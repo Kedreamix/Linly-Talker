@@ -1,0 +1,6 @@
+Chinese-LLaMA-2-7B-hf/
+checkpoints/
+gfpgan/
+__pycache__/
+https_cert/
+*.pyc
