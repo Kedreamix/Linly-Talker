@@ -6,6 +6,8 @@
 
 Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系统,创建了一种全新的人机交互方式。它集成了各种技术,例如Whisper、Linly、微软语音服务和SadTalker会说话的生成系统。该系统部署在Gradio上,允许用户通过提供图像与AI助手进行交谈。用户可以根据自己的喜好进行自由的对话或内容生成。
 
+![The system architecture of multimodal human–computer interaction.](HOI.png)
+
 ## 创建环境
 
 ```
@@ -107,3 +109,11 @@ python app.py
 ```
 
 ![](UI.jpg)
+
+
+## 参考
+
+- https://github.com/openai/whisper
+- https://github.com/rany2/edge-tts  
+- https://github.com/CVI-SZU/Linly
+- https://github.com/OpenTalker/SadTalker
