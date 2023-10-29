@@ -205,9 +205,9 @@ class AnimateFromCoeff():
         # Write each frame to the video file
         for frame in result:
             video_writer.write(frame)
-            cv2.imshow("Stream", frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # cv2.imshow("Stream", frame)
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
         # Release the video writer and close the file
         video_writer.release()
@@ -259,7 +259,7 @@ class AnimateFromCoeff():
         #     os.remove(enhanced_path)
 
         # os.remove(path)
-        # os.remove(new_audio_path)
+        os.remove(path)
 
         return return_path
 

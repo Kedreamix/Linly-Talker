@@ -10,7 +10,7 @@ def get_facerender_data(coeff, pic_path, first_coeff_path, audio_path,
                         expression_scale=1.0, still_mode = False, preprocess='crop', size = 256, facemodel='facevid2vid'):
 
     semantic_radius = 13
-    video_name = "answer"
+    video_name = f"{pic_path.split('/')[-1].split('.')[0]}_{audio_path.split('/')[-1].split('.')[0]}"
     # txt_path = os.path.splitext(coeff_path)[0]
 
     data={}
