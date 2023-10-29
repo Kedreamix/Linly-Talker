@@ -81,7 +81,7 @@ def linly_response(question):
     print(answer)
     os.system(f'proxychains4 edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
     #audio, sr = librosa.load(path='answer.wav')
-    return 'answer.wav', answer
+    return 'results/answer.wav', answer
 
 
 def asr_response(audio):
@@ -187,11 +187,14 @@ def main():
     
 if __name__ == "__main__":
     # funasr = FunASR()
-    llm = Linly(type='offline',model_path="./Chinese-LLaMA-2-7B-hf/")
+    # local 
+    # llm = Linly(type='offline',model_path="./Chinese-LLaMA-2-7B-hf/")
+    # api 
+    llm = Linly(type='api',model_path="./Chinese-LLaMA-2-7B-hf/")
     sad_talker = SadTalker(lazy_load=True)
     openaiasr = OpenAIASR('base')
     gr.close_all()
     demo = main()
     demo.queue()
     # demo.launch()
-    demo.launch(server_name="0.0.0.0", server_port=7860, ssl_certfile="/data/dengkaijun/Talk/cert.pem", ssl_keyfile="/data/dengkaijun/Talk/key.pem",ssl_verify=False)
+    demo.launch(server_name="0.0.0.0", server_port=7870, ssl_certfile="/path/to/cert.pem", ssl_keyfile="/path/to/key.pem", ssl_keyfile="/home/cvi_demo/PythonProject/Linly-Talker/key.pem",ssl_verify=False)

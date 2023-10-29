@@ -7,7 +7,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 class Linly:
     def __init__(self, type='api', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf") -> None:
         self.url = "https://P01son-52nfefhaaova.serv-c1.openbayes.net" # maybe late
-        self.url = "http://172.31.58.8:7777" # local server: http://ip:port
+        self.url = "http://ip:port" # local server: http://ip:port
         self.headers = {
             "Content-Type": "application/json"
         }
