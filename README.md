@@ -1,6 +1,12 @@
-# Linly-Talker
+# Digital Avatar Conversational System - Linly-Talker
 
 [English](./README.md) [简体中文](./README_zh.md)
+
+**2023.12 Update** 📆
+
+**Users can upload any images for the conversation**
+
+
 
 ## Introduction
 
@@ -109,6 +115,14 @@ python app.py
 ```
 
 ![](UI.jpg)
+
+Users can upload images for the conversation
+
+```bash
+python app_img.py
+```
+
+![](UI2.jpg)
 
 ## Reference
 
