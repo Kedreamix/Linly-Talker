@@ -27,15 +27,15 @@ pip install -r requirements_app.txt
 
 ## ASR - Whisper
 
-借鉴OpenAI的Whisper,具体使用方法参考https://github.com/openai/whisper
+借鉴OpenAI的Whisper,具体使用方法参考[https://github.com/openai/whisper](https://github.com/openai/whisper)
 
 ## TTS - Edge TTS
 
-使用微软语音服务,具体使用方法参考https://github.com/rany2/edge-tts
+使用微软语音服务,具体使用方法参考[https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)
 
-## THG - SadTalker 
+## THG - SadTalker
 
-说话头生成使用SadTalker,参考CVPR 2023,详情见https://sadtalker.github.io
+说话头生成使用SadTalker,参考CVPR 2023,详情见[https://sadtalker.github.io](https://sadtalker.github.io)
 
 下载SadTalker模型:
 
@@ -126,7 +126,7 @@ python app_img.py
 
 ## 参考
 
-- https://github.com/openai/whisper
-- https://github.com/rany2/edge-tts  
-- https://github.com/CVI-SZU/Linly
-- https://github.com/OpenTalker/SadTalker
+- [https://github.com/openai/whisper](https://github.com/openai/whisper)
+- [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)  
+- [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
+- [https://github.com/OpenTalker/SadTalker](https://github.com/OpenTalker/SadTalker)

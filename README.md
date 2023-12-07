@@ -29,15 +29,15 @@ pip install -r requirements_app.txt
 
 ## ASR - Whisper
 
-Leverages OpenAI's Whisper, see https://github.com/openai/whisper for usage.
+Leverages OpenAI's Whisper, see [https://github.com/openai/whisper](https://github.com/openai/whisper) for usage.
 
 ## TTS - Edge TTS
 
-Uses Microsoft Speech Services, see https://github.com/rany2/edge-tts for usage. 
+Uses Microsoft Speech Services, see [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts) for usage. 
 
 ## THG - SadTalker
 
-Talking head generation uses SadTalker from CVPR 2023, see https://sadtalker.github.io
+Talking head generation uses SadTalker from CVPR 2023, see [https://sadtalker.github.io](https://sadtalker.github.io)
 
 Download SadTalker models:
 
@@ -47,7 +47,7 @@ bash scripts/download_models.sh
 
 ## LLM - Linly 
 
-Linly from CVTE, Shenzhen University, see https://github.com/CVI-SZU/Linly
+Linly from CVI , Shenzhen University, see https://github.com/CVI-SZU/Linly
 
 Download Linly models: https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf
 
@@ -126,7 +126,7 @@ python app_img.py
 
 ## Reference
 
-- https://github.com/openai/whisper
-- https://github.com/rany2/edge-tts  
-- https://github.com/CVI-SZU/Linly
-- https://github.com/OpenTalker/SadTalker
+- [https://github.com/openai/whisper](https://github.com/openai/whisper)
+- [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)  
+- [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
+- [https://github.com/OpenTalker/SadTalker](https://github.com/OpenTalker/SadTalker)
