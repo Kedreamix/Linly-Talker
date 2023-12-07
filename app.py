@@ -7,11 +7,10 @@ from src.gradio_demo import SadTalker
 import time
 import random 
 description = """<p style="text-align: center; font-weight: bold;">
-        <span style="font-size: 28px">Linly 智能对话系统</span>
+        <span style="font-size: 28px">Linly Talker</span>
         <br>
         <span style="font-size: 18px" id="paper-info">
-            
-        </span>
+        Linly-Talker is an intelligent AI system that combines large language models (LLMs) with visual models to create a novel human-AI interaction method. 
         <br> 
     </p>"""
 
@@ -197,4 +196,8 @@ if __name__ == "__main__":
     demo = main()
     demo.queue()
     # demo.launch()
-    demo.launch(server_name="0.0.0.0", server_port=7870, ssl_certfile="/path/to/cert.pem", ssl_keyfile="/path/to/key.pem", ssl_keyfile="/home/cvi_demo/PythonProject/Linly-Talker/key.pem",ssl_verify=False)
+    demo.launch(server_name="0.0.0.0", 
+                server_port=7870, 
+                ssl_certfile="/path/to/cert.pem", 
+                ssl_keyfile="/path/to/key.pem",
+                ssl_verify=False)
