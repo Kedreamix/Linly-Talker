@@ -188,3 +188,9 @@ python app_img.py
 - [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)  
 - [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
 - [https://github.com/OpenTalker/SadTalker](https://github.com/OpenTalker/SadTalker)
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Kedreamix/Linly-Talker&type=Date)](https://star-history.com/#Kedreamix/Linly-Talker&Date)
+
