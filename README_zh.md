@@ -108,6 +108,64 @@ Gradio是一个Python库,提供了一种简单的方式将机器学习模型作�
 
 ## 启动
 
+首先说明一下的文件夹结构如下
+
+```bash
+Linly-Talker/ 
+├── app.py
+├── app_img.py
+├── utils.py
+├── Linly-api.py
+├── Linly-example.ipynb
+├── README.md
+├── README_zh.md
+├── request-Linly-api.py
+├── requirements_app.txt
+├── scripts
+│   └── download_models.sh
+├──	src
+│	└── .....
+├── inputs
+│   ├── example.png
+│   └── first_frame_dir
+│       ├── example_landmarks.txt
+│       ├── example.mat
+│       └── example.png
+├── examples
+│   ├── driven_audio
+│   │   ├── bus_chinese.wav
+│   │   ├── ......
+│   │   └── RD_Radio40_000.wav
+│   ├── ref_video
+│   │   ├── WDA_AlexandriaOcasioCortez_000.mp4
+│   │   └── WDA_KatieHill_000.mp4
+│   └── source_image
+│       ├── art_0.png
+│       ├── ......
+│       └── sad.png
+├── checkpoints // SadTalker 权重路径
+│   ├── mapping_00109-model.pth.tar
+│   ├── mapping_00229-model.pth.tar
+│   ├── SadTalker_V0.0.2_256.safetensors
+│   └── SadTalker_V0.0.2_512.safetensors
+├── gfpgan // GFPGAN 权重路径
+│   └── weights
+│       ├── alignment_WFLW_4HG.pth
+│       └── detection_Resnet50_Final.pth
+├── Chinese-LLaMA-2-7B-hf // Linly 权重路径
+    ├── config.json
+    ├── generation_config.json
+    ├── pytorch_model-00001-of-00002.bin
+    ├── pytorch_model-00002-of-00002.bin
+    ├── pytorch_model.bin.index.json
+    ├── README.md
+    ├── special_tokens_map.json
+    ├── tokenizer_config.json
+    └── tokenizer.model
+```
+
+接下来进行启动
+
 ```
 python app.py
 ```
