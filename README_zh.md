@@ -6,6 +6,10 @@
 
 **用户可以上传任意图片进行对话**
 
+**2024.01 更新** 📆
+
+**令人兴奋的消息！我现在已经将强大的GeminiPro和Qwen大模型融入到我们的对话场景中。用户现在可以在对话中上传任何图片，为我们的互动增添了全新的层面。**
+
 ## 介绍
 
 Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系统,创建了一种全新的人机交互方式。它集成了各种技术,例如Whisper、Linly、微软语音服务和SadTalker会说话的生成系统。该系统部署在Gradio上,允许用户通过提供图像与AI助手进行交谈。用户可以根据自己的喜好进行自由的对话或内容生成。
@@ -14,7 +18,7 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 
 ## 创建环境
 
-```
+```bash
 conda create -n linly python=3.8 
 conda activate linly
 
@@ -39,24 +43,26 @@ pip install -r requirements_app.txt
 
 下载SadTalker模型:
 
-```
+```bash
 bash scripts/download_models.sh  
 ```
 
-## LLM - Linly
+## LLM - Conversation
 
-Linly来自深圳大学数据工程国家重点实验室,参考https://github.com/CVI-SZU/Linly
+### Linly-AI
 
-下载Linly模型:https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf
+Linly来自深圳大学数据工程国家重点实验室,参考[https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
 
-```
+下载Linly模型:[https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf](https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf)
+
+```bash
 git lfs install
 git clone https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf
 ```
 
 或使用API:
 
-```
+```bash
 # 命令行
 curl -X POST -H "Content-Type: application/json" -d '{"question": "北京有什么好玩的地方?"}' http://url:port  
 
@@ -82,6 +88,46 @@ else:
     print("fail")
 print(response_text)
 ```
+
+
+
+### Qwen
+
+来自阿里云的Qwen，查看 [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
+
+下载 Qwen 模型: [https://huggingface.co/Qwen/Qwen-7B-Chat-Int4](https://huggingface.co/Qwen/Qwen-7B-Chat-Int4)
+
+```bash
+git lfs install
+git clone https://huggingface.co/Qwen/Qwen-1_8B-Chat
+```
+
+
+
+### Gemini-Pro
+
+来自 Google 的 Gemini-Pro，了解更多请访问 [https://deepmind.google/technologies/gemini/](https://deepmind.google/technologies/gemini/)
+
+请求 API 密钥: [https://makersuite.google.com/](https://makersuite.google.com/)
+
+
+
+### 模型选择
+
+在 app.py 文件中，轻松选择您需要的模型。
+
+```python
+# 取消注释并设置您选择的模型:
+
+# llm = Gemini(model_path='gemini-pro', api_key=None, proxy_url=None) # 不要忘记加入您自己的 Google API 密钥
+# llm = Qwen(mode='offline', model_path="Qwen/Qwen-1_8B-Chat")
+# 自动下载
+# llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
+# 手动下载到指定路径
+llm = Linly(mode='offline', model_path="./Chinese-LLaMA-2-7B-hf")
+```
+
+
 
 ## 优化
 
@@ -122,36 +168,36 @@ Linly-Talker/
 ├── request-Linly-api.py
 ├── requirements_app.txt
 ├── scripts
-│   └── download_models.sh
+│   └── download_models.sh
 ├──	src
 │	└── .....
 ├── inputs
-│   ├── example.png
-│   └── first_frame_dir
-│       ├── example_landmarks.txt
-│       ├── example.mat
-│       └── example.png
+│   ├── example.png
+│   └── first_frame_dir
+│       ├── example_landmarks.txt
+│       ├── example.mat
+│       └── example.png
 ├── examples
-│   ├── driven_audio
-│   │   ├── bus_chinese.wav
-│   │   ├── ......
-│   │   └── RD_Radio40_000.wav
-│   ├── ref_video
-│   │   ├── WDA_AlexandriaOcasioCortez_000.mp4
-│   │   └── WDA_KatieHill_000.mp4
-│   └── source_image
-│       ├── art_0.png
-│       ├── ......
-│       └── sad.png
+│   ├── driven_audio
+│   │   ├── bus_chinese.wav
+│   │   ├── ......
+│   │   └── RD_Radio40_000.wav
+│   ├── ref_video
+│   │   ├── WDA_AlexandriaOcasioCortez_000.mp4
+│   │   └── WDA_KatieHill_000.mp4
+│   └── source_image
+│       ├── art_0.png
+│       ├── ......
+│       └── sad.png
 ├── checkpoints // SadTalker 权重路径
 │   ├── mapping_00109-model.pth.tar
 │   ├── mapping_00229-model.pth.tar
 │   ├── SadTalker_V0.0.2_256.safetensors
 │   └── SadTalker_V0.0.2_512.safetensors
 ├── gfpgan // GFPGAN 权重路径
-│   └── weights
-│       ├── alignment_WFLW_4HG.pth
-│       └── detection_Resnet50_Final.pth
+│   └── weights
+│       ├── alignment_WFLW_4HG.pth
+│       └── detection_Resnet50_Final.pth
 ├── Chinese-LLaMA-2-7B-hf // Linly 权重路径
     ├── config.json
     ├── generation_config.json
@@ -166,7 +212,7 @@ Linly-Talker/
 
 接下来进行启动
 
-```
+```bash
 python app.py
 ```
 

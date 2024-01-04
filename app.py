@@ -1,7 +1,7 @@
 import os
 import gradio as gr
 from zhconv import convert
-from src.Linly import Linly
+from src.LLM import *
 from src.Asr import OpenAIASR
 from src.gradio_demo import SadTalker 
 import time
@@ -73,12 +73,13 @@ def asr(audio):
 #     return question
 
  
-def linly_response(question):
+def llm_response(question):
     voice = 'zh-CN-XiaoxiaoNeural'
     #answer = llm.predict(question)
     answer = llm.generate(question)
     print(answer)
-    os.system(f'proxychains4 edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
+    # 默认保存为answer.wav
+    os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
     #audio, sr = librosa.load(path='answer.wav')
     return 'results/answer.wav', answer
 
@@ -86,7 +87,7 @@ def linly_response(question):
 def asr_response(audio):
     
     question = asr(audio)
-    linly_response(question)
+    llm_response(question)
     pose_style = random.randint(0, 45)
     video = sad_talker.test(source_image,
                         'answer.wav',
@@ -109,7 +110,7 @@ def asr_response(audio):
 def text_response(text):
     s = time.time()
     sad_talker = SadTalker(lazy_load=True)
-    linly_response(text)
+    llm_response(text)
     e = time.time()
     print("Using Time", e-s)
     pose_style = random.randint(0, 45)
@@ -187,9 +188,15 @@ def main():
 if __name__ == "__main__":
     # funasr = FunASR()
     # local 
-    # llm = Linly(type='offline',model_path="./Chinese-LLaMA-2-7B-hf/")
-    # api 
-    llm = Linly(type='api',model_path="./Chinese-LLaMA-2-7B-hf/")
+    # llm = Linly(mode='offline',model_path="./Chinese-LLaMA-2-7B-hf/")
+    # api
+
+    # llm = Gemini(model_path='gemini-pro', api_key=None, proxy_url=None) # 需要自己加入google的apikey
+    # llm = Qwen(mode='offline',model_path="Qwen/Qwen-1_8B-Chat")
+    # 自动下载
+    # llm = Linly(mode='offline',model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
+    # 手动下载指定路径
+    llm = Linly(mode='offline',model_path="./Chinese-LLaMA-2-7B-hf")
     sad_talker = SadTalker(lazy_load=True)
     openaiasr = OpenAIASR('base')
     gr.close_all()

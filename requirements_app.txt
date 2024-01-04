@@ -21,4 +21,7 @@ scikit-image==0.19.3
 zhconv
 accelerate
 transformers
+einops 
+transformers_stream_generator
 sentencepiece
+google-generativeai

@@ -5,7 +5,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 class Linly:
-    def __init__(self, type='api', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf") -> None:
+    def __init__(self, mode='api', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf") -> None:
         self.url = "https://P01son-52nfefhaaova.serv-c1.openbayes.net" # maybe late
         self.url = "http://ip:port" # local server: http://ip:port
         self.headers = {
@@ -15,8 +15,8 @@ class Linly:
             "question": "北京有什么好玩的地方？"
         }
         self.prompt = '''请用少于25个字回答以下问题'''
-        self.type = type
-        if type != 'api':
+        self.mode = mode
+        if mode != 'api':
             self.model, self.tokenizer = self.init_model(model_path)
     
     def init_model(self, path = "Linly-AI/Chinese-LLaMA-2-7B-hf"):
@@ -26,7 +26,7 @@ class Linly:
         return model, tokenizer   
     
     def generate(self, question):
-        if self.type != 'api':
+        if self.mode != 'api':
             self.data["question"] = f"{self.prompt} ### Instruction:{question}  ### Response:"
             inputs = self.tokenizer(self.data["question"], return_tensors="pt").to("cuda:0")
             try:
@@ -54,12 +54,13 @@ class Linly:
             return "对不起，你的请求出错了，请再次尝试。\nSorry, your request has encountered an error. Please try again.\n"
 
 def test():
-    #llm = Linly(type='api')
+    #llm = Linly(mode='api')
     #answer = llm.predict("如何应对压力？")
     #print(answer)
     
-    llm = Linly(type='offline',model_path="/home/cvi_demo/PythonProject/Talk/Chinese-LLaMA-2-7B-hf/")
+    llm = Linly(mode='offline',model_path="/home/cvi_demo/PythonProject/Talk/Chinese-LLaMA-2-7B-hf/")
     answer = llm.generate("如何应对压力？")
     print(answer)
 
-# test()
+if __name__ == '__main__':
+    test()

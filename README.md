@@ -6,7 +6,9 @@
 
 **Users can upload any images for the conversation**
 
+**2024.01 Update** 📆📆
 
+**Exciting news! I've now incorporated both the powerful GeminiPro and Qwen large models into our conversational scene. Users can now upload images during the conversation, adding a whole new dimension to the interactions.**
 
 ## Introduction
 
@@ -16,7 +18,7 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 
 ## Setup
 
-```
+```bash
 conda create -n linly python=3.8
 conda activate linly
 
@@ -41,24 +43,26 @@ Talking head generation uses SadTalker from CVPR 2023, see [https://sadtalker.gi
 
 Download SadTalker models:
 
-```
+```bash
 bash scripts/download_models.sh
 ```
 
-## LLM - Linly 
+## LLM - Conversation
 
-Linly from CVI , Shenzhen University, see https://github.com/CVI-SZU/Linly
+### Linly-AI
 
-Download Linly models: https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf
+Linly-AI from CVI , Shenzhen University, see [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
 
-```
+Download Linly models: [https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf](https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf)
+
+```bash
 git lfs install
 git clone https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf
 ```
 
 Or use the API:
 
-```
+```bash
 # CLI
 curl -X POST -H "Content-Type: application/json" -d '{"question": "What are fun places in Beijing?"}' http://url:port
 
@@ -84,6 +88,44 @@ else:
     print("fail")
 print(response_text)
 ```
+
+### Qwen
+
+Qwen from Alibaba Cloud, see [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
+
+Download Qwen models: [https://huggingface.co/Qwen/Qwen-7B-Chat-Int4](https://huggingface.co/Qwen/Qwen-7B-Chat-Int4)
+
+```bash
+git lfs install
+git clone https://huggingface.co/Qwen/Qwen-1_8B-Chat
+```
+
+
+
+### Gemini-Pro
+
+Gemini-Pro from Google, see [https://deepmind.google/technologies/gemini/](https://deepmind.google/technologies/gemini/)
+
+Request API-keys: [https://makersuite.google.com/](https://makersuite.google.com/)
+
+
+
+### Model Selection
+
+In the app.py file, tailor your model choice with ease.
+
+```python
+# Uncomment and set up the model of your choice:
+
+# llm = Gemini(model_path='gemini-pro', api_key=None, proxy_url=None) # Don't forget to include your Google API key
+# llm = Qwen(mode='offline', model_path="Qwen/Qwen-1_8B-Chat")
+# Automatic download
+# llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
+# Manual download with a specific path
+llm = Linly(mode='offline', model_path="./Chinese-LLaMA-2-7B-hf")
+```
+
+
 
 ## Optimizations
 
@@ -168,7 +210,7 @@ Linly-Talker/
 
 Next, launch the app:
 
-```
+```bash
 python app.py
 ```
 
