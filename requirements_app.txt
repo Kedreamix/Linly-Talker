@@ -14,7 +14,7 @@ pyyaml
 joblib==1.1.0
 facexlib==0.3.0
 gradio==3.38.*
-#gfpgan
+# gfpgan
 edge-tts
 openai-whisper
 scikit-image==0.19.3
@@ -25,3 +25,11 @@ einops
 transformers_stream_generator
 sentencepiece
 google-generativeai
+# ========Qwen Need========#
+# transformers==4.32.0
+# accelerate 
+# tiktoken
+# scipy
+# transformers_stream_generator==0.0.4 
+# peft 
+# deepspeed

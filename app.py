@@ -81,16 +81,20 @@ def llm_response(question):
     # 默认保存为answer.wav
     os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
     #audio, sr = librosa.load(path='answer.wav')
-    return 'results/answer.wav', answer
+    return 'answer.wav', answer
 
 
 def asr_response(audio):
-    
+    s = time.time()
     question = asr(audio)
     llm_response(question)
     pose_style = random.randint(0, 45)
+    e = time.time()
+    print("Using Time", e-s)
+    s = time.time()
+    driven_audio = 'answer.wav'
     video = sad_talker.test(source_image,
-                        'answer.wav',
+                        driven_audio,
                         preprocess_type,
                         is_still_mode,
                         enhancer,
@@ -105,6 +109,8 @@ def asr_response(audio):
                         use_idle_mode,
                         length_of_audio,
                         blink_every)
+    e = time.time()
+    print("Using Time", e-s)
     return video
 
 def text_response(text):
@@ -115,8 +121,9 @@ def text_response(text):
     print("Using Time", e-s)
     pose_style = random.randint(0, 45)
     s = time.time()
+    driven_audio = 'answer.wav'
     video = sad_talker.test(source_image,
-                        'answer.wav',
+                        driven_audio,
                         preprocess_type,
                         is_still_mode,
                         enhancer,
