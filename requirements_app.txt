@@ -11,7 +11,7 @@ kornia==0.6.8
 tqdm
 yacs==0.1.8
 pyyaml  
-joblib==1.1.0
+joblib==1.2.0
 facexlib==0.3.0
 gradio==3.38.*
 # gfpgan
