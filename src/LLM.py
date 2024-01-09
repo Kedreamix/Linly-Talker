@@ -1,6 +1,6 @@
-from Linly import Linly
-from Qwen import Qwen
-from Gemini import Gemini
+from src.Linly import Linly
+from src.Qwen import Qwen
+from src.Gemini import Gemini
 
 def test_Linly(question = "如何应对压力？", mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
     llm = Linly(mode, model_path)
