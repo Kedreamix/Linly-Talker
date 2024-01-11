@@ -6,6 +6,7 @@ from src.Asr import OpenAIASR
 from src.gradio_demo import SadTalker 
 import time
 import random 
+from configs import *
 description = """<p style="text-align: center; font-weight: bold;">
         <span style="font-size: 28px">Linly 智能对话系统</span>
         <br>
@@ -295,15 +296,15 @@ if __name__ == "__main__":
     # 自动下载
     # llm = Linly(mode='offline',model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
     # 手动下载指定路径
-    llm = Linly(mode='offline',model_path="./Chinese-LLaMA-2-7B-hf")
+    llm = Linly(mode='offline', model_path=model_path)
     sad_talker = SadTalker(lazy_load=True)
     openaiasr = OpenAIASR('base')
     gr.close_all()
     demo = main()
     demo.queue()
     # demo.launch()
-    demo.launch(server_name="0.0.0.0", 
-                server_port=7870, 
-                ssl_certfile="/path/to/cert.pem", 
-                ssl_keyfile="/path/to/key.pem",
+    demo.launch(server_name="0.0.0.0",
+                server_port=port,
+                ssl_certfile=ssl_certfile,
+                ssl_keyfile=ssl_keyfile,
                 ssl_verify=False)

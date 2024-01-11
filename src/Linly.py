@@ -1,12 +1,13 @@
 import os
 import torch
 import requests
+import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 class Linly:
     def __init__(self, mode='api', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf") -> None:
-        self.url = "https://P01son-52nfefhaaova.serv-c1.openbayes.net" # maybe late
+        # mode = api need
         self.url = "http://ip:port" # local server: http://ip:port
         self.headers = {
             "Content-Type": "application/json"
@@ -43,15 +44,20 @@ class Linly:
             return self.predict(question)
     
     def predict(self, question):
-
+        # FastAPI
         self.data["question"] = f"{self.prompt} ### Instruction:{question}  ### Response:"
-        response = requests.post(self.url, headers=self.headers, json=self.data)
-        self.json = response.json()
-        answer, tag = self.json
-        if tag == 'success':
-            return answer[0]
-        else:
-            return "对不起，你的请求出错了，请再次尝试。\nSorry, your request has encountered an error. Please try again.\n"
+        headers = {'Content-Type': 'application/json'}
+        data = {"prompt": question}
+        response = requests.post(url=self.url, headers=headers, data=json.dumps(data))
+        return response.json()['response']
+            
+        # response = requests.post(self.url, headers=self.headers, json=self.data)
+        # self.json = response.json()
+        # answer, tag = self.json
+        # if tag == 'success':
+        #     return answer[0]
+        # else:
+        #     return "对不起，你的请求出错了，请再次尝试。\nSorry, your request has encountered an error. Please try again.\n"
 
 def test():
     #llm = Linly(mode='api')

@@ -214,6 +214,7 @@ class SadTalker():
             one_sec_segment = AudioSegment.silent(duration=1000*length_of_audio)  #duration in milliseconds
             one_sec_segment.export(audio_path, format="wav")
         else:
+            assert driven_audio is not None, "No audio is given"
             print(use_ref_video, ref_info)
             assert use_ref_video == True and ref_info == 'all'
 

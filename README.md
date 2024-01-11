@@ -8,13 +8,21 @@
 
 **2024.01 Update** 📆📆
 
-**Exciting news! I've now incorporated both the powerful GeminiPro and Qwen large models into our conversational scene. Users can now upload images during the conversation, adding a whole new dimension to the interactions.**
+**Exciting news! I've now incorporated both the powerful GeminiPro and Qwen large models into our conversational scene. Users can now upload images during the conversation, adding a whole new dimension to the interactions.** **The deployment invocation method for FastAPI has been updated.**
 
 ## Introduction
 
 Linly-Talker is an intelligent AI system that combines large language models (LLMs) with visual models to create a novel human-AI interaction method. It integrates various technologies like Whisper, Linly, Microsoft Speech Services and SadTalker talking head generation system. The system is deployed on Gradio to allow users to converse with an AI assistant by providing images as prompts. Users can have free-form conversations or generate content according to their preferences.
 
 ![The system architecture of multimodal human–computer interaction.](HOI.png)
+
+## TO DO LIST
+
+- [ ]  Real-time Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
+- [ ] Voice Cloning Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
+- [ ] GPT Multi-turn Dialogue System (Enhance the interactivity and realism of digital entities, bolstering their intelligence)
+
+🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
 
 ## Setup
 
@@ -28,6 +36,22 @@ conda install ffmpeg
 
 pip install -r requirements_app.txt
 ```
+
+For the convenience of deployment and usage, an `configs.py` file has been updated. You can modify some hyperparameters in this file for customization:
+
+```bash
+# 设备运行端口 (Device running port)
+port = 7870
+# API运行端口 (API running port)
+api_port = 7871
+# Linly模型路径 (Linly model path)
+model_path = 'Linly-AI/Chinese-LLaMA-2-7B-hf'
+# SSL证书 (SSL certificate)
+ssl_certfile = "/path/cert.pem"
+ssl_keyfile = "/path/key.pem"
+```
+
+This file allows you to adjust parameters such as the device running port, API running port, Linly model path, and SSL certificate paths for ease of deployment and configuration.
 
 ## ASR - Whisper
 
@@ -89,11 +113,137 @@ else:
 print(response_text)
 ```
 
+API deployment is recommended with **FastAPI**, which has now been updated to a new version for API usage. FastAPI is a high-performance, user-friendly, and modern Python web framework. It leverages the latest Python features and asynchronous programming to provide the capability for rapid development of Web APIs. This framework is not only easy to learn and use but also comes with powerful features such as automatic documentation generation and data validation. Whether you are building a small project or a large application, FastAPI is a robust and effective tool.
+
+To begin with the API deployment, first, install the libraries used:
+
+```bash
+pip install fastapi==0.104.1
+pip install uvicorn==0.24.0.post1
+```
+
+Other usage methods are generally similar, with the main difference lying in the code implementation, which is simpler and more streamlined. Additionally, it handles concurrency more effectively.
+
+Here is the translation:
+
+```python
+from fastapi import FastAPI, Request
+from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
+import uvicorn
+import json
+import datetime
+import torch
+from configs import model_path, api_port
+
+# Set device parameters
+DEVICE = "cuda"  # Use CUDA
+DEVICE_ID = "0"  # CUDA device ID, empty if not set
+CUDA_DEVICE = f"{DEVICE}:{DEVICE_ID}" if DEVICE_ID else DEVICE  # Combine CUDA device information
+
+# Function to clean GPU memory
+def torch_gc():
+    if torch.cuda.is_available():  # Check if CUDA is available
+        with torch.cuda.device(CUDA_DEVICE):  # Specify CUDA device
+            torch.cuda.empty_cache()  # Clear CUDA cache
+            torch.cuda.ipc_collect()  # Collect CUDA memory fragments
+
+# Create FastAPI application
+app = FastAPI()
+
+# Endpoint to handle POST requests
+@app.post("/")
+async def create_item(request: Request):
+    global model, tokenizer  # Declare global variables for model and tokenizer
+    json_post_raw = await request.json()  # Get JSON data from POST request
+    json_post = json.dumps(json_post_raw)  # Convert JSON data to string
+    json_post_list = json.loads(json_post)  # Convert string to Python object
+    prompt = json_post_list.get('prompt')  # Get prompt from the request
+    history = json_post_list.get('history')  # Get history from the request
+    max_length = json_post_list.get('max_length')  # Get max length from the request
+    top_p = json_post_list.get('top_p')  # Get top_p parameter from the request
+    temperature = json_post_list.get('temperature')  # Get temperature parameter from the request
+
+    # Generate response using the model
+    prompt = f"Please answer the following question in less than 25 words ### Instruction:{prompt}  ### Response:"
+    inputs = tokenizer(prompt, return_tensors="pt").to("cuda:0")
+    generate_ids = model.generate(inputs.input_ids,
+                                  max_new_tokens=max_length if max_length else 2048,
+                                  do_sample=True,
+                                  top_k=20,
+                                  top_p=top_p,
+                                  temperature=temperature if temperature else 0.84,
+                                  repetition_penalty=1.15, eos_token_id=2, bos_token_id=1, pad_token_id=0)
+    response = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+    response = response.split("### Response:")[-1]
+    now = datetime.datetime.now()  # Get current time
+    time = now.strftime("%Y-%m-%d %H:%M:%S")  # Format time as string
+
+    # Build response JSON
+    answer = {
+        "response": response,
+        "status": 200,
+        "time": time
+    }
+
+    # Build log information
+    log = "[" + time + "] " + '", prompt:"' + prompt + '", response:"' + repr(response) + '"'
+    print(log)  # Print log
+    torch_gc()  # Execute GPU memory cleanup
+    return answer  # Return response
+
+# Main function entry point
+if __name__ == '__main__':
+    # Load pretrained tokenizer and model
+    model = AutoModelForCausalLM.from_pretrained(model_path, device_map="cuda:0",
+                                                    torch_dtype=torch.bfloat16, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
+    model.eval()  # Set model to evaluation mode
+
+    # Start FastAPI application
+    uvicorn.run(app, host='0.0.0.0', port=api_port, workers=1)  # Start the application on the specified port and host
+```
+
+The default deployment is on port 7871, and you can make a POST call using curl, as shown below:
+
+```bash
+curl -X POST "http://127.0.0.1:7871" \
+     -H 'Content-Type: application/json' \
+     -d '{"prompt": "如何应对压力"}'
+```
+
+You can also use the requests library in Python, as shown below:
+
+```python
+import requests
+import json
+
+def get_completion(prompt):
+    headers = {'Content-Type': 'application/json'}
+    data = {"prompt": prompt}
+    response = requests.post(url='http://127.0.0.1:7871', headers=headers, data=json.dumps(data))
+    return response.json()['response']
+
+if __name__ == '__main__':
+    print(get_completion('你好如何应对压力'))
+```
+
+The returned value will be:
+
+```json
+{
+  "response": "寻求支持和放松，并采取积极的措施解决问题。",
+  "status": 200,
+  "time": "2024-01-12 01:43:37"
+}
+```
+
+
+
 ### Qwen
 
 Qwen from Alibaba Cloud, see [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
 
-Download Qwen models: [https://huggingface.co/Qwen/Qwen-7B-Chat-Int4](https://huggingface.co/Qwen/Qwen-7B-Chat-Int4)
+Download Qwen models: [https://huggingface.co/Qwen/Qwen-1_8B-Chat](https://huggingface.co/Qwen/Qwen-1_8B-Chat)
 
 ```bash
 git lfs install
@@ -196,16 +346,17 @@ Linly-Talker/
    └── weights
        ├── alignment_WFLW_4HG.pth
        └── detection_Resnet50_Final.pth
-├── Chinese-LLaMA-2-7B-hf // Linly model weights path
-    ├── config.json
-    ├── generation_config.json
-    ├── pytorch_model-00001-of-00002.bin
-    ├── pytorch_model-00002-of-00002.bin
-    ├── pytorch_model.bin.index.json
-    ├── README.md
-    ├── special_tokens_map.json
-    ├── tokenizer_config.json
-    └── tokenizer.model
+├── Linly-AI // Linly model weights path
+    ├── Chinese-LLaMA-2-7B-hf 
+        ├── config.json
+        ├── generation_config.json
+        ├── pytorch_model-00001-of-00002.bin
+        ├── pytorch_model-00002-of-00002.bin
+        ├── pytorch_model.bin.index.json
+        ├── README.md
+        ├── special_tokens_map.json
+        ├── tokenizer_config.json
+        └── tokenizer.model
 ```
 
 Next, launch the app:
@@ -229,6 +380,8 @@ python app_img.py
 - [https://github.com/openai/whisper](https://github.com/openai/whisper)
 - [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)  
 - [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
+- [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
+- [https://deepmind.google/technologies/gemini/](https://deepmind.google/technologies/gemini/)
 - [https://github.com/OpenTalker/SadTalker](https://github.com/OpenTalker/SadTalker)
 
 
