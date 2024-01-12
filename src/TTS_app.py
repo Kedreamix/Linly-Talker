@@ -1,46 +1,85 @@
-# import gradio as gr
-# from TTS import EdgeTTS
-# import librosa
-# import os
-
-# title = "文本转语音"
-
-# def generateAudio(text):
-#     tts = EdgeTTS()
-#     audio_file = tts.predict(text, 'zh-CN-XiaoxiaoNeural', '+0%', '+0%', "output.wav")
-#     audio, sr = librosa.load(path=audio_file)
-#     return sr,audio
-
-# app = gr.Interface(
-#     fn=generateAudio, 
-#     inputs="text", 
-#     outputs="audio", 
-#     title=title,
-#     # examples=[os.path.join(os.path.dirname(__file__),"output.wav")]
-#     )
-# if __name__ == "__main__":
-#     app.launch()
-
-import gradio as gr
 import librosa
-# from TTS import EdgeTTS
+import gradio as gr
+from TTS import EdgeTTS
 import os
-def generateAudio(text):
-    # tts = EdgeTTS()
-    # VOICE = "zh-CN-XiaoxiaoNeural"
-    # OUTPUT_FILE = "tts.wav"
-    # audio_file = tts.predict(text, VOICE, '+0%', '+0%', OUTPUT_FILE)
-    # edge-tts --text "Hello, world!" --write-media hello.mp3 --write-subtitles hello.vtt
-    os.system(f'proxychains4 edge-tts --text "{text}" --voice zh-CN-XiaoxiaoNeural --write-media tts.wav')
-    audio, sr = librosa.load(path='tts.wav')
-    return sr,audio
+title = "TTS WebUI"
+tts = EdgeTTS()
+
+def generateAudio(text, voice, rate, volume, pitch):
+    # audio_file, sub_file = tts.predict(text, 'zh-CN-XiaoxiaoNeural', '+0%', '+0%', "output.wav")
+    if rate >= 0:
+        rate = f'+{rate}%'
+    else:
+        rate = f'{rate}%'
+    if pitch >= 0:
+        pitch = f'+{pitch}Hz'
+    else:
+        pitch = f'{pitch}Hz'
+    volume = 100 - volume
+    volume = f'-{volume}%'
+      
+
+    audio_file, sub_file = tts.predict(text, voice, rate, volume, pitch, "output.wav", "output.srt")
+    print(text, audio_file, sub_file)
+    audio, sr = librosa.load(path=audio_file)
+    return gr.make_waveform(
+                audio=audio_file,
+            ),(sr, audio)
 
 
-demo = gr.Interface(
-    fn=generateAudio, 
-    inputs="text", 
-    outputs='audio',
-    )
-    
+def main():
+    with gr.Blocks(title=title) as demo:
+        with gr.Row():
+            gr.HTML("<center><h1>TTS WebUI</h1></center>")
+        with gr.Row():
+            with gr.Column():
+                text = gr.Text(label = "Text to be spoken")
+                voice = gr.Dropdown(tts.SUPPORTED_VOICE, label="Voice to be used", value = 'zh-CN-XiaoxiaoNeural')
+                with gr.Accordion("Advanced Settings",
+                                        open=False,
+                                        visible=True) as parameter_article:
+                    rate = gr.Slider(minimum=-100,
+                                        maximum=100,
+                                        value=0,
+                                        step=1.0,
+                                        label='Rate')
+                    volume = gr.Slider(minimum=0,
+                                            maximum=100,
+                                            value=100,
+                                            step=1,
+                                            label='Volume')
+                    pitch = gr.Slider(minimum=-100,
+                                        maximum=100,
+                                        value=0,
+                                        step=1,
+                                        label='Pitch')
+
+            with gr.Column():
+                video = gr.Video(label="Waveform Visual")
+                audio = gr.Audio(label = "Audio file")
+            
+        generate = gr.Button("Generate Audio", variant="primary")
+        generate.click(generateAudio, 
+                        inputs=[text, voice, rate, volume, pitch], 
+                        outputs=[video, audio],
+                        ) 
+        gr.Markdown("## Text Examples")
+        gr.Examples(
+            examples=[
+                ['大家好，很高兴认识你们！','zh-CN-XiaoxiaoNeural'],
+                ['大家好，很高兴认识你们！','zh-TW-YunJheNeural'],
+                ['hello, Nice to meet you!','en-US-RogerNeural']
+            ],
+            fn=generateAudio,
+            inputs=[text, voice],
+            outputs=[video, audio],
+        )
+    return demo
+
 if __name__ == "__main__":
-    demo.launch()  
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--server_port", type=int, default=7860)
+    opt = parser.parse_args()
+    demo = main()
+    demo.launch(server_port=opt.server_port)

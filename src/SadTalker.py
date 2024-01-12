@@ -8,8 +8,10 @@ from src.generate_batch import get_data
 from src.generate_facerender_batch import get_facerender_data
 from src.utils.init_path import init_path
 
-
-
+# from pydub import AudioSegment
+# def mp3_to_wav(mp3_filename,wav_filename,frame_rate):
+#     mp3_file = AudioSegment.from_file(file=mp3_filename)
+#     mp3_file.set_frame_rate(frame_rate).export(wav_filename,format="wav")
 
 class SadTalker():
 

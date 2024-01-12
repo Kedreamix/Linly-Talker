@@ -3,47 +3,29 @@ import gradio as gr
 from zhconv import convert
 from src.LLM import *
 from src.Asr import OpenAIASR
-from src.gradio_demo import SadTalker 
+from src.SadTalker import SadTalker 
+from src.TTS import EdgeTTS
 import time
 import random 
 from configs import *
 description = """<p style="text-align: center; font-weight: bold;">
-        <span style="font-size: 28px">Linly 智能对话系统</span>
-        <br>
-        <span style="font-size: 18px" id="paper-info">
-            
-        </span>
-        <br> 
-    </p>"""
-
-
-VOICES = ['zh-CN-XiaoxiaoNeural', 
-        'zh-CN-XiaoyiNeural', 
-        'zh-CN-YunjianNeural', 
-        'zh-CN-YunxiNeural', 
-        'zh-CN-YunxiaNeural', 
-        'zh-CN-YunyangNeural', 
-        'zh-HK-HiuGaaiNeural', 
-        'zh-HK-HiuMaanNeural', 
-        'zh-HK-WanLungNeural', 
-        'zh-TW-HsiaoChenNeural',  
-        'zh-TW-YunJheNeural', 
-        'zh-TW-HsiaoYuNeural',
-        'en-US-AnaNeural', 
-        'en-US-AriaNeural', 
-        'en-US-ChristopherNeural', 
-        'en-US-EricNeural', 
-        'en-US-GuyNeural', 
-        'en-US-JennyNeural', 
-        'en-US-MichelleNeural',
-        ]
+    <span style="font-size: 28px;">Linly 智能对话系统 (Linly-Talker)</span>
+    <br>
+    <span style="font-size: 18px;" id="paper-info">
+        [<a href="https://zhuanlan.zhihu.com/p/671006998" target="_blank">知乎</a>]
+        [<a href="https://www.bilibili.com/video/BV1rN4y1a76x/" target="_blank">bilibili</a>]
+        [<a href="https://github.com/Kedreamix/Linly-Talker" target="_blank">GitHub</a>]
+    </span>
+    <br> 
+    <span>Linly-Talker 是一款智能 AI 对话系统，结合了大型语言模型 (LLMs) 与视觉模型，是一种新颖的人工智能交互方式。</span>
+</p>
+"""
 
 use_ref_video = False
 ref_video = None
 ref_info = 'pose'
 use_idle_mode = False
 length_of_audio = 5
-voice = 'zh-CN-XiaoxiaoNeural'
 
 def asr(audio):
     #sr, data = audio
@@ -53,14 +35,7 @@ def asr(audio):
     question = openaiasr.transcribe(audio)
     question = convert(question, 'zh-cn')
     return question
-# def asr(audio):
-#     # openaiasr = OpenAIASR('base')
-#     # question = openaiasr.transcribe(audio)
-#     # question = convert(question, 'zh-cn')
-#     question = funasr.inference(audio)
-#     return question
 
- 
 def linly_response(question, voice = 'zh-CN-XiaoxiaoNeural'):
     #answer = llm.predict(question)
     answer = llm.generate(question)
@@ -69,31 +44,34 @@ def linly_response(question, voice = 'zh-CN-XiaoxiaoNeural'):
     #audio, sr = librosa.load(path='answer.wav')
     return 'answer.wav', answer
 
-def llm_response(question):
-    voice = 'zh-CN-XiaoxiaoNeural'
+def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = '+0%', volume = '+0%', pitch = '+0Hz'):
     #answer = llm.predict(question)
     answer = llm.generate(question)
     print(answer)
     # 默认保存为answer.wav
-    os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
-    #audio, sr = librosa.load(path='answer.wav')
-    return 'answer.wav', answer
+    # 以前旧方法直接调用命令行
+    # os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
+    # 现在调用函数，其实两者皆可
+    tts.predict(answer, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
+    # audio, sr = librosa.load(path='answer.wav')
+    return 'answer.wav', 'answer.vtt', answer
 
 
-def text_response(text, source_image,
-                        preprocess_type, 
-                        is_still_mode,
-                        enhancer,
-                        batch_size,                            
-                        size_of_image,
-                        pose_style,
-                        facerender,
-                        exp_weight,
-                        blink_every,
-                        fps):
+def text_response(text, voice, rate, volume, pitch, source_image,
+                    preprocess_type, 
+                    is_still_mode,
+                    enhancer,
+                    batch_size,                            
+                    size_of_image,
+                    pose_style,
+                    facerender,
+                    exp_weight,
+                    blink_every,
+                    fps):
+    voice = 'zh-CN-XiaoxiaoNeural' if voice == [] else voice
     s = time.time()
     sad_talker = SadTalker(lazy_load=True)
-    linly_response(text, voice)
+    llm_response(text, voice, rate, volume, pitch)
     e = time.time()
     print("Using Time", e-s)
     pose_style = random.randint(0, 45)
@@ -119,11 +97,11 @@ def text_response(text, source_image,
     e = time.time()
     print("Using Time", e-s)
     # print(video)
-    return video
+    return video, 'answer.vtt'
 
 def main():
     
-    with gr.Blocks(analytics_enabled=False) as inference:
+    with gr.Blocks(analytics_enabled=False, title = 'Linly-Talker') as inference:
         gr.HTML(description)
         with gr.Row().style(equal_height=False):
             with gr.Column(variant='panel'):
@@ -138,6 +116,26 @@ def main():
                         with gr.Column(variant='panel'):
                             question_audio = gr.Audio(source="microphone",type="filepath", info = '语音对话')
                             input_text = gr.Textbox(label="Input Text", lines=3, info = '文字对话')
+                            with gr.Accordion("Advanced Settings",
+                                        open=False,
+                                        visible=True) as parameter_article:
+                                voice = gr.Dropdown(tts.SUPPORTED_VOICE, values='zh-CN-XiaoxiaoNeural', label="Voice")
+                                rate = gr.Slider(minimum=-100,
+                                                    maximum=100,
+                                                    value=0,
+                                                    step=1.0,
+                                                    label='Rate')
+                                volume = gr.Slider(minimum=0,
+                                                        maximum=100,
+                                                        value=100,
+                                                        step=1,
+                                                        label='Volume')
+                                pitch = gr.Slider(minimum=-100,
+                                                    maximum=100,
+                                                    value=0,
+                                                    step=1,
+                                                    label='Pitch')
+
                             asr_text = gr.Button('语音识别（语音对话后点击）')
                             asr_text.click(fn=asr,inputs=[question_audio],outputs=[input_text])
                 
@@ -189,14 +187,15 @@ def main():
                                 fps = gr.Slider(label='fps in generation', step=1, maximum=30, value =25)
                                 enhancer = gr.Checkbox(label="GFPGAN as Face enhancer(slow)")
                             
-                            submit = gr.Button('Generate', elem_id="sadtalker_generate", variant='primary')
+                submit = gr.Button('Generate', elem_id="sadtalker_generate", variant='primary')
                             
                 with gr.Tabs(elem_id="sadtalker_genearted"):
-                        gen_video = gr.Video(label="Generated video", format="mp4").style(width=256)
+                    gen_video = gr.Video(label="Generated video", format="mp4").style(width=256)
             
             submit.click(
                 fn=text_response,
                 inputs=[input_text,
+                        voice, rate, volume, pitch,
                         source_image, 
                         preprocess_type,
                         is_still_mode,
@@ -296,9 +295,10 @@ if __name__ == "__main__":
     # 自动下载
     # llm = Linly(mode='offline',model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
     # 手动下载指定路径
-    llm = Linly(mode='offline', model_path=model_path)
+    llm = Linly(mode=mode, model_path=model_path)
     sad_talker = SadTalker(lazy_load=True)
     openaiasr = OpenAIASR('base')
+    tts = EdgeTTS()
     gr.close_all()
     demo = main()
     demo.queue()

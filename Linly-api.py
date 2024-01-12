@@ -45,6 +45,6 @@ class Predictor:
 
 
 if __name__ == '__main__':
-    # /home/cvi_demo/anaconda3/envs/talk/lib/python3.8/site-packages/openbayes_serving/serv.py
+    # anaconda3/envs/talk/lib/python3.8/site-packages/openbayes_serving/serv.py
     # nohup python Linly-api.py > api.out &
     serv.run(Predictor)

@@ -3,12 +3,13 @@ import torch
 import requests
 import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from configs import api_port, model_path
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 class Linly:
     def __init__(self, mode='api', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf") -> None:
         # mode = api need
-        self.url = "http://ip:port" # local server: http://ip:port
+        self.url = f"http://ip:{api_port}" # local server: http://ip:port
         self.headers = {
             "Content-Type": "application/json"
         }
@@ -64,7 +65,7 @@ def test():
     #answer = llm.predict("如何应对压力？")
     #print(answer)
     
-    llm = Linly(mode='offline',model_path="/home/cvi_demo/PythonProject/Talk/Chinese-LLaMA-2-7B-hf/")
+    llm = Linly(mode='offline',model_path=model_path)
     answer = llm.generate("如何应对压力？")
     print(answer)
 
