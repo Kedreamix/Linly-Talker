@@ -25,7 +25,6 @@ description = """<p style="text-align: center; font-weight: bold;">
 
 # 设定默认参数值，可修改
 source_image = r'example.png'
-batch_size = 8
 blink_every = True
 size_of_image = 256
 preprocess_type = 'crop'
@@ -52,7 +51,7 @@ def asr(audio):
     question = convert(question, 'zh-cn')
     return question
  
-def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = '+0%', volume = '+0%', pitch = '+0Hz'):
+def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0):
     #answer = llm.predict(question)
     answer = llm.generate(question)
     print(answer)
@@ -65,7 +64,7 @@ def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = '+0%', volume 
     return 'answer.wav', 'answer.vtt', answer
 
 
-def asr_response(audio):
+def asr_response(audio, batch_size = 2):
     s = time.time()
     question = asr(audio)
     llm_response(question)
@@ -94,9 +93,9 @@ def asr_response(audio):
     print("Using Time", e-s)
     return video, 'answer.vtt'
 
-def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = '+0%', volume = '+0%', pitch = '+0Hz'):
+def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
     voice = 'zh-CN-XiaoxiaoNeural' if voice == [] else voice
-    print(voice , + rate , + volume , pitch)
+    print(voice , rate , volume , pitch)
     s = time.time()
     sad_talker = SadTalker(lazy_load=True)
     llm_response(text, voice, rate, volume, pitch)
@@ -139,8 +138,7 @@ def main():
                             input_text = gr.Textbox(label="Input Text", lines=3)
                             
                             with gr.Accordion("Advanced Settings(高级设置语音参数) ",
-                                        open=False,
-                                        visible=True) as parameter_article:
+                                        open=False) as parameter_article:
                                 voice = gr.Dropdown(tts.SUPPORTED_VOICE, 
                                                     values='zh-CN-XiaoxiaoNeural', 
                                                     label="Voice")
@@ -159,7 +157,11 @@ def main():
                                                     value=0,
                                                     step=1,
                                                     label='Pitch')
-                            
+                                batch_size = gr.Slider(minimum=1,
+                                                    maximum=10,
+                                                    value=2,
+                                                    step=1,
+                                                    label='Talker Batch size')
                             asr_text = gr.Button('语音识别（语音对话后点击）')
                             asr_text.click(fn=asr,inputs=[question_audio],outputs=[input_text])
                             
@@ -174,7 +176,7 @@ def main():
                     with gr.TabItem('数字人问答'):
                         gen_video = gr.Video(label="Generated video", format="mp4", scale=1)
                 video_button = gr.Button("提交",variant='primary')
-            video_button.click(fn=text_response,inputs=[input_text,voice, rate, volume, pitch,],outputs=[gen_video])
+            video_button.click(fn=text_response,inputs=[input_text,voice, rate, volume, pitch, batch_size],outputs=[gen_video])
             
             # text_button.click(fn=text_response,inputs=[input_text],outputs=[gen_video])
         with gr.Row():
@@ -190,9 +192,10 @@ def main():
                         ]
                     gr.Examples(
                         examples = examples,
-                        inputs = [input_text],
                         fn = text_response,
-                        outputs=[gen_video]
+                        inputs = [input_text],
+                        outputs=[gen_video],
+                        # cache_examples = True,
                     )
     return inference
 

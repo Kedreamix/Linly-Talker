@@ -32,6 +32,15 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 
 🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
 
+## 示例
+
+|                           文字对话                           |                          数字人回答                          |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+|                 应对压力最有效的方法是什么？                 | <video src="examples/example_video/example_answer1.mp4"></video> |
+|                      如何进行时间管理？                      | <video src="examples/example_video/example_answer2.mp4"></video> |
+|  撰写一篇交响乐音乐会评论，讨论乐团的表演和观众的整体体验。  | <video src="examples/example_video/example_answer3.mp4"></video> |
+| 翻译成中文：Luck is a dividend of sweat. The more you sweat, the luckier you get. | <video src="examples/example_video/example_answer4.mp4"></video> |
+
 ## 创建环境
 
 ```bash
@@ -215,7 +224,7 @@ curl -X POST "http://127.0.0.1:7871" \
 
 也可以使用python中的requests库进行调用，如下所示：
 
-```bash
+```python
 import requests
 import json
 
@@ -226,7 +235,7 @@ def get_completion(prompt):
     return response.json()['response']
 
 if __name__ == '__main__':
-    print(get_completion('你好如何应对压力
+    print(get_completion('你好如何应对压力'))
 ```
 
 得到的返回值如下所示：

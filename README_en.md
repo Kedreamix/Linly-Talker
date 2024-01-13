@@ -36,6 +36,15 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 
 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
 
+## Example
+
+|                           文字对话                           |                          数字人回答                          |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+|                 应对压力最有效的方法是什么？                 | <video src="examples/example_video/example_answer1.mp4"></video> |
+|                      如何进行时间管理？                      | <video src="examples/example_video/example_answer2.mp4"></video> |
+|  撰写一篇交响乐音乐会评论，讨论乐团的表演和观众的整体体验。  | <video src="examples/example_video/example_answer3.mp4"></video> |
+| 翻译成中文：Luck is a dividend of sweat. The more you sweat, the luckier you get. | <video src="examples/example_video/example_answer4.mp4"></video> |
+
 ## Setup
 
 ```bash

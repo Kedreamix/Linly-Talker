@@ -44,7 +44,7 @@ def linly_response(question, voice = 'zh-CN-XiaoxiaoNeural'):
     #audio, sr = librosa.load(path='answer.wav')
     return 'answer.wav', answer
 
-def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = '+0%', volume = '+0%', pitch = '+0Hz'):
+def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0):
     #answer = llm.predict(question)
     answer = llm.generate(question)
     print(answer)
@@ -165,33 +165,36 @@ def main():
             with gr.Column(variant='panel'): 
                 with gr.Tabs(elem_id="sadtalker_checkbox"):
                     with gr.TabItem('Settings'):
-                        gr.Markdown("SadTalker: need help? please visit our [[best practice page](https://github.com/OpenTalker/SadTalker/blob/main/docs/best_practice.md)] for more detials")
-                        with gr.Column(variant='panel'):
-                            # width = gr.Slider(minimum=64, elem_id="img2img_width", maximum=2048, step=8, label="Manually Crop Width", value=512) # img2img_width
-                            # height = gr.Slider(minimum=64, elem_id="img2img_height", maximum=2048, step=8, label="Manually Crop Height", value=512) # img2img_width
-                            with gr.Row():
-                                pose_style = gr.Slider(minimum=0, maximum=45, step=1, label="Pose style", value=0) #
-                                exp_weight = gr.Slider(minimum=0, maximum=3, step=0.1, label="expression scale", value=1) # 
-                                blink_every = gr.Checkbox(label="use eye blink", value=True)
+                        with gr.Accordion("Advanced Settings",
+                                        open=False) as parameter_article:
+                            gr.Markdown("SadTalker: need help? please visit our [[best practice page](https://github.com/OpenTalker/SadTalker/blob/main/docs/best_practice.md)] for more detials")
+                            with gr.Column(variant='panel'):
+                                # width = gr.Slider(minimum=64, elem_id="img2img_width", maximum=2048, step=8, label="Manually Crop Width", value=512) # img2img_width
+                                # height = gr.Slider(minimum=64, elem_id="img2img_height", maximum=2048, step=8, label="Manually Crop Height", value=512) # img2img_width
+                                with gr.Row():
+                                    pose_style = gr.Slider(minimum=0, maximum=45, step=1, label="Pose style", value=0) #
+                                    exp_weight = gr.Slider(minimum=0, maximum=3, step=0.1, label="expression scale", value=1) # 
+                                    blink_every = gr.Checkbox(label="use eye blink", value=True)
 
-                            with gr.Row():
-                                size_of_image = gr.Radio([256, 512], value=256, label='face model resolution', info="use 256/512 model? 256 is faster") # 
-                                preprocess_type = gr.Radio(['crop', 'resize','full', 'extcrop', 'extfull'], value='crop', label='preprocess', info="How to handle input image?")
-                            
-                            with gr.Row():
-                                is_still_mode = gr.Checkbox(label="Still Mode (fewer head motion, works with preprocess `full`)")
-                                facerender = gr.Radio(['facevid2vid', 'PIRender'], value='facevid2vid', label='facerender', info="which face render?")
+                                with gr.Row():
+                                    size_of_image = gr.Radio([256, 512], value=256, label='face model resolution', info="use 256/512 model? 256 is faster") # 
+                                    preprocess_type = gr.Radio(['crop', 'resize','full', 'extcrop', 'extfull'], value='crop', label='preprocess', info="How to handle input image?")
                                 
-                            with gr.Row():
-                                batch_size = gr.Slider(label="batch size in generation", step=1, maximum=10, value=1)
-                                fps = gr.Slider(label='fps in generation', step=1, maximum=30, value =25)
-                                enhancer = gr.Checkbox(label="GFPGAN as Face enhancer(slow)")
-                            
-                submit = gr.Button('Generate', elem_id="sadtalker_generate", variant='primary')
+                                with gr.Row():
+                                    is_still_mode = gr.Checkbox(label="Still Mode (fewer head motion, works with preprocess `full`)")
+                                    facerender = gr.Radio(['facevid2vid', 'PIRender'], value='facevid2vid', label='facerender', info="which face render?")
+                                    
+                                with gr.Row():
+                                    batch_size = gr.Slider(label="batch size in generation", step=1, maximum=10, value=1)
+                                    fps = gr.Slider(label='fps in generation', step=1, maximum=30, value =25)
+                                    enhancer = gr.Checkbox(label="GFPGAN as Face enhancer(slow)")                                               
+
+                
                             
                 with gr.Tabs(elem_id="sadtalker_genearted"):
-                    gen_video = gr.Video(label="Generated video", format="mp4").style(width=256)
-            
+                    gen_video = gr.Video(label="Generated video", format="mp4",scale=0.8)
+                    
+                submit = gr.Button('Generate', elem_id="sadtalker_generate", variant='primary')
             submit.click(
                 fn=text_response,
                 inputs=[input_text,
@@ -222,14 +225,14 @@ def main():
                 ],
                 [
                     'examples/source_image/full_body_1.png',
-                    'full',
-                    True,
+                    'crop',
+                    False,
                     False
                 ],
                 [
                     'examples/source_image/full_body_1.png',
                     'crop',
-                    True,
+                    False,
                     False
                 ],
     
@@ -237,41 +240,42 @@ def main():
                     'examples/source_image/full3.png',
                     'crop',
                     False,
-                    True
+                    False
                 ],
                 [
                     'examples/source_image/full4.jpeg',
-                    'full',
+                    'crop',
                     False,
-                    True
+                    False
                 ],
                 [
                     'examples/source_image/full4.jpeg',
-                    'full',
-                    True,
-                    True
+                    'crop',
+                    False,
+                    False
                 ],
                 
                 [
                     'examples/source_image/art_13.png',
-                    'resize',
-                    True,
-                    False
-                ],
-                [
-                    'examples/source_image/art_5.png',
-                    'resize',
+                    'crop',
                     False,
                     False
                 ],
                 [
                     'examples/source_image/art_5.png',
-                    'resize',
-                    True,
-                    True
+                    'crop',
+                    False,
+                    False
+                ],
+                [
+                    'examples/source_image/art_5.png',
+                    'crop',
+                    False,
+                    False
                 ],
             ]
             gr.Examples(examples=examples,
+                        fn=text_response,
                         inputs=[
                             source_image,
                             preprocess_type,
@@ -279,7 +283,7 @@ def main():
                             enhancer], 
                         outputs=[gen_video],
                         # cache_examples=True,
-                        fn=text_response)
+                        )
     return inference
 
 
