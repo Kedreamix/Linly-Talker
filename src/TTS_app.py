@@ -6,19 +6,6 @@ title = "TTS WebUI"
 tts = EdgeTTS()
 
 def generateAudio(text, voice, rate, volume, pitch):
-    # audio_file, sub_file = tts.predict(text, 'zh-CN-XiaoxiaoNeural', '+0%', '+0%', "output.wav")
-    if rate >= 0:
-        rate = f'+{rate}%'
-    else:
-        rate = f'{rate}%'
-    if pitch >= 0:
-        pitch = f'+{pitch}Hz'
-    else:
-        pitch = f'{pitch}Hz'
-    volume = 100 - volume
-    volume = f'-{volume}%'
-      
-
     audio_file, sub_file = tts.predict(text, voice, rate, volume, pitch, "output.wav", "output.srt")
     print(text, audio_file, sub_file)
     audio, sr = librosa.load(path=audio_file)
@@ -67,7 +54,7 @@ def main():
         gr.Examples(
             examples=[
                 ['大家好，很高兴认识你们！','zh-CN-XiaoxiaoNeural'],
-                ['大家好，很高兴认识你们！','zh-TW-YunJheNeural'],
+                ['みなさん、こんにちは！お会いできて嬉しいです！','ja-JP-NanamiNeural'],
                 ['hello, Nice to meet you!','en-US-RogerNeural']
             ],
             fn=generateAudio,

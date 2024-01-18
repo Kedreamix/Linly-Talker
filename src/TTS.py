@@ -101,8 +101,8 @@ class EdgeTTS:
         # finally:
         #     loop.close()
         asyncio.run(amain())
-        file = open(OUTPUT_SUBS)
-        vtt_lines = file.readlines()
+        with open(OUTPUT_SUBS, 'r', encoding='utf-8') as file:
+            vtt_lines = file.readlines()
 
         # 去掉每一行文字中的空格
         vtt_lines_without_spaces = [line.replace(" ", "") if "-->" not in line else line for line in vtt_lines]
@@ -116,7 +116,7 @@ def test():
     TEXT = '''近日，苹果公司起诉高通公司，状告其未按照相关合约进行合作，高通方面尚未回应。这句话中“其”指的是谁？'''
     VOICE = "zh-CN-XiaoxiaoNeural"
     OUTPUT_FILE, OUTPUT_SUBS = "tts.wav", "tts.vtt"
-    audio_file, sub_file = tts.predict(TEXT, VOICE, '+0%', '+0%', '+0Hz', OUTPUT_FILE, OUTPUT_SUBS)
+    audio_file, sub_file = tts.predict(TEXT, VOICE, 0, 0, 0, OUTPUT_FILE, OUTPUT_SUBS)
     print("Audio file written to", audio_file, "and subtitle file written to", sub_file)
 
 if __name__ == "__main__":
