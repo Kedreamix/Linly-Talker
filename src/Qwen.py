@@ -14,10 +14,10 @@ class Qwen:
         self.data = {
             "question": "北京有什么好玩的地方？"
         }
-        self.prompt = '''请用少于25个字回答以下问题'''
+        self.prompt = '''请用少于25个字回答以下问题 '''
         self.mode = mode
-        
         self.model, self.tokenizer = self.init_model(model_path)
+        self.history = None
     
     def init_model(self, path = "Qwen/Qwen-1_8B-Chat"):
         model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen-1_8B-Chat", 
@@ -27,23 +27,28 @@ class Qwen:
 
         return model, tokenizer   
     
-    def generate(self, question):
+    def generate(self, question, system_prompt=""):
         if self.mode != 'api':
-            self.data["question"] = f"{self.prompt} ### Instruction:{question}  ### Response:"
+            self.data["question"] = self.prompt + question
             try:
-                response, history = self.model.chat(self.tokenizer, self.data["question"], history=None)
-                print(history)
+                response, self.history = self.model.chat(self.tokenizer, self.data["question"], history=self.history, system = system_prompt)
+                # print(self.history)
                 return response
             except:
                 return "对不起，你的请求出错了，请再次尝试。\nSorry, your request has encountered an error. Please try again.\n"
         else:
-            return self.predict(question)
-    def predict(self, question):
+            return self.predict_api(question)
+    def predict_api(self, question):
         '''暂时不写api版本,与Linly-api相类似,感兴趣可以实现一下'''
         pass 
     
+    def chat(self, system_prompt, message, history):
+        response = self.generate(message, system_prompt)
+        history.append((message, response))
+        return response, history
+        
 def test():
-    llm = Qwen(mode='offline',model_path="Qwen/Qwen-1_8B-Chat")
+    llm = Qwen(mode='offline', model_path="../Qwen/Qwen-1_8B-Chat")
     answer = llm.generate("如何应对压力？")
     print(answer)
 

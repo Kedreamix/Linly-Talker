@@ -9,9 +9,9 @@
 **2024.01 Update** 📆📆
 
 - **Exciting news! I've now incorporated both the powerful GeminiPro and Qwen large models into our conversational scene. Users can now upload images during the conversation, adding a whole new dimension to the interactions.** 
-
 - **The deployment invocation method for FastAPI has been updated.**
 - **The advanced settings options for Microsoft TTS have been updated, increasing the variety of voice types. Additionally, video subtitles have been introduced to enhance visualization.**
+- **Updated the GPT multi-turn conversation system to establish contextual connections in dialogue, enhancing the interactivity and realism of the digital persona.**
 
 ## Introduction
 
@@ -23,16 +23,16 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 
 ## TO DO LIST
 
-- [x] Completed the basic conversation system flow, capable of voice interactions.
-- [x] Integrated the LLM large model, including the usage of Linly, Qwen, and GeminiPro.
-- [x] Enabled the ability to upload any digital person's photo for conversation.
-- [x] Integrated FastAPI invocation for Linly.
-- [x] Utilized Microsoft TTS with advanced options, allowing customization of voice and tone parameters to enhance audio diversity.
-- [x] Added subtitles to video generation for improved visualization.
-
-- [ ]  Real-time Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
-- [ ] Voice Cloning Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
-- [ ] GPT Multi-turn Dialogue System (Enhance the interactivity and realism of digital entities, bolstering their intelligence)
+- [x] Completed the basic conversation system flow, capable of `voice interactions`.
+- [x] Integrated the LLM large model, including the usage of `Linly`, `Qwen`, and `GeminiPro`.
+- [x] Enabled the ability to upload `any digital person's photo` for conversation.
+- [x] Integrated `FastAPI` invocation for Linly.
+- [x] Utilized Microsoft `TTS` with advanced options, allowing customization of voice and tone parameters to enhance audio diversity.
+- [x] `Added subtitles` to video generation for improved visualization.
+- [x] GPT `Multi-turn Dialogue System` (Enhance the interactivity and realism of digital entities, bolstering their intelligence)
+- [ ] `Voice Cloning` Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
+- [ ] Integrate the `Langchain` framework and establish a local knowledge base.
+- [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
 
@@ -53,7 +53,7 @@ conda activate linly
 
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113 
 
-conda install ffmpeg
+conda install -q ffmpeg
 
 pip install -r requirements_app.txt
 ```
@@ -63,15 +63,16 @@ For the convenience of deployment and usage, an `configs.py` file has been updat
 ```bash
 # 设备运行端口 (Device running port)
 port = 7870
-# api运行端口 (API running port)
+# api运行端口及IP (API running port and IP)
+ip = '127.0.0.1' 
 api_port = 7871
 # Linly模型路径 (Linly model path)
 mode = 'api' # api 需要先运行Linly-api-fast.py
 mode = 'offline'
 model_path = 'Linly-AI/Chinese-LLaMA-2-7B-hf'
 # ssl证书 (SSL certificate) 麦克风对话需要此参数
-ssl_certfile = "/path/to/Linly-Talker/cert.pem"
-ssl_keyfile = "/path/to/Linly-Talker/key.pem"
+ssl_certfile = "/path/to/Linly-Talker/https_cert/cert.pem"
+ssl_keyfile = "/path/to/Linly-Talker/https_cert/key.pem"
 ```
 
 This file allows you to adjust parameters such as the device running port, API running port, Linly model path, and SSL certificate paths for ease of deployment and configuration.
@@ -83,6 +84,75 @@ Leverages OpenAI's Whisper, see [https://github.com/openai/whisper](https://gith
 ## TTS - Edge TTS
 
 Uses Microsoft Speech Services, see [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts) for usage. 
+
+I have written a class called `EdgeTTS` that enhances usability and includes the functionality to save subtitle files.
+
+```python
+class EdgeTTS:
+    def __init__(self, list_voices = False, proxy = None) -> None:
+        voices = list_voices_fn(proxy=proxy)
+        self.SUPPORTED_VOICE = [item['ShortName'] for item in voices]
+        self.SUPPORTED_VOICE.sort(reverse=True)
+        if list_voices:
+            print(", ".join(self.SUPPORTED_VOICE))
+
+    def preprocess(self, rate, volume, pitch):
+        if rate >= 0:
+            rate = f'+{rate}%'
+        else:
+            rate = f'{rate}%'
+        if pitch >= 0:
+            pitch = f'+{pitch}Hz'
+        else:
+            pitch = f'{pitch}Hz'
+        volume = 100 - volume
+        volume = f'-{volume}%'
+        return rate, volume, pitch
+
+    def predict(self,TEXT, VOICE, RATE, VOLUME, PITCH, OUTPUT_FILE='result.wav', OUTPUT_SUBS='result.vtt', words_in_cue = 8):
+        async def amain() -> None:
+            """Main function"""
+            rate, volume, pitch = self.preprocess(rate = RATE, volume = VOLUME, pitch = PITCH)
+            communicate = Communicate(TEXT, VOICE, rate = rate, volume = volume, pitch = pitch)
+            subs: SubMaker = SubMaker()
+            sub_file: Union[TextIOWrapper, TextIO] = (
+                open(OUTPUT_SUBS, "w", encoding="utf-8")
+            )
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    # audio_file.write(chunk["data"])
+                    pass
+                elif chunk["type"] == "WordBoundary":
+                    # print((chunk["offset"], chunk["duration"]), chunk["text"])
+                    subs.create_sub((chunk["offset"], chunk["duration"]), chunk["text"])
+            sub_file.write(subs.generate_subs(words_in_cue))
+            await communicate.save(OUTPUT_FILE)
+            
+        
+        # loop = asyncio.get_event_loop_policy().get_event_loop()
+        # try:
+        #     loop.run_until_complete(amain())
+        # finally:
+        #     loop.close()
+        asyncio.run(amain())
+        with open(OUTPUT_SUBS, 'r', encoding='utf-8') as file:
+            vtt_lines = file.readlines()
+
+        # 去掉每一行文字中的空格
+        vtt_lines_without_spaces = [line.replace(" ", "") if "-->" not in line else line for line in vtt_lines]
+        # print(vtt_lines_without_spaces)
+        with open(OUTPUT_SUBS, 'w', encoding='utf-8') as output_file:
+            output_file.writelines(vtt_lines_without_spaces)
+        return OUTPUT_FILE, OUTPUT_SUBS
+```
+
+At the same time, I have created a simple `WebUI` in the `src` folder.
+
+```bash
+python TTS_app.py
+```
+
+![TTS](docs/TTS.png)
 
 ## THG - SadTalker
 
@@ -102,9 +172,25 @@ Linly-AI from CVI , Shenzhen University, see [https://github.com/CVI-SZU/Linly](
 
 Download Linly models: [https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf](https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf)
 
+You can use `git` to download:
+
 ```bash
 git lfs install
 git clone https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf
+```
+
+Alternatively, you can use the `huggingface` download tool `huggingface-cli`:
+
+```bash
+pip install -U huggingface_hub
+
+# Set up mirror acceleration
+# Linux
+export HF_ENDPOINT="https://hf-mirror.com"
+# Windows PowerShell
+$env:HF_ENDPOINT="https://hf-mirror.com"
+
+huggingface-cli download --resume-download Linly-AI/Chinese-LLaMA-2-7B-hf --local-dir Linly-AI/Chinese-LLaMA-2-7B-hf
 ```
 
 Or use the API:
@@ -268,9 +354,25 @@ Qwen from Alibaba Cloud, see [https://github.com/QwenLM/Qwen](https://github.com
 
 Download Qwen models: [https://huggingface.co/Qwen/Qwen-1_8B-Chat](https://huggingface.co/Qwen/Qwen-1_8B-Chat)
 
+You can use `git` to download:
+
 ```bash
 git lfs install
 git clone https://huggingface.co/Qwen/Qwen-1_8B-Chat
+```
+
+Alternatively, you can use the `huggingface` download tool `huggingface-cli`:
+
+```bash
+pip install -U huggingface_hub
+
+# Set up mirror acceleration
+# Linux
+export HF_ENDPOINT="https://hf-mirror.com"
+# Windows PowerShell
+$env:HF_ENDPOINT="https://hf-mirror.com"
+
+huggingface-cli download --resume-download Qwen/Qwen-1_8B-Chat --local-dir Qwen/Qwen-1_8B-Chat
 ```
 
 
@@ -283,7 +385,7 @@ Request API-keys: [https://makersuite.google.com/](https://makersuite.google.com
 
 
 
-### Model Selection
+### LLM Model Selection
 
 In the app.py file, tailor your model choice with ease.
 
@@ -295,7 +397,7 @@ In the app.py file, tailor your model choice with ease.
 # Automatic download
 # llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
 # Manual download with a specific path
-llm = Linly(mode='offline', model_path="./Chinese-LLaMA-2-7B-hf")
+llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
 ```
 
 
@@ -325,64 +427,9 @@ In summary, Gradio provides visualization and user interaction interfaces for Li
 
 ## Usage
 
-The folder structure is as follows:
+There are three modes for the current startup, and you can choose a specific setting based on the scenario.
 
-```bash
-Linly-Talker/
-├── app.py
-├── app_img.py 
-├── utils.py
-├── Linly-api.py
-├── Linly-example.ipynb
-├── README.md
-├── README_zh.md
-├── request-Linly-api.py
-├── requirements_app.txt
-├── scripts
-   └── download_models.sh
-├── src
-   └── .....
-├── inputs
-   ├── example.png
-   └── first_frame_dir
-       ├── example_landmarks.txt
-       ├── example.mat
-       └── example.png
-├── examples
-   ├── driven_audio
-      ├── bus_chinese.wav
-      ├── ......
-      └── RD_Radio40_000.wav
-   ├── ref_video
-      ├── WDA_AlexandriaOcasioCortez_000.mp4
-      └── WDA_KatieHill_000.mp4
-   └── source_image
-       ├── art_0.png
-       ├── ......
-       └── sad.png
-├── checkpoints // SadTalker model weights path
-   ├── mapping_00109-model.pth.tar
-   ├── mapping_00229-model.pth.tar
-   ├── SadTalker_V0.0.2_256.safetensors
-   └── SadTalker_V0.0.2_512.safetensors
-├── gfpgan // GFPGAN model weights path
-   └── weights
-       ├── alignment_WFLW_4HG.pth
-       └── detection_Resnet50_Final.pth
-├── Linly-AI // Linly model weights path
-    ├── Chinese-LLaMA-2-7B-hf 
-        ├── config.json
-        ├── generation_config.json
-        ├── pytorch_model-00001-of-00002.bin
-        ├── pytorch_model-00002-of-00002.bin
-        ├── pytorch_model.bin.index.json
-        ├── README.md
-        ├── special_tokens_map.json
-        ├── tokenizer_config.json
-        └── tokenizer.model
-```
-
-Next, launch the app:
+The first mode involves fixed Q&A with a predefined character, eliminating preprocessing time.
 
 ```bash
 python app.py
@@ -390,13 +437,95 @@ python app.py
 
 ![](docs/UI.png)
 
-Users can upload images for the conversation
+The second mode allows for conversing with any uploaded image.
 
 ```bash
 python app_img.py
 ```
 
 ![](docs/UI2.png)
+
+The third mode builds upon the first one by incorporating a large language model for multi-turn GPT conversations.
+
+```bash
+python app_multi.py
+```
+
+![](docs/UI3.png)
+
+The folder structure is as follows:
+
+```bash
+Linly-Talker/ 
+├── app.py
+├── app_img.py
+├── utils.py
+├── Linly-api.py
+├── Linly-api-fast.py
+├── Linly-example.ipynb
+├── README.md
+├── README_zh.md
+├── request-Linly-api.py
+├── requirements_app.txt
+├── scripts
+│   └── download_models.sh
+├──	src
+│	└── .....
+├── inputs
+│   ├── example.png
+│   └── first_frame_dir
+│       ├── example_landmarks.txt
+│       ├── example.mat
+│       └── example.png
+├── examples
+│   └── source_image
+│       ├── art_0.png
+│       ├── ......
+│       └── sad.png
+├── checkpoints // SadTalker model weights path
+│   ├── mapping_00109-model.pth.tar
+│   ├── mapping_00229-model.pth.tar
+│   ├── SadTalker_V0.0.2_256.safetensors
+│   └── SadTalker_V0.0.2_512.safetensors
+├── gfpgan // GFPGAN model weights path
+│   └── weights
+│       ├── alignment_WFLW_4HG.pth
+│       └── detection_Resnet50_Final.pth
+├── Linly-AI // Linly model weights path
+│   └── Chinese-LLaMA-2-7B-hf 
+│       ├── config.json
+│       ├── generation_config.json
+│       ├── pytorch_model-00001-of-00002.bin
+│       ├── pytorch_model-00002-of-00002.bin
+│       ├── pytorch_model.bin.index.json
+│       ├── README.md
+│       ├── special_tokens_map.json
+│       ├── tokenizer_config.json
+│       └── tokenizer.model
+├── Qwen // Qwen model weights path
+│   └── Qwen-1_8B-Chat
+│       ├── cache_autogptq_cuda_256.cpp
+│       ├── cache_autogptq_cuda_kernel_256.cu
+│       ├── config.json
+│       ├── configuration_qwen.py
+│       ├── cpp_kernels.py
+│       ├── examples
+│       │   └── react_prompt.md
+│       ├── generation_config.json
+│       ├── LICENSE
+│       ├── model-00001-of-00002.safetensors
+│       ├── model-00002-of-00002.safetensors
+│       ├── modeling_qwen.py
+│       ├── model.safetensors.index.json
+│       ├── NOTICE
+│       ├── qwen_generation_utils.py
+│       ├── qwen.tiktoken
+│       ├── README.md
+│       ├── tokenization_qwen.py
+│       └── tokenizer_config.json
+```
+
+
 
 ## Reference
 

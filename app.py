@@ -94,10 +94,9 @@ def asr_response(audio, batch_size = 2):
     return video, 'answer.vtt'
 
 def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
-    voice = 'zh-CN-XiaoxiaoNeural' if voice == [] else voice
+    voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
     print(voice , rate , volume , pitch)
     s = time.time()
-    sad_talker = SadTalker(lazy_load=True)
     llm_response(text, voice, rate, volume, pitch)
     e = time.time()
     print("Using Time", e-s)
@@ -224,4 +223,5 @@ if __name__ == "__main__":
                 server_port=port,
                 ssl_certfile=ssl_certfile,
                 ssl_keyfile=ssl_keyfile,
-                ssl_verify=False)
+                ssl_verify=False,
+                debug=True)

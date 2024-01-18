@@ -15,7 +15,7 @@ joblib==1.1.0
 facexlib==0.3.0
 gradio==3.38.*
 # gfpgan
-edge-tts
+edge-tts>=6.1.9
 openai-whisper
 scikit-image==0.19.3
 zhconv

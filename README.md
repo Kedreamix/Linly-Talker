@@ -11,6 +11,7 @@
 - **令人兴奋的消息！我现在已经将强大的GeminiPro和Qwen大模型融入到我们的对话场景中。用户现在可以在对话中上传任何图片，为我们的互动增添了全新的层面。**
 -  **更新了FastAPI的部署调用方法。** 
 - **更新了微软TTS的高级设置选项，增加声音种类的多样性，以及加入视频字幕加强可视化。**
+- **更新了GPT多轮对话系统，使得对话有上下文联系，提高数字人的交互性和真实感**
 
 ## 介绍
 
@@ -20,15 +21,16 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 
 ## TO DO LIST
 
-- [x] 基本完成对话系统流程，能够语音对话
-- [x] 加入了LLM大模型，包括Linly，Qwen和GeminiPro的使用
-- [x] 可上传任意数字人照片进行对话
-- [x] Linly加入FastAPI调用方式
-- [x] 利用微软TTS加入高级选项，可设置对应人声以及音调等参数，增加声音的多样性
-- [x] 视频生成加入字幕，能够更好的进行可视化
-- [ ] 语音克隆技术（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
-- [ ] 实时语音识别（人与数字人之间就可以通过语音进行对话交流)
-- [ ] GPT多轮对话系统（提高数字人的交互性和真实感，增强数字人的智能）
+- [x] 基本完成对话系统流程，能够`语音对话`
+- [x] 加入了LLM大模型，包括`Linly`，`Qwen`和`GeminiPro`的使用
+- [x] 可上传`任意数字人照片`进行对话
+- [x] Linly加入`FastAP`I调用方式
+- [x] 利用微软`TTS`加入高级选项，可设置对应人声以及音调等参数，增加声音的多样性
+- [x] 视频生成加入`字幕`，能够更好的进行可视化
+- [x] GPT`多轮对话`系统（提高数字人的交互性和真实感，增强数字人的智能）
+- [ ] `语音克隆`技术（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
+- [ ] 加入`Langchain`的框架，建立本地知识库
+- [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
 
 🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
 
@@ -49,7 +51,7 @@ conda activate linly
 
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 
-conda install ffmpeg 
+conda install -ffmpeg 
 
 pip install -r requirements_app.txt
 ```
@@ -59,15 +61,16 @@ pip install -r requirements_app.txt
 ```bash
 # 设备运行端口 (Device running port)
 port = 7870
-# api运行端口 (API running port)
+# api运行端口及IP (API running port and IP)
+ip = '127.0.0.1' 
 api_port = 7871
 # Linly模型路径 (Linly model path)
 mode = 'api' # api 需要先运行Linly-api-fast.py
 mode = 'offline'
 model_path = 'Linly-AI/Chinese-LLaMA-2-7B-hf'
 # ssl证书 (SSL certificate) 麦克风对话需要此参数
-ssl_certfile = "/path/to/Linly-Talker/cert.pem"
-ssl_keyfile = "/path/to/Linly-Talker/key.pem"
+ssl_certfile = "/path/to/Linly-Talker/https_cert/cert.pem"
+ssl_keyfile = "/path/to/Linly-Talker/https_cert/key.pem"
 ```
 
 ## ASR - Whisper
@@ -77,6 +80,75 @@ ssl_keyfile = "/path/to/Linly-Talker/key.pem"
 ## TTS - Edge TTS
 
 使用微软语音服务,具体使用方法参考[https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)
+
+我编写了一个 `EdgeTTS` 的类，能够更好的使用，并且增加了保存字幕文件的功能
+
+```python
+class EdgeTTS:
+    def __init__(self, list_voices = False, proxy = None) -> None:
+        voices = list_voices_fn(proxy=proxy)
+        self.SUPPORTED_VOICE = [item['ShortName'] for item in voices]
+        self.SUPPORTED_VOICE.sort(reverse=True)
+        if list_voices:
+            print(", ".join(self.SUPPORTED_VOICE))
+
+    def preprocess(self, rate, volume, pitch):
+        if rate >= 0:
+            rate = f'+{rate}%'
+        else:
+            rate = f'{rate}%'
+        if pitch >= 0:
+            pitch = f'+{pitch}Hz'
+        else:
+            pitch = f'{pitch}Hz'
+        volume = 100 - volume
+        volume = f'-{volume}%'
+        return rate, volume, pitch
+
+    def predict(self,TEXT, VOICE, RATE, VOLUME, PITCH, OUTPUT_FILE='result.wav', OUTPUT_SUBS='result.vtt', words_in_cue = 8):
+        async def amain() -> None:
+            """Main function"""
+            rate, volume, pitch = self.preprocess(rate = RATE, volume = VOLUME, pitch = PITCH)
+            communicate = Communicate(TEXT, VOICE, rate = rate, volume = volume, pitch = pitch)
+            subs: SubMaker = SubMaker()
+            sub_file: Union[TextIOWrapper, TextIO] = (
+                open(OUTPUT_SUBS, "w", encoding="utf-8")
+            )
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    # audio_file.write(chunk["data"])
+                    pass
+                elif chunk["type"] == "WordBoundary":
+                    # print((chunk["offset"], chunk["duration"]), chunk["text"])
+                    subs.create_sub((chunk["offset"], chunk["duration"]), chunk["text"])
+            sub_file.write(subs.generate_subs(words_in_cue))
+            await communicate.save(OUTPUT_FILE)
+            
+        
+        # loop = asyncio.get_event_loop_policy().get_event_loop()
+        # try:
+        #     loop.run_until_complete(amain())
+        # finally:
+        #     loop.close()
+        asyncio.run(amain())
+        with open(OUTPUT_SUBS, 'r', encoding='utf-8') as file:
+            vtt_lines = file.readlines()
+
+        # 去掉每一行文字中的空格
+        vtt_lines_without_spaces = [line.replace(" ", "") if "-->" not in line else line for line in vtt_lines]
+        # print(vtt_lines_without_spaces)
+        with open(OUTPUT_SUBS, 'w', encoding='utf-8') as output_file:
+            output_file.writelines(vtt_lines_without_spaces)
+        return OUTPUT_FILE, OUTPUT_SUBS
+```
+
+同时在`src`文件夹下，写了一个简易的`WebUI`
+
+```bash
+python TTS_app.py
+```
+
+![TTS](docs/TTS.png)
 
 ## THG - SadTalker
 
@@ -88,6 +160,8 @@ ssl_keyfile = "/path/to/Linly-Talker/key.pem"
 bash scripts/download_models.sh  
 ```
 
+
+
 ## LLM - Conversation
 
 ### Linly-AI
@@ -96,9 +170,23 @@ Linly来自深圳大学数据工程国家重点实验室,参考[https://github.c
 
 下载Linly模型:[https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf](https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf)
 
+可以使用`git`下载
+
 ```bash
 git lfs install
 git clone https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf
+```
+或者使用`huggingface`的下载工具`huggingface-cli`
+```bash
+pip install -U huggingface_hub
+
+# 设置镜像加速
+# Linux
+export HF_ENDPOINT="https://hf-mirror.com"
+# windows powershell
+$env:HF_ENDPOINT="https://hf-mirror.com"
+
+huggingface-cli download --resume-download Linly-AI/Chinese-LLaMA-2-7B-hf --local-dir Linly-AI/Chinese-LLaMA-2-7B-hf
 ```
 
 或使用API:
@@ -254,14 +342,27 @@ if __name__ == '__main__':
 
 来自阿里云的Qwen，查看 [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
 
-下载 Qwen 模型: [https://huggingface.co/Qwen/Qwen-7B-Chat-Int4](https://huggingface.co/Qwen/Qwen-7B-Chat-Int4)
+下载 Qwen 模型: [https://huggingface.co/Qwen/Qwen-1_8B-Chat](https://huggingface.co/Qwen/Qwen-1_8B-Chat)
+
+可以使用`git`下载
 
 ```bash
 git lfs install
 git clone https://huggingface.co/Qwen/Qwen-1_8B-Chat
 ```
 
+或者使用`huggingface`的下载工具`huggingface-cli`
+```bash
+pip install -U huggingface_hub
 
+# 设置镜像加速
+# Linux
+export HF_ENDPOINT="https://hf-mirror.com"
+# windows powershell
+$env:HF_ENDPOINT="https://hf-mirror.com"
+
+huggingface-cli download --resume-download Qwen/Qwen-1_8B-Chat --local-dir Qwen/Qwen-1_8B-Chat
+```
 
 ### Gemini-Pro
 
@@ -271,7 +372,7 @@ git clone https://huggingface.co/Qwen/Qwen-1_8B-Chat
 
 
 
-### 模型选择
+### LLM 模型选择
 
 在 app.py 文件中，轻松选择您需要的模型。
 
@@ -283,7 +384,7 @@ git clone https://huggingface.co/Qwen/Qwen-1_8B-Chat
 # 自动下载
 # llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
 # 手动下载到指定路径
-llm = Linly(mode='offline', model_path="./Chinese-LLaMA-2-7B-hf")
+llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
 ```
 
 
@@ -313,7 +414,33 @@ Gradio是一个Python库,提供了一种简单的方式将机器学习模型作�
 
 ## 启动
 
-首先说明一下的文件夹结构如下
+现在的启动一共有几种模式，可以选择特定的场景进行设置
+
+第一种只有固定了人物问答，设置好了人物，省去了预处理时间
+
+```bash
+python app.py
+```
+
+![](docs/UI.png)
+
+第二种是可以任意上传图片进行对话
+
+```bash
+python app_img.py
+```
+
+![](docs/UI2.png)
+
+第三种是在第一种的基础上加入了大语言模型，加入了多轮的GPT对话
+
+```bash
+python app_multi.py
+```
+
+![](docs/UI3.png)
+
+文件夹结构如下
 
 ```bash
 Linly-Talker/ 
@@ -338,13 +465,6 @@ Linly-Talker/
 │       ├── example.mat
 │       └── example.png
 ├── examples
-│   ├── driven_audio
-│   │   ├── bus_chinese.wav
-│   │   ├── ......
-│   │   └── RD_Radio40_000.wav
-│   ├── ref_video
-│   │   ├── WDA_AlexandriaOcasioCortez_000.mp4
-│   │   └── WDA_KatieHill_000.mp4
 │   └── source_image
 │       ├── art_0.png
 │       ├── ......
@@ -358,34 +478,39 @@ Linly-Talker/
 │   └── weights
 │       ├── alignment_WFLW_4HG.pth
 │       └── detection_Resnet50_Final.pth
-├── Linly-AI
-    ├── Chinese-LLaMA-2-7B-hf // Linly 权重路径
-        ├── config.json
-        ├── generation_config.json
-        ├── pytorch_model-00001-of-00002.bin
-        ├── pytorch_model-00002-of-00002.bin
-        ├── pytorch_model.bin.index.json
-        ├── README.md
-        ├── special_tokens_map.json
-        ├── tokenizer_config.json
-        └── tokenizer.model
+├── Linly-AI // Linly 权重路径
+│   └── Chinese-LLaMA-2-7B-hf 
+│       ├── config.json
+│       ├── generation_config.json
+│       ├── pytorch_model-00001-of-00002.bin
+│       ├── pytorch_model-00002-of-00002.bin
+│       ├── pytorch_model.bin.index.json
+│       ├── README.md
+│       ├── special_tokens_map.json
+│       ├── tokenizer_config.json
+│       └── tokenizer.model
+├── Qwen // Qwen 权重路径
+│   └── Qwen-1_8B-Chat
+│       ├── cache_autogptq_cuda_256.cpp
+│       ├── cache_autogptq_cuda_kernel_256.cu
+│       ├── config.json
+│       ├── configuration_qwen.py
+│       ├── cpp_kernels.py
+│       ├── examples
+│       │   └── react_prompt.md
+│       ├── generation_config.json
+│       ├── LICENSE
+│       ├── model-00001-of-00002.safetensors
+│       ├── model-00002-of-00002.safetensors
+│       ├── modeling_qwen.py
+│       ├── model.safetensors.index.json
+│       ├── NOTICE
+│       ├── qwen_generation_utils.py
+│       ├── qwen.tiktoken
+│       ├── README.md
+│       ├── tokenization_qwen.py
+│       └── tokenizer_config.json
 ```
-
-接下来进行启动
-
-```bash
-python app.py
-```
-
-![](docs/UI.png)
-
-可以任意上传图片进行对话
-
-```bash
-python app_img.py
-```
-
-![](docs/UI2.png)
 
 
 

@@ -192,8 +192,9 @@ class AnimateFromCoeff():
         ### the generated video is 256x256, so we keep the aspect ratio, 
         original_size = crop_info[0]
         if original_size:
-            result = [ cv2.cvtColor(cv2.resize(result_i,(img_size, int(img_size * original_size[1]/original_size[0]) )), cv2.COLOR_BGR2RGB) for result_i in result ]
-        
+            # result = [ cv2.resize(result_i,(img_size, int(img_size * original_size[1]/original_size[0]) )) for result_i in result ]
+            # result = [ cv2.cvtColor(cv2.resize(result_i, (img_size, int(img_size * original_size[1]/original_size[0]) )), cv2.COLOR_BGR2RGB) for result_i in result ]
+            result = [ cv2.cvtColor(result_i, cv2.COLOR_BGR2RGB) for result_i in result ]
         video_name = x['video_name']  + '.mp4'
         path = os.path.join(video_save_dir, 'temp_'+video_name)
         print("fps: ", fps, len(result))
@@ -228,7 +229,6 @@ class AnimateFromCoeff():
         # word.export(new_audio_path, format="wav")
 
         save_video_with_watermark(path, audio_path, av_path, watermark= False)
-        # print(f'The generated video is named {video_save_dir}/{video_name}') 
 
         # if 'full' in preprocess.lower():
         #     # only add watermark to the full image.
@@ -259,7 +259,6 @@ class AnimateFromCoeff():
         #     os.remove(enhanced_path)
 
         # os.remove(path)
-        os.remove(path)
 
         return return_path
 

@@ -68,9 +68,8 @@ def text_response(text, voice, rate, volume, pitch, source_image,
                     exp_weight,
                     blink_every,
                     fps):
-    voice = 'zh-CN-XiaoxiaoNeural' if voice == [] else voice
+    voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
     s = time.time()
-    sad_talker = SadTalker(lazy_load=True)
     llm_response(text, voice, rate, volume, pitch)
     e = time.time()
     print("Using Time", e-s)
@@ -289,7 +288,7 @@ def main():
 
     
 if __name__ == "__main__":
-        # funasr = FunASR()
+    # funasr = FunASR()
     # local 
     # llm = Linly(mode='offline',model_path="./Chinese-LLaMA-2-7B-hf/")
     # api
@@ -311,4 +310,5 @@ if __name__ == "__main__":
                 server_port=port,
                 ssl_certfile=ssl_certfile,
                 ssl_keyfile=ssl_keyfile,
-                ssl_verify=False)
+                ssl_verify=False,
+                debug=True)

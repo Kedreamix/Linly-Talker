@@ -1,6 +1,6 @@
 import shutil
 import uuid
-
+import subprocess
 import os
 
 import cv2
@@ -19,8 +19,14 @@ def load_video_to_cv2(input_path):
 
 def save_video_with_watermark(video, audio, save_path, watermark=False):
     temp_file = str(uuid.uuid4())+'.mp4'
-    cmd = r'ffmpeg -y -hide_banner -loglevel error -i "%s" -i "%s" -vcodec mpeg4 "%s"' % (video, audio, temp_file)
-    os.system(cmd)
+    cmd = r'ffmpeg -y -hide_banner -loglevel error -i "%s" -i "%s" -vcodec h264 "%s"' % (video, audio, temp_file)
+    # cmd = r'ffmpeg -y -hide_banner -loglevel error -i "%s" -i "%s" -c:v libx264 -c:a aac -strict experimental "%s"' % (video, audio, temp_file)
+    # os.system(cmd)
+    try:
+        subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except:
+        print('ffmpeg error')
+        return
     shutil.move(temp_file, save_path)
     # if watermark is False:
     #     

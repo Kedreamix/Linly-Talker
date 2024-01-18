@@ -165,11 +165,11 @@ class SadTalker():
         # del self.audio_to_coeff
         # del self.animate_from_coeff
 
-        # if torch.cuda.is_available():
-        #     torch.cuda.empty_cache()
-        #     torch.cuda.synchronize()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
             
-        # import gc; gc.collect()
+        import gc; gc.collect()
         
         return return_path
     
@@ -279,8 +279,8 @@ class SadTalker():
         data = get_facerender_data(coeff_path, crop_pic_path, first_coeff_path, audio_path, batch_size, still_mode=still_mode, \
             preprocess=preprocess, size=size, expression_scale = exp_scale, facemodel=facerender)
         return_path = self.animate_from_coeff.generate(data, save_dir,  pic_path, crop_info, enhancer='gfpgan' if use_enhancer else None, preprocess=preprocess, img_size=size)
-        video_name = data['video_name']
-        print(f'The generated video is named {video_name} in {save_dir}')
+        # video_name = data['video_name']
+        print(f'The generated video is saved in {return_path}')
 
         del self.preprocess_model
         del self.audio_to_coeff
