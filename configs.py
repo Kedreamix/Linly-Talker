@@ -7,5 +7,5 @@ api_port = 7871
 mode = 'offline'
 model_path = 'Linly-AI/Chinese-LLaMA-2-7B-hf'
 # ssl证书 (SSL certificate) 麦克风对话需要此参数
-ssl_certfile = "/path/to/Linly-Talker/cert.pem"
-ssl_keyfile = "/path/to/Linly-Talker/key.pem"
+ssl_certfile = "/path/to/Linly-Talker/https_cert/cert.pem"
+ssl_keyfile = "/path/to/Linly-Talker/https_cert/key.pem"
