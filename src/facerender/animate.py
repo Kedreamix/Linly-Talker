@@ -17,13 +17,30 @@ from src.facerender.modules.mapping import MappingNet
 from src.facerender.modules.generator import  OcclusionAwareSPADEGenerator
 from src.facerender.modules.make_animation import make_animation 
 
+# from pydub import AudioSegment 
+from src.utils.face_enhancer import enhancer_generator_with_len, enhancer_list
+from src.utils.paste_pic import paste_pic
 from src.utils.videoio import save_video_with_watermark
-
+import imageio
 try:
     import webui  # in webui
     in_webui = True
 except:
     in_webui = False
+
+def save_video(path, videos, fps = 25, img_size = 256):
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    video_writer = cv2.VideoWriter(path, fourcc, float(fps), (img_size, img_size))
+
+    # Write each frame to the video file
+    for frame in videos:
+        video_writer.write(frame)
+        # cv2.imshow("Stream", frame)
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break
+
+    # Release the video writer and close the file
+    video_writer.release()
 
 class AnimateFromCoeff():
 
@@ -199,26 +216,16 @@ class AnimateFromCoeff():
         path = os.path.join(video_save_dir, 'temp_'+video_name)
         print("fps: ", fps, len(result))
         # imageio.mimsave(path, result,  fps=float(fps))
-        # Define the codec for video output
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        video_writer = cv2.VideoWriter(path, fourcc, float(fps), (img_size, img_size))
-
-        # Write each frame to the video file
-        for frame in result:
-            video_writer.write(frame)
-            # cv2.imshow("Stream", frame)
-            # if cv2.waitKey(1) & 0xFF == ord('q'):
-            #     break
-
-        # Release the video writer and close the file
-        video_writer.release()
-
+        
+        # OpenCV save
+        save_video(path, result, fps, img_size)
+        
         av_path = os.path.join(video_save_dir, video_name)
         return_path = av_path 
         
         audio_path =  x['audio_path'] 
         # audio_name = os.path.splitext(os.path.split(audio_path)[-1])[0]
-        # new_audio_path = os.path.join(video_save_dir,'new_answer.wav')
+        # new_audio_path = os.path.join(video_save_dir, 'new_answer.wav')
         # start_time = 0
         # # cog will not keep the .mp3 filename
         # sound = AudioSegment.from_file(audio_path)
@@ -230,35 +237,39 @@ class AnimateFromCoeff():
 
         save_video_with_watermark(path, audio_path, av_path, watermark= False)
 
-        # if 'full' in preprocess.lower():
-        #     # only add watermark to the full image.
-        #     video_name_full = x['video_name']  + '_full.mp4'
-        #     full_video_path = os.path.join(video_save_dir, video_name_full)
-        #     return_path = full_video_path
-        #     paste_pic(path, pic_path, crop_info, new_audio_path, full_video_path, extended_crop= True if 'ext' in preprocess.lower() else False)
-        #     print(f'The generated video is named {video_save_dir}/{video_name_full}') 
-        # else:
-        #     full_video_path = av_path 
+        if 'full' in preprocess.lower():
+            # only add watermark to the full image.
+            video_name_full = x['video_name']  + '_full.mp4'
+            full_video_path = os.path.join(video_save_dir, video_name_full)
+            return_path = full_video_path
+            paste_pic(path, pic_path, crop_info, audio_path, full_video_path, extended_crop= True if 'ext' in preprocess.lower() else False)
+            print(f'The generated video is named {video_save_dir}/{video_name_full}') 
+        else:
+            full_video_path = av_path 
 
-        #### paste back then enhancers
-        # if enhancer:
-        #     video_name_enhancer = x['video_name']  + '_enhanced.mp4'
-        #     enhanced_path = os.path.join(video_save_dir, 'temp_'+video_name_enhancer)
-        #     av_path_enhancer = os.path.join(video_save_dir, video_name_enhancer) 
-        #     return_path = av_path_enhancer
+        ### paste back then enhancers
+        if enhancer:
+            video_name_enhancer = x['video_name']  + '_enhanced.mp4'
+            enhanced_path = os.path.join(video_save_dir, 'temp_'+video_name_enhancer)
+            av_path_enhancer = os.path.join(video_save_dir, video_name_enhancer) 
+            return_path = av_path_enhancer
 
-        #     try:
-                # enhanced_images_gen_with_len = enhancer_generator_with_len(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
-        #         imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
-        #     except:
-        #         enhanced_images_gen_with_len = enhancer_list(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
-        #         imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
+            try:
+                enhanced_images_gen_with_len = enhancer_generator_with_len(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
+                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
+                # print(enhanced_images_gen_with_len.shape)
+                # save_video(enhanced_path, enhanced_images_gen_with_len, fps, img_size)
+            except:
+                enhanced_images_gen_with_len = enhancer_list(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
+                # print(enhanced_images_gen_with_len.shape)
+                # save_video(enhanced_path, enhanced_images_gen_with_len, fps, img_size)
+                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
             
-        #     save_video_with_watermark(enhanced_path, new_audio_path, av_path_enhancer, watermark= False)
-        #     print(f'The generated video is named {video_save_dir}/{video_name_enhancer}')
-        #     os.remove(enhanced_path)
+            save_video_with_watermark(enhanced_path, audio_path, av_path_enhancer, watermark= False)
+            # print(f'The generated video is named {video_save_dir}/{video_name_enhancer}')
+            os.remove(enhanced_path)
 
-        # os.remove(path)
+        os.remove(path)
 
         return return_path
 

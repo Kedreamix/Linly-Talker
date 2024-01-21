@@ -14,7 +14,7 @@ pyyaml
 joblib==1.1.0
 facexlib==0.3.0
 gradio==3.38.*
-# gfpgan
+gfpgan
 edge-tts>=6.1.9
 openai-whisper
 scikit-image==0.19.3

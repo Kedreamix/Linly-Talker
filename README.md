@@ -24,7 +24,7 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 - [x] 基本完成对话系统流程，能够`语音对话`
 - [x] 加入了LLM大模型，包括`Linly`，`Qwen`和`GeminiPro`的使用
 - [x] 可上传`任意数字人照片`进行对话
-- [x] Linly加入`FastAP`I调用方式
+- [x] Linly加入`FastAPI`调用方式
 - [x] 利用微软`TTS`加入高级选项，可设置对应人声以及音调等参数，增加声音的多样性
 - [x] 视频生成加入`字幕`，能够更好的进行可视化
 - [x] GPT`多轮对话`系统（提高数字人的交互性和真实感，增强数字人的智能）
@@ -160,7 +160,7 @@ python TTS_app.py
 bash scripts/download_models.sh  
 ```
 
-
+[Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 
 ## LLM - Conversation
 
@@ -441,6 +441,8 @@ python app_multi.py
 ![](docs/UI3.png)
 
 文件夹结构如下
+
+[Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 
 ```bash
 Linly-Talker/ 

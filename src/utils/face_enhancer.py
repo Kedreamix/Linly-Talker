@@ -1,7 +1,7 @@
 import os
 import torch 
 
-#from gfpgan import GFPGANer
+from gfpgan import GFPGANer
 
 from tqdm import tqdm
 

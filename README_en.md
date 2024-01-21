@@ -455,6 +455,8 @@ python app_multi.py
 
 The folder structure is as follows:
 
+[Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+
 ```bash
 Linly-Talker/ 
 ├── app.py

@@ -191,10 +191,8 @@ class SadTalker():
         self.audio_to_coeff = Audio2Coeff(self.sadtalker_paths, self.device)
         self.preprocess_model = CropAndExtract(self.sadtalker_paths, self.device)
         
-
         self.animate_from_coeff = AnimateFromCoeff(self.sadtalker_paths, self.device)
 
-        
         time_tag = str(uuid.uuid4())
         save_dir = os.path.join(result_dir, time_tag)
         os.makedirs(save_dir, exist_ok=True)
