@@ -5,7 +5,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 class Qwen:
-    def __init__(self, mode='api', model_path="Qwen/Qwen-1_8B-Chat") -> None:
+    def __init__(self, mode='offline', model_path="Qwen/Qwen-1_8B-Chat") -> None:
         '''暂时不写api版本,与Linly-api相类似,感兴趣可以实现一下'''
         self.url = "http://ip:port" # local server: http://ip:port
         self.headers = {
@@ -20,7 +20,7 @@ class Qwen:
         self.history = None
     
     def init_model(self, path = "Qwen/Qwen-1_8B-Chat"):
-        model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen-1_8B-Chat", 
+        model = AutoModelForCausalLM.from_pretrained(path, 
                                                      device_map="auto", 
                                                      trust_remote_code=True).eval()
         tokenizer = AutoTokenizer.from_pretrained(path, trust_remote_code=True)
