@@ -28,7 +28,7 @@ try:
 except:
     in_webui = False
 
-def save_video(path, videos, fps = 25, img_size = 256):
+def opencv_save_video(path, videos, fps = 25, img_size = 256):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_writer = cv2.VideoWriter(path, fourcc, float(fps), (img_size, img_size))
 
@@ -174,22 +174,6 @@ class AnimateFromCoeff():
         source_image=source_image.to(self.device)
         source_semantics=source_semantics.to(self.device)
         target_semantics=target_semantics.to(self.device)
-        # if 'yaw_c_seq' in x:
-        #     yaw_c_seq = x['yaw_c_seq'].type(torch.FloatTensor)
-        #     yaw_c_seq = x['yaw_c_seq'].to(self.device)
-        # else:
-        #     yaw_c_seq = None
-        # if 'pitch_c_seq' in x:
-        #     pitch_c_seq = x['pitch_c_seq'].type(torch.FloatTensor)
-        #     pitch_c_seq = x['pitch_c_seq'].to(self.device)
-        # else:
-        #     pitch_c_seq = None
-        # if 'roll_c_seq' in x:
-        #     roll_c_seq = x['roll_c_seq'].type(torch.FloatTensor) 
-        #     roll_c_seq = x['roll_c_seq'].to(self.device)
-        # else:
-        #     roll_c_seq = None
-
         frame_num = x['frame_num']
 
         predictions_video = make_animation(source_image, source_semantics, target_semantics,
@@ -209,16 +193,21 @@ class AnimateFromCoeff():
         ### the generated video is 256x256, so we keep the aspect ratio, 
         original_size = crop_info[0]
         if original_size:
-            # result = [ cv2.resize(result_i,(img_size, int(img_size * original_size[1]/original_size[0]) )) for result_i in result ]
+            # sadtalker origin
+            result = [ cv2.resize(result_i,(img_size, int(img_size * original_size[1]/original_size[0]) )) for result_i in result ]
             # result = [ cv2.cvtColor(cv2.resize(result_i, (img_size, int(img_size * original_size[1]/original_size[0]) )), cv2.COLOR_BGR2RGB) for result_i in result ]
-            result = [ cv2.cvtColor(result_i, cv2.COLOR_BGR2RGB) for result_i in result ]
+            # result = [ cv2.cvtColor(result_i, cv2.COLOR_BGR2RGB) for result_i in result ]
+            
         video_name = x['video_name']  + '.mp4'
         path = os.path.join(video_save_dir, 'temp_'+video_name)
         print("fps: ", fps, len(result))
         # imageio.mimsave(path, result,  fps=float(fps))
         
         # OpenCV save
-        save_video(path, result, fps, img_size)
+        # save_video(path, result, fps, img_size)
+        
+        # mimsave
+        imageio.mimsave(path, result,  fps=float(fps))
         
         av_path = os.path.join(video_save_dir, video_name)
         return_path = av_path 

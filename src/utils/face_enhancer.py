@@ -1,7 +1,6 @@
 import os
 import torch 
 
-from gfpgan import GFPGANer
 
 from tqdm import tqdm
 
@@ -43,7 +42,22 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
     """ Provide a generator function so that all of the enhanced images don't need
     to be stored in memory at the same time. This can save tons of RAM compared to
     the enhancer function. """
-
+    try:
+        from gfpgan import GFPGANer
+    except ImportError:
+        print("GFPGAN library not found. Installing...")
+        try:
+            # Use pip to install the library
+            import subprocess
+            subprocess.check_call(["pip", "install", "gfpgan"])
+            
+            # Retry the import after installation
+            from gfpgan import GFPGANer
+            print("GFPGAN library installed successfully!")
+        except Exception as e:
+            print(f"Failed to install GFPGAN library. Error: {e}")
+            # Handle the error or raise it again if needed
+        
     print('face enhancer....')
     if not isinstance(images, list) and os.path.isfile(images): # handle video to images
         images = load_video_to_cv2(images)

@@ -182,7 +182,7 @@ class SadTalker():
         ref_video = None,
         ref_info = None,
         use_idle_mode = False,
-        length_of_audio = 0, use_blink=True, fps = 25,
+        length_of_audio = 0, use_blink=True, fps = 20,
         result_dir='./results/'):
 
         self.sadtalker_paths = init_path(self.checkpoint_path, self.config_path, size, False, preprocess)
