@@ -48,12 +48,14 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 ## Setup
 
 ```bash
-conda create -n linly python=3.8
+conda create -n linly python=3.9 
 conda activate linly
 
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113 
+pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
+# pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+# conda install pytorch==1.12.0 torchvision==0.13.0 torchaudio==0.12.0 cudatoolkit=11.3 -c pytorch
 
-conda install -q ffmpeg
+conda install -q ffmpeg # ffmpeg==4.2.2
 
 pip install -r requirements_app.txt
 ```
@@ -71,8 +73,9 @@ mode = 'api' # api 需要先运行Linly-api-fast.py
 mode = 'offline'
 model_path = 'Linly-AI/Chinese-LLaMA-2-7B-hf'
 # ssl证书 (SSL certificate) 麦克风对话需要此参数
-ssl_certfile = "/path/to/Linly-Talker/https_cert/cert.pem"
-ssl_keyfile = "/path/to/Linly-Talker/https_cert/key.pem"
+# 最好绝对路径
+ssl_certfile = "./https_cert/cert.pem"
+ssl_keyfile = "./https_cert/key.pem"
 ```
 
 This file allows you to adjust parameters such as the device running port, API running port, Linly model path, and SSL certificate paths for ease of deployment and configuration.
@@ -392,12 +395,12 @@ In the app.py file, tailor your model choice with ease.
 ```python
 # Uncomment and set up the model of your choice:
 
-# llm = Gemini(model_path='gemini-pro', api_key=None, proxy_url=None) # Don't forget to include your Google API key
-# llm = Qwen(mode='offline', model_path="Qwen/Qwen-1_8B-Chat")
-# Automatic download
-# llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
+# llm = LLM(mode='offline').init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
+# llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
+# llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
+
 # Manual download with a specific path
-llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
+llm = LLM(mode=mode).init_model('Qwen', model_path)
 ```
 
 

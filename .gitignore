@@ -1,6 +1,14 @@
-Chinese-LLaMA-2-7B-hf/
 checkpoints/
 gfpgan/
 __pycache__/
-https_cert/
 *.pyc
+Linly-AI
+Qwen
+checkpoints
+temp
+*.wav
+*.vtt
+*.srt
+results/example_answer.mp4
+request-Linly-api.py
+results

@@ -9,7 +9,7 @@
 **2024.01 更新** 📆
 
 - **令人兴奋的消息！我现在已经将强大的GeminiPro和Qwen大模型融入到我们的对话场景中。用户现在可以在对话中上传任何图片，为我们的互动增添了全新的层面。**
--  **更新了FastAPI的部署调用方法。** 
+- **更新了FastAPI的部署调用方法。** 
 - **更新了微软TTS的高级设置选项，增加声音种类的多样性，以及加入视频字幕加强可视化。**
 - **更新了GPT多轮对话系统，使得对话有上下文联系，提高数字人的交互性和真实感**
 
@@ -46,12 +46,16 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 ## 创建环境
 
 ```bash
-conda create -n linly python=3.8 
+conda create -n linly python=3.9 
 conda activate linly
 
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 
-conda install -ffmpeg 
+# pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+
+# conda install pytorch==1.12.0 torchvision==0.13.0 torchaudio==0.12.0 cudatoolkit=11.3 -c pytorch
+
+conda install -q ffmpeg # ffmpeg==4.2.2
 
 pip install -r requirements_app.txt
 ```
@@ -60,17 +64,20 @@ pip install -r requirements_app.txt
 
 ```bash
 # 设备运行端口 (Device running port)
-port = 7870
+port = 7860
 # api运行端口及IP (API running port and IP)
+mode = 'api' # api 需要先运行Linly-api-fast.py，暂时仅仅适用于Linly
 ip = '127.0.0.1' 
 api_port = 7871
-# Linly模型路径 (Linly model path)
-mode = 'api' # api 需要先运行Linly-api-fast.py
+
+# L模型路径 (Linly model path)
 mode = 'offline'
-model_path = 'Linly-AI/Chinese-LLaMA-2-7B-hf'
+model_path = 'Qwen/Qwen-1_8B-Chat'
+
 # ssl证书 (SSL certificate) 麦克风对话需要此参数
-ssl_certfile = "/path/to/Linly-Talker/https_cert/cert.pem"
-ssl_keyfile = "/path/to/Linly-Talker/https_cert/key.pem"
+# 最好调整为绝对路径
+ssl_certfile = "./https_cert/cert.pem"
+ssl_keyfile = "./https_cert/key.pem"
 ```
 
 ## ASR - Whisper
@@ -176,7 +183,9 @@ Linly来自深圳大学数据工程国家重点实验室,参考[https://github.c
 git lfs install
 git clone https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf
 ```
+
 或者使用`huggingface`的下载工具`huggingface-cli`
+
 ```bash
 pip install -U huggingface_hub
 
@@ -221,6 +230,7 @@ print(response_text)
 API部署推荐**FastAPI**，现在更新了 FastAPI 的API使用版本，FastAPI 是一个高性能、易用且现代的Python Web 框架，它通过使用最新的Python 特性和异步编程，提供了快速开发Web API 的能力。 该框架不仅易于学习和使用，还具有自动生成文档、数据验证等强大功能。 无论是构建小型项目还是大型应用程序，FastAPI 都是一个强大而有效的工具。
 
 首先安装部署API所使用的库
+
 ```bash
 pip install fastapi==0.104.1
 pip install uvicorn==0.24.0.post1
@@ -342,7 +352,9 @@ if __name__ == '__main__':
 
 来自阿里云的Qwen，查看 [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
 
-下载 Qwen 模型: [https://huggingface.co/Qwen/Qwen-1_8B-Chat](https://huggingface.co/Qwen/Qwen-1_8B-Chat)
+如果想要快速使用，可以选1.8B的模型，参数比较少，在较小的显存也可以正常使用，当然这一部分可以替换
+
+下载 Qwen1.8B 模型: [https://huggingface.co/Qwen/Qwen-1_8B-Chat](https://huggingface.co/Qwen/Qwen-1_8B-Chat)
 
 可以使用`git`下载
 
@@ -352,6 +364,7 @@ git clone https://huggingface.co/Qwen/Qwen-1_8B-Chat
 ```
 
 或者使用`huggingface`的下载工具`huggingface-cli`
+
 ```bash
 pip install -U huggingface_hub
 
@@ -362,6 +375,14 @@ export HF_ENDPOINT="https://hf-mirror.com"
 $env:HF_ENDPOINT="https://hf-mirror.com"
 
 huggingface-cli download --resume-download Qwen/Qwen-1_8B-Chat --local-dir Qwen/Qwen-1_8B-Chat
+```
+
+如果出现了一些网络问题，大家其实可以用魔搭社区进行下载，速度很快，最后修改路径即可 [https://modelscope.cn/models/qwen/Qwen-1_8B-Chat/files](https://modelscope.cn/models/qwen/Qwen-1_8B-Chat/files)
+
+```python
+# 模型下载
+from modelscope import snapshot_download
+model_dir = snapshot_download('qwen/Qwen-1_8B-Chat')
 ```
 
 ### Gemini-Pro
@@ -377,14 +398,13 @@ huggingface-cli download --resume-download Qwen/Qwen-1_8B-Chat --local-dir Qwen/
 在 app.py 文件中，轻松选择您需要的模型。
 
 ```python
-# 取消注释并设置您选择的模型:
+# 可以注释掉选择模型
+# llm = LLM(mode='offline').init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
+# llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
+# llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
 
-# llm = Gemini(model_path='gemini-pro', api_key=None, proxy_url=None) # 不要忘记加入您自己的 Google API 密钥
-# llm = Qwen(mode='offline', model_path="Qwen/Qwen-1_8B-Chat")
-# 自动下载
-# llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
-# 手动下载到指定路径
-llm = Linly(mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
+# 可以通过config来设置模型
+llm = LLM(mode=mode).init_model('Qwen', model_path)
 ```
 
 
