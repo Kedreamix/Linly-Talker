@@ -1,6 +1,6 @@
 import requests
 
-url = "http://ip:port"
+url = "http://127.0.0.1:7871"
 headers = {
     "Content-Type": "application/json"
 }
