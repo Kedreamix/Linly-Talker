@@ -17,6 +17,7 @@ description = """<p style="text-align: center; font-weight: bold;">
         [<a href="https://zhuanlan.zhihu.com/p/671006998" target="_blank">知乎</a>]
         [<a href="https://www.bilibili.com/video/BV1rN4y1a76x/" target="_blank">bilibili</a>]
         [<a href="https://github.com/Kedreamix/Linly-Talker" target="_blank">GitHub</a>]
+        [<a herf="https://kedreamix.github.io/" target="_blank">个人主页</a>]
     </span>
     <br> 
     <span>Linly-Talker 是一款智能 AI 对话系统，结合了大型语言模型 (LLMs) 与视觉模型，是一种新颖的人工智能交互方式。</span>
@@ -55,43 +56,11 @@ def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
     #answer = llm.predict(question)
     answer = llm.generate(question)
     print(answer)
-    # 默认保存为answer.wav
-    # 以前旧方法直接调用命令行
-    # os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
-    # 现在调用函数，其实两者皆可
-    tts.predict(answer, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
-    # audio, sr = librosa.load(path='answer.wav')
+    try:
+        tts.predict(answer, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
+    except:
+        os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
     return 'answer.wav', 'answer.vtt', answer
-
-
-def asr_response(audio, batch_size = 2):
-    s = time.time()
-    question = asr(audio)
-    llm_response(question)
-    pose_style = random.randint(0, 45)
-    e = time.time()
-    print("Using Time", e-s)
-    s = time.time()
-    driven_audio = 'answer.wav'
-    video = sad_talker.test(source_image,
-                        driven_audio,
-                        preprocess_type,
-                        is_still_mode,
-                        enhancer,
-                        batch_size,                            
-                        size_of_image,
-                        pose_style,
-                        facerender,
-                        exp_weight,
-                        use_ref_video,
-                        ref_video,
-                        ref_info,
-                        use_idle_mode,
-                        length_of_audio,
-                        blink_every)
-    e = time.time()
-    print("Using Time", e-s)
-    return video, 'answer.vtt'
 
 def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
     voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
@@ -121,8 +90,10 @@ def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, 
                         blink_every)
     e = time.time()
     print("Using Time", e-s)
-    print(video)
-    return video, './answer.vtt'
+    if os.path.exists('answer.vtt'):
+        return video, './answer.vtt'
+    else:
+        return video
 
 def main():
     
@@ -201,17 +172,10 @@ def main():
 
     
 if __name__ == "__main__":
-    # funasr = FunASR()
-    # local 
-    # llm = Linly(mode='offline',model_path="./Chinese-LLaMA-2-7B-hf/")
-    # api
-
-    # llm = Gemini(model_path='gemini-pro', api_key=None, proxy_url=None) # 需要自己加入google的apikey
-    # llm = Qwen(mode='offline',model_path="Qwen/Qwen-1_8B-Chat")
-    # 自动下载
-    # llm = Linly(mode='offline',model_path="Linly-AI/Chinese-LLaMA-2-7B-hf")
-    # 手动下载指定路径
-    llm = Linly(mode=mode, model_path=model_path)
+    # llm = LLM(mode='offline').init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
+    # llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
+    # llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
+    llm = LLM(mode=mode).init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
     sad_talker = SadTalker(lazy_load=True)
     openaiasr = OpenAIASR('base')
     tts = EdgeTTS()
@@ -219,7 +183,7 @@ if __name__ == "__main__":
     demo = main()
     demo.queue()
     # demo.launch()
-    demo.launch(server_name="0.0.0.0",
+    demo.launch(server_name="127.0.0.1", # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
                 server_port=port,
                 ssl_certfile=ssl_certfile,
                 ssl_keyfile=ssl_keyfile,
