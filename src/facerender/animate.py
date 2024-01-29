@@ -205,7 +205,7 @@ class AnimateFromCoeff():
         
         # OpenCV save
         # save_video(path, result, fps, img_size)
-        
+        print(path)
         # mimsave
         imageio.mimsave(path, result,  fps=float(fps))
         

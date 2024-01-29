@@ -4,13 +4,13 @@ from PIL import Image
 from skimage import  img_as_float32, transform
 import torch
 import scipy.io as scio
-
+import os
 def get_facerender_data(coeff, pic_path, first_coeff_path, audio_path, 
                         batch_size, input_yaw_list=None, input_pitch_list=None, input_roll_list=None, 
                         expression_scale=1.0, still_mode = False, preprocess='crop', size = 256, facemodel='facevid2vid'):
 
     semantic_radius = 13
-    video_name = f"{pic_path.split('/')[-1].split('.')[0]}_{audio_path.split('/')[-1].split('.')[0]}"
+    video_name = f"{os.path.basename(pic_path).split('.')[0]}_{os.path.basename(audio_path).split('.')[0]}"
     # txt_path = os.path.splitext(coeff_path)[0]
 
     data={}
