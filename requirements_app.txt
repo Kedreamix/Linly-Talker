@@ -4,6 +4,7 @@ imageio==2.19.3
 imageio-ffmpeg==0.4.7
 librosa==0.9.2 
 numba
+zhconv
 resampy==0.3.1
 pydub==0.25.1 
 scipy==1.10.1
@@ -13,18 +14,20 @@ yacs==0.1.8
 pyyaml  
 joblib==1.1.0
 facexlib==0.3.0
-gradio==3.38.*
-# gfpgan
+gradio==4.16.0
 edge-tts>=6.1.9
 openai-whisper
 scikit-image==0.19.3
-zhconv
 accelerate
-transformers
+transformers==4.32.0
 einops 
-transformers_stream_generator
+transformers_stream_generator==0.0.4
 sentencepiece
 google-generativeai
+tiktoken
+accelerate
+protobuf==3.19.6
+# gfpgan
 # ========Qwen Need========#
 # transformers==4.32.0
 # accelerate 

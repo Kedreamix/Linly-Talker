@@ -1,14 +1,15 @@
 import os
+import random 
+import time
 import gradio as gr
 from zhconv import convert
-from src.LLM import *
-from src.Asr import OpenAIASR
-from src.SadTalker import SadTalker 
-from src.TTS import EdgeTTS
-import time
-import random 
+from LLM import LLM
+from ASR import WhisperASR
+from TFG import SadTalker 
+from TTS import EdgeTTS
+
+from src.cost_time import calculate_time
 from configs import *
-from time import sleep
 os.environ["GRADIO_TEMP_DIR"]= './temp'
 
 description = """<p style="text-align: center; font-weight: bold;">
@@ -46,13 +47,18 @@ ref_info = 'pose'
 use_idle_mode = False
 length_of_audio = 5
 
-def asr(audio):
-    question = openaiasr.transcribe(audio)
-    question = convert(question, 'zh-cn')
+@calculate_time
+def Asr(audio):
+    try:
+        question = asr.transcribe(audio)
+        question = convert(question, 'zh-cn')
+    except Exception as e:
+        print("ASR Error: ", e)
+        question = 'Gradio 的麦克风有时候可能音频还未传入，请重试一下'
     return question
- 
-def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0):
-    #answer = llm.predict(question)
+
+@calculate_time
+def LLM_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0):
     answer = llm.generate(question)
     print(answer)
     try:
@@ -61,18 +67,14 @@ def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
         os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
     return 'answer.wav', 'answer.vtt', answer
 
-def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
+@calculate_time
+def Talker_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
     voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
-    # print(voice , rate , volume , pitch)
-    s = time.time()
-    sad_talker = SadTalker(lazy_load=True)
-    llm_response(text, voice, rate, volume, pitch)
-    e = time.time()
-    print("Using Time", e-s)
+    talker = SadTalker(lazy_load=True)
+    LLM_response(text, voice, rate, volume, pitch)
     pose_style = random.randint(0, 45)
-    s = time.time()
     driven_audio = 'answer.wav'
-    video = sad_talker.test(source_image,
+    video = talker.test(source_image,
                         driven_audio,
                         preprocess_type,
                         is_still_mode,
@@ -88,8 +90,6 @@ def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, 
                         use_idle_mode,
                         length_of_audio,
                         blink_every)
-    e = time.time()
-    print("Using Time", e-s)
     if os.path.exists('answer.vtt'):
         return video, './answer.vtt'
     else:
@@ -111,7 +111,7 @@ def human_respone(history, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
     voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
     tts.predict(response, voice, rate, volume, pitch, driven_audio, video_vtt)
     pose_style = random.randint(0, 45) # 随机选择
-    video_path = sad_talker.test(source_image,
+    video_path = talker.test(source_image,
                         driven_audio,
                         preprocess_type,
                         is_still_mode,
@@ -126,7 +126,8 @@ def human_respone(history, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
                         ref_info,
                         use_idle_mode,
                         length_of_audio,
-                        blink_every)
+                        blink_every,
+                        fps=20)
 
     return video_path, video_vtt
 
@@ -149,7 +150,7 @@ def main():
                 with gr.Accordion("Advanced Settings(高级设置) ",
                                         open=False):
                     voice = gr.Dropdown(tts.SUPPORTED_VOICE, 
-                                        values='zh-CN-XiaoxiaoNeural', 
+                                        value='zh-CN-XiaoxiaoNeural', 
                                         label="Voice")
                     rate = gr.Slider(minimum=-100,
                                         maximum=100,
@@ -171,7 +172,7 @@ def main():
                                         value=1,
                                         step=1,
                                         label='Talker Batch size')
-                video = gr.Video(label = '数字人问答', autoplay = True).style(full_width=True)
+                video = gr.Video(label = '数字人问答', scale = 0.5)
                 video_button = gr.Button("🎬 生成数字人视频（对话后）", variant = 'primary')
             
             with gr.Column():
@@ -183,11 +184,11 @@ def main():
                     system_state = gr.Textbox(value=default_system, visible=False)
 
                 chatbot = gr.Chatbot(height=400, show_copy_button=True)
-                audio = gr.Audio(source="microphone", type="filepath", label='语音对话')
+                audio = gr.Audio(sources=['microphone','upload'], type="filepath", label='语音对话', autoplay=True)
                 asr_text = gr.Button('🎤 语音识别（语音对话后点击）')
                 # 创建一个文本框组件，用于输入 prompt。
                 msg = gr.Textbox(label="Prompt/问题")
-                asr_text.click(fn=asr,inputs=[audio],outputs=[msg])
+                asr_text.click(fn=Asr,inputs=[audio],outputs=[msg])
                 
                 with gr.Row():
                     clear_history = gr.Button("🧹 清除历史对话")
@@ -220,7 +221,7 @@ def main():
                     ]
                 gr.Examples(
                     examples = examples,
-                    # fn = text_response,
+                    # fn = Talker_response,
                     inputs = [msg],
                     # outputs=[gen_video],
                     # cache_examples = True,
@@ -234,8 +235,8 @@ if __name__ == "__main__":
     # llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
     # llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
     llm = LLM(mode=mode).init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
-    sad_talker = SadTalker(lazy_load=True)
-    openaiasr = OpenAIASR('base')
+    talker = SadTalker(lazy_load=True)
+    asr = WhisperASR('base')
     tts = EdgeTTS()
     gr.close_all()
     demo = main()

@@ -1,12 +1,13 @@
 import os
+import random 
 import gradio as gr
 from zhconv import convert
-from src.LLM import *
-from src.Asr import OpenAIASR
-from src.SadTalker import SadTalker 
-from src.TTS import EdgeTTS
-import time
-import random 
+from LLM import LLM
+from ASR import WhisperASR
+from TFG import SadTalker 
+from TTS import EdgeTTS
+from src.cost_time import calculate_time
+
 from configs import *
 os.environ["GRADIO_TEMP_DIR"]= './temp'
 
@@ -32,9 +33,7 @@ preprocess_type = 'crop'
 facerender = 'facevid2vid'
 enhancer = False
 is_still_mode = False
-# pose_style = gr.Slider(minimum=0, maximum=45, step=1, label="Pose style", value=0)
 
-# exp_weight = gr.Slider(minimum=0, maximum=3, step=0.1, label="expression scale", value=1)
 exp_weight = 1
 
 use_ref_video = False
@@ -43,17 +42,18 @@ ref_info = 'pose'
 use_idle_mode = False
 length_of_audio = 5
 
-def asr(audio):
-    #sr, data = audio
-    #audio = "audio_output.wav"
-    #sf.write(audio, data, samplerate=sr)  # 以44100Hz的采样率保存为WAV文件
-    #print(audio)
-    question = openaiasr.transcribe(audio)
-    question = convert(question, 'zh-cn')
+@calculate_time
+def Asr(audio):
+    try:
+        question = asr.transcribe(audio)
+        question = convert(question, 'zh-cn')
+    except Exception as e:
+        print("ASR Error: ", e)
+        question = 'Gradio 的麦克风有时候可能音频还未传入，请重试一下'
     return question
- 
-def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0):
-    #answer = llm.predict(question)
+
+@calculate_time
+def LLM_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0):
     answer = llm.generate(question)
     print(answer)
     try:
@@ -62,17 +62,14 @@ def llm_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
         os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
     return 'answer.wav', 'answer.vtt', answer
 
-def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
+@calculate_time
+def Talker_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
     voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
-    print(voice , rate , volume , pitch)
-    s = time.time()
-    llm_response(text, voice, rate, volume, pitch)
-    e = time.time()
-    print("Using Time", e-s)
+    # print(voice , rate , volume , pitch)
+    LLM_response(text, voice, rate, volume, pitch)
     pose_style = random.randint(0, 45)
-    s = time.time()
     driven_audio = 'answer.wav'
-    video = sad_talker.test(source_image,
+    video = talker.test(source_image,
                         driven_audio,
                         preprocess_type,
                         is_still_mode,
@@ -87,30 +84,28 @@ def text_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, 
                         ref_info,
                         use_idle_mode,
                         length_of_audio,
-                        blink_every)
-    e = time.time()
-    print("Using Time", e-s)
+                        blink_every,
+                        fps=20)
     if os.path.exists('answer.vtt'):
         return video, './answer.vtt'
     else:
         return video
 
 def main():
-    
     with gr.Blocks(analytics_enabled=False, title = 'Linly-Talker') as inference:
         gr.HTML(description)
-        with gr.Row().style(equal_height=False):
+        with gr.Row(equal_height=False):
             with gr.Column(variant='panel'): 
                 with gr.Tabs(elem_id="question_audio"):
                     with gr.TabItem('对话'):
                         with gr.Column(variant='panel'):
-                            question_audio = gr.Audio(source="microphone", type="filepath")
+                            question_audio = gr.Audio(sources=['microphone','upload'], type="filepath", label = '语音对话')
                             input_text = gr.Textbox(label="Input Text", lines=3)
                             
                             with gr.Accordion("Advanced Settings(高级设置语音参数) ",
-                                        open=False) as parameter_article:
+                                        open=False):
                                 voice = gr.Dropdown(tts.SUPPORTED_VOICE, 
-                                                    values='zh-CN-XiaoxiaoNeural', 
+                                                    value='zh-CN-XiaoxiaoNeural', 
                                                     label="Voice")
                                 rate = gr.Slider(minimum=-100,
                                                     maximum=100,
@@ -133,7 +128,7 @@ def main():
                                                     step=1,
                                                     label='Talker Batch size')
                             asr_text = gr.Button('语音识别（语音对话后点击）')
-                            asr_text.click(fn=asr,inputs=[question_audio],outputs=[input_text])
+                            asr_text.click(fn=Asr,inputs=[question_audio],outputs=[input_text])
                             
                         # with gr.Column(variant='panel'):
                         #     input_text = gr.Textbox(label="Input Text", lines=3)
@@ -141,14 +136,12 @@ def main():
                         
                 
             with gr.Column(variant='panel'): 
-        
-                with gr.Tabs(elem_id="sadtalker_genearted"):
+                with gr.Tabs():
                     with gr.TabItem('数字人问答'):
-                        gen_video = gr.Video(label="Generated video", format="mp4", scale=1)
-                video_button = gr.Button("提交",variant='primary')
-            video_button.click(fn=text_response,inputs=[input_text,voice, rate, volume, pitch, batch_size],outputs=[gen_video])
-            
-            # text_button.click(fn=text_response,inputs=[input_text],outputs=[gen_video])
+                        gen_video = gr.Video(label="Generated video", format="mp4", scale=1, autoplay=True)
+                video_button = gr.Button("提交", variant='primary')
+            video_button.click(fn=Talker_response,inputs=[input_text,voice, rate, volume, pitch, batch_size],outputs=[gen_video])
+
         with gr.Row():
             with gr.Column(variant='panel'):
                     gr.Markdown("## Text Examples")
@@ -162,7 +155,7 @@ def main():
                         ]
                     gr.Examples(
                         examples = examples,
-                        fn = text_response,
+                        fn = Talker_response,
                         inputs = [input_text],
                         outputs=[gen_video],
                         # cache_examples = True,
@@ -176,8 +169,8 @@ if __name__ == "__main__":
     # llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
     # llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
     llm = LLM(mode=mode).init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
-    sad_talker = SadTalker(lazy_load=True)
-    openaiasr = OpenAIASR('base')
+    talker = SadTalker(lazy_load=True)
+    asr = WhisperASR('base')
     tts = EdgeTTS()
     gr.close_all()
     demo = main()
