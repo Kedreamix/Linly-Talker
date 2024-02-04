@@ -13,6 +13,11 @@
 - **更新了微软TTS的高级设置选项，增加声音种类的多样性，以及加入视频字幕加强可视化。**
 - **更新了GPT多轮对话系统，使得对话有上下文联系，提高数字人的交互性和真实感**
 
+**2024.02 更新** 📆
+
+- **更新了Gradio的版本为最新版本4.16.0，使得界面拥有更多的功能，比如可以摄像头拍摄图片构建数字人等**
+- **更新了ASR和THG，其中ASR加入了阿里的FunASR，具体更快的速度；THG部分加入了Wav2Lip模型，ER-NeRF在准备中(Comming Soon)**
+
 ## 介绍
 
 Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系统,创建了一种全新的人机交互方式。它集成了各种技术,例如Whisper、Linly、微软语音服务和SadTalker会说话的生成系统。该系统部署在Gradio上,允许用户通过提供图像与AI助手进行交谈。用户可以根据自己的喜好进行自由的对话或内容生成。
@@ -28,6 +33,7 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 - [x] 利用微软`TTS`加入高级选项，可设置对应人声以及音调等参数，增加声音的多样性
 - [x] 视频生成加入`字幕`，能够更好的进行可视化
 - [x] GPT`多轮对话`系统（提高数字人的交互性和真实感，增强数字人的智能）
+- [x] 优化Gradio界面，加入更多模型，如Wav2Lip，FunASR等
 - [ ] `语音克隆`技术（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
 - [ ] 加入`Langchain`的框架，建立本地知识库
 - [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
@@ -49,11 +55,11 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 conda create -n linly python=3.9 
 conda activate linly
 
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
+# pytorch安装方式1：conda安装（推荐）
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
 
-# pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
-
-# conda install pytorch==1.12.0 torchvision==0.13.0 torchaudio==0.12.0 cudatoolkit=11.3 -c pytorch
+# pytorch安装方式2：pip 安装
+pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
 
 conda install -q ffmpeg # ffmpeg==4.2.2
 
@@ -80,9 +86,72 @@ ssl_certfile = "./https_cert/cert.pem"
 ssl_keyfile = "./https_cert/key.pem"
 ```
 
-## ASR - Whisper
+## ASR - Speech Recognition
 
-借鉴OpenAI的Whisper,具体使用方法参考[https://github.com/openai/whisper](https://github.com/openai/whisper)
+### Whisper
+
+借鉴OpenAI的Whisper实现了ASR的语音识别，具体使用方法参考 [https://github.com/openai/whisper](https://github.com/openai/whisper)
+
+```python
+'''
+https://github.com/openai/whisper
+pip install -U openai-whisper
+'''
+import whisper
+
+class WhisperASR:
+    def __init__(self, model_path):
+        self.LANGUAGES = {
+            "en": "english",
+            "zh": "chinese",
+        }
+        self.model = whisper.load_model(model_path)
+        
+    def transcribe(self, audio_file):
+        result = self.model.transcribe(audio_file)
+        return result["text"]
+```
+
+
+
+### FunASR
+
+阿里的`FunASR`的语音识别效果也是相当不错，而且时间也是比whisper更快的，更能达到实时的效果，所以也将FunASR添加进去了，在ASR文件夹下的FunASR文件里可以进行体验，需要注意的是，在第一次运行的时候，需要安装以下库，参考 [https://github.com/alibaba-damo-academy/FunASR](https://github.com/alibaba-damo-academy/FunASR)
+
+```bash
+pip install funasr
+pip install modelscope
+pip install -U rotary_embedding_torch
+```
+
+```python
+'''
+Reference: https://github.com/alibaba-damo-academy/FunASR
+pip install funasr
+pip install modelscope
+pip install -U rotary_embedding_torch
+'''
+try:
+    from funasr import AutoModel
+except:
+    print("如果想使用FunASR，请先安装funasr，若使用Whisper，请忽略此条信息")   
+
+class FunASR:
+    def __init__(self) -> None:
+        self.model = AutoModel(model="paraformer-zh", model_revision="v2.0.4",
+                vad_model="fsmn-vad", vad_model_revision="v2.0.4",
+                punc_model="ct-punc-c", punc_model_revision="v2.0.4",
+                # spk_model="cam++", spk_model_revision="v2.0.2",
+                )
+
+    def transcribe(self, audio_file):
+        res = self.model.generate(input=audio_file, 
+            batch_size_s=300)
+        print(res)
+        return res[0]['text']
+```
+
+
 
 ## TTS - Edge TTS
 
@@ -157,17 +226,77 @@ python TTS_app.py
 
 ![TTS](docs/TTS.png)
 
-## THG - SadTalker
+## THG - Avatar
 
-说话头生成使用SadTalker（CVPR 2023）,详情见[https://sadtalker.github.io](https://sadtalker.github.io)
+### SadTalker
 
-下载SadTalker模型:
+数字人生成可使用SadTalker（CVPR 2023）,详情介绍见 [https://sadtalker.github.io](https://sadtalker.github.io)
+
+在使用前先下载SadTalker模型:
 
 ```bash
-bash scripts/download_models.sh  
+bash scripts/sadtalker_download_models.sh  
 ```
 
 [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+
+> 如果百度网盘下载，记住是放在checkpoints文件夹下，百度网盘下载的默认命名为sadtalker，实际应该重命名为checkpoints
+
+### Wav2Lip
+
+数字人生成还可使用Wav2Lip（ACM 2020），详情介绍见 [https://github.com/Rudrabha/Wav2Lip](https://github.com/Rudrabha/Wav2Lip)
+
+在使用前先下载Wav2Lip模型：
+
+| Model                        | Description                                           | Link to the model                                            |
+| ---------------------------- | ----------------------------------------------------- | ------------------------------------------------------------ |
+| Wav2Lip                      | Highly accurate lip-sync                              | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/Eb3LEzbfuKlJiR600lQWRxgBIY27JZg80f7V9jtMfbNDaQ?e=TBFBVW) |
+| Wav2Lip + GAN                | Slightly inferior lip-sync, but better visual quality | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EdjI7bZlgApMqsVoEUUXpLsBxqXbn5z8VTmoxp55YNDcIA?e=n9ljGW) |
+| Expert Discriminator         | Weights of the expert discriminator                   | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQRvmiZg-HRAjvI6zqN9eTEBP74KefynCwPWVmF57l-AYA?e=ZRPHKP) |
+| Visual Quality Discriminator | Weights of the visual disc trained in a GAN setup     | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQVqH88dTm1HjlK11eNba5gBbn15WMS0B0EZbDBttqrqkg?e=ic0ljo) |
+
+```python
+class Wav2Lip:
+    def __init__(self, path = 'checkpoints/wav2lip.pth'):
+        self.fps = 25
+        self.resize_factor = 1
+        self.mel_step_size = 16
+        self.static = False
+        self.img_size = 96
+        self.face_det_batch_size = 2
+        self.box = [-1, -1, -1, -1]
+        self.pads = [0, 10, 0, 0]
+        self.nosmooth = False
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model = self.load_model(path)
+
+    def load_model(self, checkpoint_path):
+        model = wav2lip_mdoel()
+        print("Load checkpoint from: {}".format(checkpoint_path))
+        if self.device == 'cuda':
+            checkpoint = torch.load(checkpoint_path)
+        else:
+            checkpoint = torch.load(checkpoint_path,
+                                    map_location=lambda storage, loc: storage)
+        s = checkpoint["state_dict"]
+        new_s = {}
+        for k, v in s.items():
+            new_s[k.replace('module.', '')] = v
+        model.load_state_dict(new_s)
+
+        model = model.to(self.device)
+        return model.eval()
+```
+
+
+
+### ER-NeRF（Comming Soon）
+
+ER-NeRF（ICCV2023）是使用最新的NeRF技术构建的数字人，拥有定制数字人的特性，只需要一个人的五分钟左右到视频即可重建出来，具体可参考 [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF)
+
+后续会针对此更新
+
+
 
 ## LLM - Conversation
 
@@ -202,7 +331,7 @@ huggingface-cli download --resume-download Linly-AI/Chinese-LLaMA-2-7B-hf --loca
 
 ```bash
 # 命令行
-curl -X POST -H "Content-Type: application/json" -d '{"question": "北京有什么好玩的地方?"}' http://url:port  
+curl -X POST -H "Content-Type: application/json" -d '{"question": "北京有什么好玩的地方?"}' http://url:port
 
 # Python
 import requests
@@ -444,6 +573,12 @@ python app.py
 
 ![](docs/UI.png)
 
+最近更新了第一种模式，加入了Wav2Lip模型进行对话
+
+```bash
+python appv2.py
+```
+
 第二种是可以任意上传图片进行对话
 
 ```bash
@@ -460,9 +595,11 @@ python app_multi.py
 
 ![](docs/UI3.png)
 
+
+
 文件夹结构如下
 
-[Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+权重部分可以从这下载：[Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 
 ```bash
 Linly-Talker/ 
@@ -479,7 +616,17 @@ Linly-Talker/
 ├── scripts
 │   └── download_models.sh
 ├──	src
-│	└── .....
+│   ├── audio2exp_models
+│   ├── audio2pose_models
+│   ├── config
+│   ├── cost_time.py
+│   ├── face3d
+│   ├── facerender
+│   ├── generate_batch.py
+│   ├── generate_facerender_batch.py
+│   ├── Record.py
+│   ├── test_audio2coeff.py
+│   └── utils
 ├── inputs
 │   ├── example.png
 │   └── first_frame_dir
@@ -491,11 +638,33 @@ Linly-Talker/
 │       ├── art_0.png
 │       ├── ......
 │       └── sad.png
+├── TFG
+│   ├── __init__.py
+│   ├── Wav2Lip.py
+│   └── SadTalker.py
+└── TTS
+│   ├── __init__.py
+│   ├── EdgeTTS.py
+│   └── TTS_app.py
+├── ASR
+│   ├── __init__.py
+│   ├── FunASR.py
+│   └── Whisper.py
+├── LLM
+│   ├── __init__.py
+│   ├── Gemini.py
+│   ├── Linly.py
+│   └── Qwen.py
+....... // 以下是需要下载的权重路径（可选）
 ├── checkpoints // SadTalker 权重路径
 │   ├── mapping_00109-model.pth.tar
 │   ├── mapping_00229-model.pth.tar
 │   ├── SadTalker_V0.0.2_256.safetensors
 │   └── SadTalker_V0.0.2_512.safetensors
+│   ├── lipsync_expert.pth
+│   ├── visual_quality_disc.pth
+│   ├── wav2lip_gan.pth
+│   └── wav2lip.pth // Wav2Lip 权重陆军
 ├── gfpgan // GFPGAN 权重路径
 │   └── weights
 │       ├── alignment_WFLW_4HG.pth

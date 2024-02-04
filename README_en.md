@@ -13,6 +13,11 @@
 - **The advanced settings options for Microsoft TTS have been updated, increasing the variety of voice types. Additionally, video subtitles have been introduced to enhance visualization.**
 - **Updated the GPT multi-turn conversation system to establish contextual connections in dialogue, enhancing the interactivity and realism of the digital persona.**
 
+**2024.02 Update** 📆
+
+- **Updated Gradio to the latest version 4.16.0, providing the interface with additional functionalities such as capturing images from the camera to create digital personas, among others.**
+- **ASR and THG have been updated. FunASR from Alibaba has been integrated into ASR, enhancing its speed significantly. Additionally, the THG section now incorporates the Wav2Lip model, while ER-NeRF is currently in preparation (Coming Soon).**
+
 ## Introduction
 
 Linly-Talker is an intelligent AI system that combines large language models (LLMs) with visual models to create a novel human-AI interaction method. It integrates various technologies like Whisper, Linly, Microsoft Speech Services and SadTalker talking head generation system. The system is deployed on Gradio to allow users to converse with an AI assistant by providing images as prompts. Users can have free-form conversations or generate content according to their preferences.
@@ -30,6 +35,7 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 - [x] Utilized Microsoft `TTS` with advanced options, allowing customization of voice and tone parameters to enhance audio diversity.
 - [x] `Added subtitles` to video generation for improved visualization.
 - [x] GPT `Multi-turn Dialogue System` (Enhance the interactivity and realism of digital entities, bolstering their intelligence)
+- [x] Optimized the Gradio interface by incorporating additional models such as Wav2Lip, FunASR, and others.
 - [ ] `Voice Cloning` Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
 - [ ] Integrate the `Langchain` framework and establish a local knowledge base.
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
@@ -51,9 +57,11 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 conda create -n linly python=3.9 
 conda activate linly
 
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
-# pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
-# conda install pytorch==1.12.0 torchvision==0.13.0 torchaudio==0.12.0 cudatoolkit=11.3 -c pytorch
+# PyTorch Installation Method 1: Conda Installation (Recommended)
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
+
+# PyTorch Installation Method 2: Pip Installation
+pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
 
 conda install -q ffmpeg # ffmpeg==4.2.2
 
@@ -80,9 +88,72 @@ ssl_keyfile = "./https_cert/key.pem"
 
 This file allows you to adjust parameters such as the device running port, API running port, Linly model path, and SSL certificate paths for ease of deployment and configuration.
 
-## ASR - Whisper
+## ASR - Speech Recognition
+
+### Whisper
 
 Leverages OpenAI's Whisper, see [https://github.com/openai/whisper](https://github.com/openai/whisper) for usage.
+
+```python
+'''
+https://github.com/openai/whisper
+pip install -U openai-whisper
+'''
+import whisper
+
+class WhisperASR:
+    def __init__(self, model_path):
+        self.LANGUAGES = {
+            "en": "english",
+            "zh": "chinese",
+        }
+        self.model = whisper.load_model(model_path)
+        
+    def transcribe(self, audio_file):
+        result = self.model.transcribe(audio_file)
+        return result["text"]
+```
+
+
+
+### FunASR
+
+Alibaba's `FunASR` speech recognition also yields quite impressive results, and its processing time is even faster than Whisper's, making it more capable of achieving real-time effects. Therefore, FunASR has also been incorporated. You can experience FunASR in the FunASR file within the ASR folder. It's worth noting that upon the initial run, you'll need to install the following libraries, as referenced in [https://github.com/alibaba-damo-academy/FunASR]().
+
+```bash
+pip install funasr
+pip install modelscope
+pip install -U rotary_embedding_torch
+```
+
+```python
+'''
+Reference: https://github.com/alibaba-damo-academy/FunASR
+pip install funasr
+pip install modelscope
+pip install -U rotary_embedding_torch
+'''
+try:
+    from funasr import AutoModel
+except:
+    print("如果想使用FunASR，请先安装funasr，若使用Whisper，请忽略此条信息")   
+
+class FunASR:
+    def __init__(self) -> None:
+        self.model = AutoModel(model="paraformer-zh", model_revision="v2.0.4",
+                vad_model="fsmn-vad", vad_model_revision="v2.0.4",
+                punc_model="ct-punc-c", punc_model_revision="v2.0.4",
+                # spk_model="cam++", spk_model_revision="v2.0.2",
+                )
+
+    def transcribe(self, audio_file):
+        res = self.model.generate(input=audio_file, 
+            batch_size_s=300)
+        print(res)
+        return res[0]['text']
+```
+
+
 
 ## TTS - Edge TTS
 
@@ -157,15 +228,75 @@ python TTS_app.py
 
 ![TTS](docs/TTS.png)
 
-## THG - SadTalker
+## THG - Avatar
 
-Talking head generation uses SadTalker from CVPR 2023, see [https://sadtalker.github.io](https://sadtalker.github.io)
+### SadTalker
 
-Download SadTalker models:
+Digital persona generation can utilize SadTalker (CVPR 2023). For detailed information, please visit [https://sadtalker.github.io](https://sadtalker.github.io).
+
+Before usage, download the SadTalker model:
 
 ```bash
-bash scripts/download_models.sh
+bash scripts/sadtalker_download_models.sh  
 ```
+
+[Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+
+> If downloading from Baidu Cloud, remember to place it in the `checkpoints` folder. The model downloaded from Baidu Cloud is named `sadtalker` by default, but it should be renamed to `checkpoints`.
+
+### Wav2Lip
+
+Digital persona generation can also utilize Wav2Lip (ACM 2020). For detailed information, refer to [https://github.com/Rudrabha/Wav2Lip](https://github.com/Rudrabha/Wav2Lip).
+
+Before usage, download the Wav2Lip model:
+
+| Model                        | Description                                           | Link to the model                                            |
+| ---------------------------- | ----------------------------------------------------- | ------------------------------------------------------------ |
+| Wav2Lip                      | Highly accurate lip-sync                              | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/Eb3LEzbfuKlJiR600lQWRxgBIY27JZg80f7V9jtMfbNDaQ?e=TBFBVW) |
+| Wav2Lip + GAN                | Slightly inferior lip-sync, but better visual quality | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EdjI7bZlgApMqsVoEUUXpLsBxqXbn5z8VTmoxp55YNDcIA?e=n9ljGW) |
+| Expert Discriminator         | Weights of the expert discriminator                   | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQRvmiZg-HRAjvI6zqN9eTEBP74KefynCwPWVmF57l-AYA?e=ZRPHKP) |
+| Visual Quality Discriminator | Weights of the visual disc trained in a GAN setup     | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQVqH88dTm1HjlK11eNba5gBbn15WMS0B0EZbDBttqrqkg?e=ic0ljo) |
+
+```python
+class Wav2Lip:
+    def __init__(self, path = 'checkpoints/wav2lip.pth'):
+        self.fps = 25
+        self.resize_factor = 1
+        self.mel_step_size = 16
+        self.static = False
+        self.img_size = 96
+        self.face_det_batch_size = 2
+        self.box = [-1, -1, -1, -1]
+        self.pads = [0, 10, 0, 0]
+        self.nosmooth = False
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model = self.load_model(path)
+
+    def load_model(self, checkpoint_path):
+        model = wav2lip_mdoel()
+        print("Load checkpoint from: {}".format(checkpoint_path))
+        if self.device == 'cuda':
+            checkpoint = torch.load(checkpoint_path)
+        else:
+            checkpoint = torch.load(checkpoint_path,
+                                    map_location=lambda storage, loc: storage)
+        s = checkpoint["state_dict"]
+        new_s = {}
+        for k, v in s.items():
+            new_s[k.replace('module.', '')] = v
+        model.load_state_dict(new_s)
+
+        model = model.to(self.device)
+        return model.eval()
+```
+
+### ER-NeRF (Coming Soon)
+
+ER-NeRF (ICCV 2023) is a digital persona built using the latest NeRF technology, possessing customized digital persona features. It only requires about five minutes of a person's video to reconstruct. For more details, refer to [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF).
+
+Further updates will be provided regarding this.
+
+
 
 ## LLM - Conversation
 
@@ -440,6 +571,14 @@ python app.py
 
 ![](docs/UI.png)
 
+The first mode has recently been updated to include the Wav2Lip model for dialogue.
+
+```bash
+python appv2.py
+```
+
+
+
 The second mode allows for conversing with any uploaded image.
 
 ```bash
@@ -475,7 +614,17 @@ Linly-Talker/
 ├── scripts
 │   └── download_models.sh
 ├──	src
-│	└── .....
+│   ├── audio2exp_models
+│   ├── audio2pose_models
+│   ├── config
+│   ├── cost_time.py
+│   ├── face3d
+│   ├── facerender
+│   ├── generate_batch.py
+│   ├── generate_facerender_batch.py
+│   ├── Record.py
+│   ├── test_audio2coeff.py
+│   └── utils
 ├── inputs
 │   ├── example.png
 │   └── first_frame_dir
@@ -487,16 +636,38 @@ Linly-Talker/
 │       ├── art_0.png
 │       ├── ......
 │       └── sad.png
-├── checkpoints // SadTalker model weights path
+├── TFG
+│   ├── __init__.py
+│   ├── Wav2Lip.py
+│   └── SadTalker.py
+└── TTS
+│   ├── __init__.py
+│   ├── EdgeTTS.py
+│   └── TTS_app.py
+├── ASR
+│   ├── __init__.py
+│   ├── FunASR.py
+│   └── Whisper.py
+├── LLM
+│   ├── __init__.py
+│   ├── Gemini.py
+│   ├── Linly.py
+│   └── Qwen.py
+....... // 以下是需要下载的权重路径（可选）
+├── checkpoints // SadTalker 权重路径
 │   ├── mapping_00109-model.pth.tar
 │   ├── mapping_00229-model.pth.tar
 │   ├── SadTalker_V0.0.2_256.safetensors
 │   └── SadTalker_V0.0.2_512.safetensors
-├── gfpgan // GFPGAN model weights path
+│   ├── lipsync_expert.pth
+│   ├── visual_quality_disc.pth
+│   ├── wav2lip_gan.pth
+│   └── wav2lip.pth // Wav2Lip 权重陆军
+├── gfpgan // GFPGAN 权重路径
 │   └── weights
 │       ├── alignment_WFLW_4HG.pth
 │       └── detection_Resnet50_Final.pth
-├── Linly-AI // Linly model weights path
+├── Linly-AI // Linly 权重路径
 │   └── Chinese-LLaMA-2-7B-hf 
 │       ├── config.json
 │       ├── generation_config.json
@@ -507,7 +678,7 @@ Linly-Talker/
 │       ├── special_tokens_map.json
 │       ├── tokenizer_config.json
 │       └── tokenizer.model
-├── Qwen // Qwen model weights path
+├── Qwen // Qwen 权重路径
 │   └── Qwen-1_8B-Chat
 │       ├── cache_autogptq_cuda_256.cpp
 │       ├── cache_autogptq_cuda_kernel_256.cu
