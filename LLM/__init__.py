@@ -1,6 +1,9 @@
-from src.Linly import Linly
-from src.Qwen import Qwen
-from src.Gemini import Gemini
+from .Linly import Linly
+from .Qwen import Qwen
+from .Gemini import Gemini
+# import Linly
+# import Qwen
+# import Gemini
 
 def test_Linly(question = "如何应对压力？", mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
     llm = Linly(mode, model_path)
@@ -46,6 +49,7 @@ class LLM:
         llm = Gemini(model_path, api_key, proxy_url)
         answer = llm.generate(question)
         print(answer)
+    
 
 if __name__ == '__main__':
     llm = LLM(mode='offline')

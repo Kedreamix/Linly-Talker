@@ -73,7 +73,7 @@ class Linly:
         self.history = history
         prompt = self.message_to_prompt(message, system_prompt)
         response = self.generate(prompt)
-        self.history.append((message, response))
+        self.history.append([message, response])
         return response, self.history
     
     def clear_history(self):

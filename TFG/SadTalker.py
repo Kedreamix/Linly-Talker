@@ -43,7 +43,7 @@ class SadTalker():
         ref_video = None,
         ref_info = None,
         use_idle_mode = False,
-        length_of_audio = 0, use_blink=True,
+        length_of_audio = 0, use_blink=True, fps=20,
         result_dir='./results/'):
 
         
@@ -145,7 +145,7 @@ class SadTalker():
         first_coeff_path = "./inputs/first_frame_dir/example.mat"
         audio_path = driven_audio
         crop_info = ((403, 403), (19, 30, 502, 513), [40.05956541381802, 40.17324339233366, 443.7892505041507, 443.9029284826663])
-        fps = 25
+        # fps = 25
         #audio2ceoff
         # if use_ref_video and ref_info == 'all':
         #     coeff_path = ref_video_coeff_path # self.audio_to_coeff.generate(batch, save_dir, pose_style, ref_pose_coeff_path)

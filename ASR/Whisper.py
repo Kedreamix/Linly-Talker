@@ -1,6 +1,13 @@
+'''
+https://github.com/openai/whisper
+pip install -U openai-whisper
+'''
 import whisper
+import sys
+sys.path.append('..')
+from src.cost_time import calculate_time 
 
-class OpenAIASR:
+class WhisperASR:
     def __init__(self, model_path):
         self.LANGUAGES = {
             "en": "english",
@@ -105,45 +112,18 @@ class OpenAIASR:
         }
         self.model = whisper.load_model(model_path)
 
+    @calculate_time
     def transcribe(self, audio_file):
         result = self.model.transcribe(audio_file)
         return result["text"]
 
 
-#from modelscope.pipelines import pipeline
-#from modelscope.utils.constant import Tasks
-import soundfile
-import time
-class FunASR:
-    def __init__(self) -> None:
-        self.pipeline = pipeline(
-            task=Tasks.auto_speech_recognition,
-            model='damo/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch',
-            model_revision="v1.2.4")
-
-    def inference(self, audio_file):
-        waveform, sample_rate = soundfile.read(audio_file)
-
-        rec_result = self.pipeline(audio_in=waveform)
-        print(rec_result)
-        return rec_result['text']
-    
-def test():
+if __name__ == "__main__":
+    import os
     # 创建ASR对象并进行语音识别
     model_path = "base"  # 模型路径
     audio_file = "output.wav"  # 音频文件路径
-
-    
-    asr = OpenAIASR(model_path)
-    s = time.time()
-    transcription = asr.transcribe(audio_file)
-    print(transcription)
-    print("OpenAIASR: ",time.time() - s,'-'*10)
-    
-    
-    # asr2 = FunASR()
-    # s = time.time()
-    # result = asr2.inference(audio_file)
-    # print(result)
-    # print("FunASR: ",time.time() - s,'-'*10)
-# test()
+    if not os.path.exists(audio_file):
+        os.system('edge-tts --text "hello" --write-media output.wav')
+    asr = WhisperASR(model_path)
+    print(asr.transcribe(audio_file))

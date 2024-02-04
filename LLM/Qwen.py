@@ -34,7 +34,8 @@ class Qwen:
                 response, self.history = self.model.chat(self.tokenizer, self.data["question"], history=self.history, system = system_prompt)
                 # print(self.history)
                 return response
-            except:
+            except Exception as e:
+                print(e)
                 return "对不起，你的请求出错了，请再次尝试。\nSorry, your request has encountered an error. Please try again.\n"
         else:
             return self.predict_api(question)
@@ -46,7 +47,11 @@ class Qwen:
         response = self.generate(message, system_prompt)
         history.append((message, response))
         return response, history
-        
+    
+    def clear_history(self):
+        # 清空历史记录
+        self.history = []
+    
 def test():
     llm = Qwen(mode='offline', model_path="../Qwen/Qwen-1_8B-Chat")
     answer = llm.generate("如何应对压力？")

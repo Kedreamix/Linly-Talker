@@ -5,6 +5,9 @@ import os
 from edge_tts import Communicate, SubMaker
 from io import TextIOWrapper
 from typing import Any, TextIO, Union
+import sys
+sys.path.append('..')
+from src.cost_time import calculate_time    
 os.environ["GRADIO_TEMP_DIR"]= './temp'
 
 """
@@ -143,7 +146,7 @@ class EdgeTTS:
         volume = 100 - volume
         volume = f'-{volume}%'
         return rate, volume, pitch
-
+    @calculate_time
     def predict(self,TEXT, VOICE, RATE, VOLUME, PITCH, OUTPUT_FILE='result.wav', OUTPUT_SUBS='result.vtt', words_in_cue = 8):
         async def amain() -> None:
             """Main function"""
