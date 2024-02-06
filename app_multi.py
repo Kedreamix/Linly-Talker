@@ -37,6 +37,10 @@ facerender = 'facevid2vid'
 enhancer = False
 is_still_mode = False
 # pose_style = gr.Slider(minimum=0, maximum=45, step=1, label="Pose style", value=0)
+pic_path = "girl.png"
+crop_pic_path = "./inputs/first_frame_dir_girl/girl.png"
+first_coeff_path = "./inputs/first_frame_dir_girl/girl.mat"
+crop_info = ((403, 403), (19, 30, 502, 513), [40.05956541381802, 40.17324339233366, 443.7892505041507, 443.9029284826663])
 
 # exp_weight = gr.Slider(minimum=0, maximum=3, step=0.1, label="expression scale", value=1)
 exp_weight = 1
@@ -71,10 +75,13 @@ def LLM_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
 def Talker_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
     voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
     talker = SadTalker(lazy_load=True)
-    LLM_response(text, voice, rate, volume, pitch)
+    driven_audio, driven_vtt, _ = LLM_response(text, voice, rate, volume, pitch)
     pose_style = random.randint(0, 45)
-    driven_audio = 'answer.wav'
-    video = talker.test(source_image,
+    video = talker.test(pic_path,
+                        crop_pic_path,
+                        first_coeff_path,
+                        crop_info,
+                        source_image,
                         driven_audio,
                         preprocess_type,
                         is_still_mode,
@@ -89,9 +96,10 @@ def Talker_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100
                         ref_info,
                         use_idle_mode,
                         length_of_audio,
-                        blink_every)
-    if os.path.exists('answer.vtt'):
-        return video, './answer.vtt'
+                        blink_every,
+                        fps=20)
+    if driven_vtt:
+        return video, driven_vtt
     else:
         return video
 
@@ -111,7 +119,11 @@ def human_respone(history, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
     voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
     tts.predict(response, voice, rate, volume, pitch, driven_audio, video_vtt)
     pose_style = random.randint(0, 45) # 随机选择
-    video_path = talker.test(source_image,
+    video_path = talker.test(pic_path,
+                        crop_pic_path,
+                        first_coeff_path,
+                        crop_info,
+                        source_image,
                         driven_audio,
                         preprocess_type,
                         is_still_mode,

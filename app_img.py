@@ -62,8 +62,7 @@ def Talker_response(text, voice, rate, volume, pitch, source_image,
                     blink_every,
                     fps):
     voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
-    LLM_response(text, voice, rate, volume, pitch)
-    driven_audio = 'answer.wav'
+    driven_audio, driven_vtt, _ = LLM_response(text, voice, rate, volume, pitch)
     video = talker.test2(source_image,
                         driven_audio,
                         preprocess_type,
@@ -80,9 +79,9 @@ def Talker_response(text, voice, rate, volume, pitch, source_image,
                         use_idle_mode,
                         length_of_audio,
                         blink_every,
-                        fps=20)
-    if os.path.exists('answer.vtt'):
-        return video, './answer.vtt'
+                        fps=fps)
+    if driven_vtt:
+        return video, driven_vtt
     else:
         return video
 

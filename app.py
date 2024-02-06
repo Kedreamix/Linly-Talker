@@ -33,6 +33,10 @@ preprocess_type = 'crop'
 facerender = 'facevid2vid'
 enhancer = False
 is_still_mode = False
+pic_path = "girl.png"
+crop_pic_path = "./inputs/first_frame_dir_girl/girl.png"
+first_coeff_path = "./inputs/first_frame_dir_girl/girl.mat"
+crop_info = ((403, 403), (19, 30, 502, 513), [40.05956541381802, 40.17324339233366, 443.7892505041507, 443.9029284826663])
 
 exp_weight = 1
 
@@ -66,10 +70,13 @@ def LLM_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
 def Talker_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
     voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
     # print(voice , rate , volume , pitch)
-    LLM_response(text, voice, rate, volume, pitch)
+    driven_audio, driven_vtt, _ = LLM_response(text, voice, rate, volume, pitch)
     pose_style = random.randint(0, 45)
-    driven_audio = 'answer.wav'
-    video = talker.test(source_image,
+    video = talker.test(pic_path,
+                        crop_pic_path,
+                        first_coeff_path,
+                        crop_info,
+                        source_image,
                         driven_audio,
                         preprocess_type,
                         is_still_mode,
@@ -86,8 +93,8 @@ def Talker_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100
                         length_of_audio,
                         blink_every,
                         fps=20)
-    if os.path.exists('answer.vtt'):
-        return video, './answer.vtt'
+    if driven_vtt:
+        return video, driven_vtt
     else:
         return video
 
@@ -168,7 +175,7 @@ if __name__ == "__main__":
     # llm = LLM(mode='offline').init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
     # llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
     # llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
-    llm = LLM(mode=mode).init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
+    llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
     talker = SadTalker(lazy_load=True)
     asr = WhisperASR('base')
     tts = EdgeTTS()
