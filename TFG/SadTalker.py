@@ -34,17 +34,22 @@ class SadTalker():
         self.animate_from_coeff = AnimateFromCoeff(self.sadtalker_paths, self.device)
         self.audio_to_coeff = Audio2Coeff(self.sadtalker_paths, self.device)
 
-    def test(self, source_image, driven_audio, preprocess='crop', 
-        still_mode=False,  use_enhancer=False, batch_size=1, size=256, 
-        pose_style = 0, 
-        facerender='facevid2vid',
-        exp_scale=1.0, 
-        use_ref_video = False,
-        ref_video = None,
-        ref_info = None,
-        use_idle_mode = False,
-        length_of_audio = 0, use_blink=True, fps=20,
-        result_dir='./results/'):
+    def test(self, 
+            pic_path,
+            crop_pic_path,
+            first_coeff_path, 
+            crop_info,
+            source_image, driven_audio, preprocess='crop', 
+            still_mode=False,  use_enhancer=False, batch_size=1, size=256, 
+            pose_style = 0, 
+            facerender='facevid2vid',
+            exp_scale=1.0, 
+            use_ref_video = False,
+            ref_video = None,
+            ref_info = None,
+            use_idle_mode = False,
+            length_of_audio = 0, use_blink=True, fps=20,
+            result_dir='./results/'):
 
         
         # print(self.sadtalker_paths)
@@ -140,11 +145,7 @@ class SadTalker():
 
         ref_pose_coeff_path = None
         ref_eyeblink_coeff_path = None
-        pic_path = "example.png"
-        crop_pic_path = "./inputs/first_frame_dir/example.png"
-        first_coeff_path = "./inputs/first_frame_dir/example.mat"
         audio_path = driven_audio
-        crop_info = ((403, 403), (19, 30, 502, 513), [40.05956541381802, 40.17324339233366, 443.7892505041507, 443.9029284826663])
         # fps = 25
         #audio2ceoff
         # if use_ref_video and ref_info == 'all':
@@ -232,7 +233,7 @@ class SadTalker():
         first_frame_dir = os.path.join(save_dir, 'first_frame_dir')
         os.makedirs(first_frame_dir, exist_ok=True)
         first_coeff_path, crop_pic_path, crop_info = self.preprocess_model.generate(pic_path, first_frame_dir, preprocess, True, size)
-        
+        print(first_coeff_path, crop_info)
         if first_coeff_path is None:
             raise AttributeError("No face is detected")
 
