@@ -245,14 +245,14 @@ class AnimateFromCoeff():
 
             try:
                 enhanced_images_gen_with_len = enhancer_generator_with_len(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
-                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
+                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(fps))
                 # print(enhanced_images_gen_with_len.shape)
                 # save_video(enhanced_path, enhanced_images_gen_with_len, fps, img_size)
             except:
                 enhanced_images_gen_with_len = enhancer_list(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
                 # print(enhanced_images_gen_with_len.shape)
                 # save_video(enhanced_path, enhanced_images_gen_with_len, fps, img_size)
-                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
+                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(fps))
             
             save_video_with_watermark(enhanced_path, audio_path, av_path_enhancer, watermark= False)
             # print(f'The generated video is named {video_save_dir}/{video_name_enhancer}')
