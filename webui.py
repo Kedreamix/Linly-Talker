@@ -571,7 +571,7 @@ if __name__ == "__main__":
     demo = gr.TabbedInterface(interface_list = [demo_app, demo_img, demo_multi, ], 
                               tab_names = ["文本/语音对话", "任意图片对话", "多轮GPT对话", ],
                               title = "Linly-Talker WebUI")
-    demo.launch(server_name="127.0.0.0", # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
+    demo.launch(server_name="127.0.0.1", # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
                 server_port=port,
                 ssl_certfile=ssl_certfile,
                 ssl_keyfile=ssl_keyfile,
