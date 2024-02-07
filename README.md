@@ -18,6 +18,7 @@
 - **更新了Gradio的版本为最新版本4.16.0，使得界面拥有更多的功能，比如可以摄像头拍摄图片构建数字人等**
 - **更新了ASR和THG，其中ASR加入了阿里的FunASR，具体更快的速度；THG部分加入了Wav2Lip模型，ER-NeRF在准备中(Comming Soon)**
 - **加入了语音克隆方法GPT-SoVITS模型，能够通过微调一分钟对应人的语料进行克隆，效果还是相当不错的，值得推荐**
+- **集成一个WebUI界面，能够更好的运行Linly-Talker**
 
 ## 介绍
 
@@ -53,7 +54,7 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 ## 创建环境
 
 ```bash
-conda create -n linly python=3.9 
+conda create -n linly python=3.10  
 conda activate linly
 
 # pytorch安装方式1：conda安装（推荐）
@@ -583,7 +584,25 @@ Gradio是一个Python库,提供了一种简单的方式将机器学习模型作�
 
 总之,Gradio为Linly-Talker提供了可视化和用户交互的接口,是展示系统功能和让最终用户使用系统的有效途径。
 
-## 启动
+## 启动WebUI
+
+之前我将很多个版本都是分开来的，实际上运行多个会比较麻烦，所以后续我增加了变成WebUI一个界面即可体验，后续也会不断更新
+
+现在已加入WebUI的功能如下
+
+- [x] 文本/语音数字人对话（固定数字人，分男女角色）
+- [x] 任意图片数字人对话（可上传任意数字人）
+- [x] 多轮GPT对话（加入历史对话数据，链接上下文）
+- [ ] 语音克隆对话（基于GPT-SoVITS设置进行语音克隆，内置烟嗓音）
+
+```bash
+# WebUI
+python webui.py
+```
+
+![](docs/WebUI.png)
+
+
 
 现在的启动一共有几种模式，可以选择特定的场景进行设置
 
@@ -622,8 +641,6 @@ python app_multi.py
 ```bash
 python app_vits.py
 ```
-
-
 
 文件夹结构如下
 
