@@ -1,6 +1,6 @@
 import librosa
 import gradio as gr
-from TTS import EdgeTTS
+from EdgeTTS import EdgeTTS
 import os
 title = "TTS WebUI"
 tts = EdgeTTS()
@@ -23,7 +23,7 @@ def main():
                 text = gr.Text(label = "Text to be spoken")
                 voice = gr.Dropdown(tts.SUPPORTED_VOICE, label="Voice to be used", value = 'zh-CN-XiaoxiaoNeural')
                 with gr.Accordion("Advanced Settings",
-                                        open=False,
+                                        open=True,
                                         visible=True) as parameter_article:
                     rate = gr.Slider(minimum=-100,
                                         maximum=100,
