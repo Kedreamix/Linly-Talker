@@ -6,7 +6,9 @@ from edge_tts import Communicate, SubMaker
 from io import TextIOWrapper
 from typing import Any, TextIO, Union
 import sys
-sys.path.append('..')
+sys.path.append('../Linly-Talker')
+sys.path.append('../Linly-Talker-main')
+from src import cost_time
 from src.cost_time import calculate_time    
 os.environ["GRADIO_TEMP_DIR"]= './temp'
 
