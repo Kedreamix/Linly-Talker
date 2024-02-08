@@ -1,0 +1,12 @@
+# Preinstall requirements from TTS 
+TTS @ git+https://github.com/coqui-ai/TTS@v0.21.1
+pydantic==1.10.13
+python-multipart==0.0.6
+typing-extensions>=4.8.0
+cutlet
+mecab-python3==1.0.6
+unidic-lite==1.0.8
+unidic==1.1.0
+langid
+deepspeed
+pydub

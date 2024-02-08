@@ -3,9 +3,9 @@ import random
 import gradio as gr
 from zhconv import convert
 from LLM import LLM
-from ASR import WhisperASR
+from ASR import WhisperASR, FunASR
 from TFG import SadTalker 
-# from TTS import EdgeTTS
+from TTS import EdgeTTS
 from VITS import GPT_SoVITS
 from src.cost_time import calculate_time
 
@@ -59,27 +59,46 @@ def Asr(audio):
     return question
 
 @calculate_time
-def LLM_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0):
+def LLM_response(question_audio, question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0):
     answer = llm.generate(question)
     print(answer)
-    # try:
-    #     tts.predict(answer, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
-    # except:
-    #     os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
-    vits.predict(ref_wav_path = "../GPT-SoVITS/output/slicer_opt/vocal_output.wav_10.wav_0000846400_0000957760.wav",
-                 prompt_text = "你为什么要一次一次的伤我的心啊？",
-                 prompt_language = "中文",
-                 text = answer,
-                 text_language = "中英混合",
-                 how_to_cut = "按标点符号切",
-                 save_path = 'answer.wav')
+    if voice in tts.SUPPORTED_VOICE:
+        try:
+            tts.predict(answer, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
+        except:
+            os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
+    elif voice == "克隆烟嗓音":
+        gpt_path = "../GPT-SoVITS/GPT_weights/yansang-e15.ckpt"
+        sovits_path = "../GPT-SoVITS/SoVITS_weights/yansang_e16_s144.pth"
+        vits.load_model(gpt_path, sovits_path)
+        vits.predict(ref_wav_path = "examples/slicer_opt/vocal_output.wav_10.wav_0000846400_0000957760.wav",
+                    prompt_text = "你为什么要一次一次的伤我的心啊？",
+                    prompt_language = "中文",
+                    text = answer,
+                    text_language = "中英混合",
+                    how_to_cut = "按标点符号切",
+                    save_path = 'answer.wav')
+    elif voice == "克隆声音":
+        if question_audio is None:
+            print("无声音输入，无法克隆声音")
+            return None, None, None
+        gpt_path = "GPT_SoVITS/pretrained_models/s1bert25hz-2kh-longer-epoch=68e-step=50232.ckpt"
+        sovits_path = "GPT_SoVITS/pretrained_models/s2G488k.pth"
+        vits.load_model(gpt_path, sovits_path)
+        vits.predict(ref_wav_path = question_audio, 
+                    prompt_text = question,
+                    prompt_language = "中文",
+                    text = answer,
+                    text_language = "中英混合",
+                    how_to_cut = "凑四句一切",
+                    save_path = 'answer.wav')
     return 'answer.wav', None, answer
 
 @calculate_time
-def Talker_response(text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
+def Talker_response(question_audio, text, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2):
     # voice = 'zh-CN-XiaoxiaoNeural' if voice not in tts.SUPPORTED_VOICE else voice
     # print(voice , rate , volume , pitch)
-    driven_audio, driven_vtt, _ = LLM_response(text, voice, rate, volume, pitch)
+    driven_audio, driven_vtt, _ = LLM_response(question_audio, text, voice, rate, volume, pitch)
     pose_style = random.randint(0, 45)
     video = talker.test(pic_path,
                         crop_pic_path,
@@ -117,11 +136,12 @@ def main():
                         with gr.Column(variant='panel'):
                             question_audio = gr.Audio(sources=['microphone','upload'], type="filepath", label = '语音对话')
                             input_text = gr.Textbox(label="Input Text", lines=3)
-                            
+
                             with gr.Accordion("Advanced Settings(高级设置语音参数) ",
                                         open=False):
-                                voice = gr.Dropdown(["使用VITS提供的语音"], 
-                                                    value='zh-CN-XiaoxiaoNeural', 
+                                gr.Markdown("若进行克隆声音，声音需要大于3s，小于10s，语音识别后可点击语音对话，否则无法克隆声音")
+                                voice = gr.Dropdown(["克隆声音", "克隆烟嗓音"] + tts.SUPPORTED_VOICE, 
+                                                    value='克隆声音', 
                                                     label="Voice")
                                 rate = gr.Slider(minimum=-100,
                                                     maximum=100,
@@ -156,7 +176,7 @@ def main():
                     with gr.TabItem('数字人问答'):
                         gen_video = gr.Video(label="Generated video", format="mp4", scale=1, autoplay=True)
                 video_button = gr.Button("提交", variant='primary')
-            video_button.click(fn=Talker_response,inputs=[input_text,voice, rate, volume, pitch, batch_size],outputs=[gen_video])
+            video_button.click(fn=Talker_response,inputs=[question_audio, input_text,voice, rate, volume, pitch, batch_size],outputs=[gen_video])
 
         with gr.Row():
             with gr.Column(variant='panel'):
@@ -186,12 +206,10 @@ if __name__ == "__main__":
     # llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
     llm = LLM(mode=mode).init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
     talker = SadTalker(lazy_load=True)
-    asr = WhisperASR('base')
-    # tts = EdgeTTS()
+    # asr = WhisperASR('base')
+    asr = FunASR()
+    tts = EdgeTTS()
     vits = GPT_SoVITS()
-    gpt_path = "../GPT-SoVITS/GPT_weights/yansang-e15.ckpt"
-    sovits_path = "../GPT-SoVITS/SoVITS_weights/yansang_e16_s144.pth"
-    vits.load_model(gpt_path, sovits_path)
     gr.close_all()
     demo = main()
     demo.queue()
