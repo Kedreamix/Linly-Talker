@@ -5,7 +5,7 @@ from g2p_en import G2p
 
 from string import punctuation
 
-from text import symbols
+from text.symbols import symbols
 
 current_file_path = os.path.dirname(__file__)
 CMU_DICT_PATH = os.path.join(current_file_path, "cmudict.rep")
