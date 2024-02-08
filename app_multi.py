@@ -58,7 +58,8 @@ def Asr(audio):
         question = convert(question, 'zh-cn')
     except Exception as e:
         print("ASR Error: ", e)
-        question = 'Gradio 的麦克风有时候可能音频还未传入，请重试一下'
+        question = 'Gradio存在一些bug，麦克风模式有时候可能音频还未传入，请重新点击一下语音识别即可'
+        gr.Warning(question)
     return question
 
 @calculate_time
