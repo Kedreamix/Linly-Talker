@@ -1,10 +1,6 @@
 # 数字人对话系统 - Linly-Talker —— “数字人交互，与虚拟的自己互动”
 
 <div align="center">
-<h1>Linly-Talker</h1>
-
-数字人对话系统—数字人交互，与虚拟的自己互动<br><br>
-
 [![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/Kedreamix/Linly-Talker)
 
 <img src="https://github.com/CVI-SZU/Linly/raw/main/assets/linly_logo.png" /><br>
