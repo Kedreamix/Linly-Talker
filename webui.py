@@ -486,7 +486,8 @@ def app_img():
                 submit = gr.Button('Generate', elem_id="sadtalker_generate", variant='primary')
             submit.click(
                 fn=Talker_response_img,
-                inputs=[method, 
+                inputs=[question_audio,
+                        method, 
                         input_text,
                         voice, rate, volume, pitch,
                         source_image, 
