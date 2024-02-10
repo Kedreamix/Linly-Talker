@@ -3,8 +3,9 @@ import google.generativeai as genai
 
 
 def configure_api(api_key, proxy_url=None):
-    os.environ['https_proxy'] = proxy_url if proxy_url else None
-    os.environ['http_proxy'] = proxy_url if proxy_url else None
+    if proxy_url:
+        os.environ['https_proxy'] = proxy_url if proxy_url else None
+        os.environ['http_proxy'] = proxy_url if proxy_url else None
     genai.configure(api_key=api_key)
     
     

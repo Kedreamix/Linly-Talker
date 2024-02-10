@@ -257,7 +257,4 @@ if __name__ == "__main__":
     # demo.launch()
     demo.launch(server_name="127.0.0.1", # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
                 server_port=port,
-                ssl_certfile=ssl_certfile,
-                ssl_keyfile=ssl_keyfile,
-                ssl_verify=False,
                 debug=True)
