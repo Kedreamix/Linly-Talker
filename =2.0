@@ -1,3 +1,0 @@
-Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
-Requirement already satisfied: pydantic in /data/dengkaijun/anaconda3/envs/linly/lib/python3.9/site-packages (1.10.13)
-Requirement already satisfied: typing-extensions>=4.2.0 in /data/dengkaijun/anaconda3/envs/linly/lib/python3.9/site-packages (from pydantic) (4.8.0)
