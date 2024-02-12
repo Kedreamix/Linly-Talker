@@ -5,7 +5,7 @@
 
 [![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/Kedreamix/Linly-Talker)
 
-<img src="/Users/pikachu/Desktop/workdirs/Linly-Talker/docs/linly_logo.png" /><br>
+<img src="docs/linly_logo.png" /><br>
 
 [![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/github/Kedreamix/Linly-Talker/blob/main/colab_webui.ipynb)
 [![Licence](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/Kedreamix/Linly-Talker/blob/main/LICENSE)
@@ -436,6 +436,12 @@ python app_multi.py
 ```
 
 ![](docs/UI3.png)
+
+Now, the part of voice cloning has been added, allowing for freely switching between cloned voice models and corresponding person images. Here, I have chosen a deep, smoky voice and an image of a male.
+
+```bash
+python app_vits.py
+```
 
 ## Folder structure
 
