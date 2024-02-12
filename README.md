@@ -33,6 +33,7 @@
 - **I have incorporated the GPT-SoVITS model, which is a voice cloning method. By fine-tuning it with just one minute of a person's speech data, it can effectively clone their voice. The results are quite impressive and worth recommending.**
 - **I have integrated a web user interface (WebUI) that allows for better execution of Linly-Talker.**
 
+---
 
 <!-- TOC -->
 
