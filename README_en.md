@@ -1,6 +1,19 @@
-# Digital Avatar Conversational System - Linly-Talker —— "Digital Persona Interaction: Interact with Your Virtual Self"
+# Digital Avatar Conversational System - Linly-Talker —— "Digital Persona Interaction: Interact with Your Virtual Self”
 
-[English](./README.md) [简体中文](./README_zh.md)
+<div align="center">
+<h1>Linly-Talker WebUI</h1>
+
+[![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/Kedreamix/Linly-Talker)
+
+<img src="/Users/pikachu/Desktop/workdirs/Linly-Talker/docs/linly_logo.png" /><br>
+
+[![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/github/Kedreamix/Linly-Talker/blob/main/colab_webui.ipynb)
+[![Licence](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/Kedreamix/Linly-Talker/blob/main/LICENSE)
+[![Huggingface](https://img.shields.io/badge/🤗%20-Models%20Repo-yellow.svg?style=for-the-badge)](https://huggingface.co/Kedreamix/Linly-Talker)
+
+[**English**](./README_en.md) | [**中文简体**](./README.md)
+
+</div>
 
 **2023.12 Update** 📆
 
@@ -17,6 +30,10 @@
 
 - **Updated Gradio to the latest version 4.16.0, providing the interface with additional functionalities such as capturing images from the camera to create digital personas, among others.**
 - **ASR and THG have been updated. FunASR from Alibaba has been integrated into ASR, enhancing its speed significantly. Additionally, the THG section now incorporates the Wav2Lip model, while ER-NeRF is currently in preparation (Coming Soon).**
+- **I have incorporated the GPT-SoVITS model, which is a voice cloning method. By fine-tuning it with just one minute of a person's speech data, it can effectively clone their voice. The results are quite impressive and worth recommending.**
+- **I have integrated a web user interface (WebUI) that allows for better execution of Linly-Talker.**
+
+
 
 ## Introduction
 
@@ -24,7 +41,7 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 
 ![The system architecture of multimodal human–computer interaction.](docs/HOI.png)
 
-
+> You can watch the demo video [here](https://www.bilibili.com/video/BV1rN4y1a76x/).
 
 ## TO DO LIST
 
@@ -36,7 +53,7 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 - [x] `Added subtitles` to video generation for improved visualization.
 - [x] GPT `Multi-turn Dialogue System` (Enhance the interactivity and realism of digital entities, bolstering their intelligence)
 - [x] Optimized the Gradio interface by incorporating additional models such as Wav2Lip, FunASR, and others.
-- [ ] `Voice Cloning` Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
+- [x] `Voice Cloning` Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
 - [ ] Integrate the `Langchain` framework and establish a local knowledge base.
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
@@ -51,10 +68,12 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 |  撰写一篇交响乐音乐会评论，讨论乐团的表演和观众的整体体验。  | <video src="https://github.com/Kedreamix/Linly-Talker/assets/61195303/f052820f-6511-4cf0-a383-daf8402630db"></video> |
 | 翻译成中文：Luck is a dividend of sweat. The more you sweat, the luckier you get. | <video src="https://github.com/Kedreamix/Linly-Talker/assets/61195303/118eec13-a9f7-4c38-b4ad-044d36ba9776"></video> |
 
-## Setup
+## Setup Environment
+
+To install the environment using Anaconda and PyTorch, follow the steps below:
 
 ```bash
-conda create -n linly python=3.9 
+conda create -n linly python=3.10
 conda activate linly
 
 # PyTorch Installation Method 1: Conda Installation (Recommended)
@@ -66,6 +85,48 @@ pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --e
 conda install -q ffmpeg # ffmpeg==4.2.2
 
 pip install -r requirements_app.txt
+```
+
+If you want to use models like voice cloning, you may need a higher version of PyTorch. However, the functionality will be more diverse. You may need to use CUDA 11.8 as the driver version, which you can choose.
+
+```bash
+conda create -n linly python=3.10  
+conda activate linly
+
+pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
+
+conda install -q ffmpeg # ffmpeg==4.2.2
+
+pip install -r requirements_app.txt
+
+# Install dependencies for voice cloning
+pip install -r VITS/requirements_gptsovits.txt
+```
+
+Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
+
+- [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+- [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
+- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files) (coming soon)
+
+```bash
+# Download pre-trained models from Hugging Face
+git lfs install
+git clone https://huggingface.co/Kedreamix/Linly-Talker
+
+# Move all models to the current directory
+# Checkpoint contains SadTalker and Wav2Lip
+mv Linly-Talker/chechpoints/* ./checkpoints/
+
+# Enhanced GFPGAN for SadTalker
+# pip install gfpgan
+# mv Linly-Talker/gfpan ./
+
+# Voice cloning models
+mv Linly-Talker/GPT_SoVITS/pretrained_models/ ./GPT_SoVITS/pretrained_models/
+
+# Qwen large model
+mv Linly-Talker/Qwen ./
 ```
 
 For the convenience of deployment and usage, an `configs.py` file has been updated. You can modify some hyperparameters in this file for customization:
@@ -90,145 +151,60 @@ This file allows you to adjust parameters such as the device running port, API r
 
 ## ASR - Speech Recognition
 
+For detailed information about the usage and code implementation of Automatic Speech Recognition (ASR), please refer to [ASR - Bridging the Gap with Digital Humans](./ASR/README.md).
+
 ### Whisper
 
-Leverages OpenAI's Whisper, see [https://github.com/openai/whisper](https://github.com/openai/whisper) for usage.
-
-```python
-'''
-https://github.com/openai/whisper
-pip install -U openai-whisper
-'''
-import whisper
-
-class WhisperASR:
-    def __init__(self, model_path):
-        self.LANGUAGES = {
-            "en": "english",
-            "zh": "chinese",
-        }
-        self.model = whisper.load_model(model_path)
-        
-    def transcribe(self, audio_file):
-        result = self.model.transcribe(audio_file)
-        return result["text"]
-```
+To implement ASR (Automatic Speech Recognition) using OpenAI's Whisper, you can refer to the specific usage methods provided in the GitHub repository: [https://github.com/openai/whisper](https://github.com/openai/whisper)
 
 
 
 ### FunASR
 
-Alibaba's `FunASR` speech recognition also yields quite impressive results, and its processing time is even faster than Whisper's, making it more capable of achieving real-time effects. Therefore, FunASR has also been incorporated. You can experience FunASR in the FunASR file within the ASR folder. It's worth noting that upon the initial run, you'll need to install the following libraries, as referenced in [https://github.com/alibaba-damo-academy/FunASR]().
-
-```bash
-pip install funasr
-pip install modelscope
-pip install -U rotary_embedding_torch
-```
-
-```python
-'''
-Reference: https://github.com/alibaba-damo-academy/FunASR
-pip install funasr
-pip install modelscope
-pip install -U rotary_embedding_torch
-'''
-try:
-    from funasr import AutoModel
-except:
-    print("如果想使用FunASR，请先安装funasr，若使用Whisper，请忽略此条信息")   
-
-class FunASR:
-    def __init__(self) -> None:
-        self.model = AutoModel(model="paraformer-zh", model_revision="v2.0.4",
-                vad_model="fsmn-vad", vad_model_revision="v2.0.4",
-                punc_model="ct-punc-c", punc_model_revision="v2.0.4",
-                # spk_model="cam++", spk_model_revision="v2.0.2",
-                )
-
-    def transcribe(self, audio_file):
-        res = self.model.generate(input=audio_file, 
-            batch_size_s=300)
-        print(res)
-        return res[0]['text']
-```
+The speech recognition performance of Alibaba's FunASR is quite impressive and it is actually better than Whisper in terms of Chinese language. Additionally, FunASR is capable of achieving real-time results, making it a great choice. You can experience FunASR by accessing the FunASR file in the ASR folder. Please refer to [https://github.com/alibaba-damo-academy/FunASR](https://github.com/alibaba-damo-academy/FunASR) for more information.
 
 
 
 ## TTS - Edge TTS
 
-Uses Microsoft Speech Services, see [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts) for usage. 
+For detailed information about the usage and code implementation of Text-to-Speech (TTS), please refer to [TTS - Empowering Digital Humans with Natural Speech Interaction](./TTS/README.md).
 
-I have written a class called `EdgeTTS` that enhances usability and includes the functionality to save subtitle files.
+To use Microsoft Edge's online text-to-speech service from Python without needing Microsoft Edge or Windows or an API key, you can refer to the GitHub repository at [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts). It provides a Python module called "edge-tts" that allows you to utilize the service. You can find detailed installation instructions and usage examples in the repository's README file.
 
-```python
-class EdgeTTS:
-    def __init__(self, list_voices = False, proxy = None) -> None:
-        voices = list_voices_fn(proxy=proxy)
-        self.SUPPORTED_VOICE = [item['ShortName'] for item in voices]
-        self.SUPPORTED_VOICE.sort(reverse=True)
-        if list_voices:
-            print(", ".join(self.SUPPORTED_VOICE))
 
-    def preprocess(self, rate, volume, pitch):
-        if rate >= 0:
-            rate = f'+{rate}%'
-        else:
-            rate = f'{rate}%'
-        if pitch >= 0:
-            pitch = f'+{pitch}Hz'
-        else:
-            pitch = f'{pitch}Hz'
-        volume = 100 - volume
-        volume = f'-{volume}%'
-        return rate, volume, pitch
 
-    def predict(self,TEXT, VOICE, RATE, VOLUME, PITCH, OUTPUT_FILE='result.wav', OUTPUT_SUBS='result.vtt', words_in_cue = 8):
-        async def amain() -> None:
-            """Main function"""
-            rate, volume, pitch = self.preprocess(rate = RATE, volume = VOLUME, pitch = PITCH)
-            communicate = Communicate(TEXT, VOICE, rate = rate, volume = volume, pitch = pitch)
-            subs: SubMaker = SubMaker()
-            sub_file: Union[TextIOWrapper, TextIO] = (
-                open(OUTPUT_SUBS, "w", encoding="utf-8")
-            )
-            async for chunk in communicate.stream():
-                if chunk["type"] == "audio":
-                    # audio_file.write(chunk["data"])
-                    pass
-                elif chunk["type"] == "WordBoundary":
-                    # print((chunk["offset"], chunk["duration"]), chunk["text"])
-                    subs.create_sub((chunk["offset"], chunk["duration"]), chunk["text"])
-            sub_file.write(subs.generate_subs(words_in_cue))
-            await communicate.save(OUTPUT_FILE)
-            
-        
-        # loop = asyncio.get_event_loop_policy().get_event_loop()
-        # try:
-        #     loop.run_until_complete(amain())
-        # finally:
-        #     loop.close()
-        asyncio.run(amain())
-        with open(OUTPUT_SUBS, 'r', encoding='utf-8') as file:
-            vtt_lines = file.readlines()
 
-        # 去掉每一行文字中的空格
-        vtt_lines_without_spaces = [line.replace(" ", "") if "-->" not in line else line for line in vtt_lines]
-        # print(vtt_lines_without_spaces)
-        with open(OUTPUT_SUBS, 'w', encoding='utf-8') as output_file:
-            output_file.writelines(vtt_lines_without_spaces)
-        return OUTPUT_FILE, OUTPUT_SUBS
-```
 
-At the same time, I have created a simple `WebUI` in the `src` folder.
+## Voice Clone
 
-```bash
-python TTS_app.py
-```
+For detailed information about the usage and code implementation of Voice Clone, please refer to [Voice Clone - Stealing Your Voice Quietly During Conversations](./VITS/README.md).
 
-![TTS](docs/TTS.png)
+### GPT-SoVITS（Recommend）
+
+Thank you for your open source contribution. I have also found the `GPT-SoVITS` voice cloning model to be quite impressive. You can find the project at [https://github.com/RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS).
+
+
+
+### XTTS
+
+Coqui XTTS is a leading deep learning toolkit for Text-to-Speech (TTS) tasks, allowing for voice cloning and voice transfer to different languages using a 5-second or longer audio clip.
+
+🐸 TTS is a library for advanced text-to-speech generation.
+
+🚀 Over 1100 pre-trained models for various languages.
+
+🛠️ Tools for training new models and fine-tuning existing models in any language.
+
+📚 Utility programs for dataset analysis and management.
+
+- Experience XTTS online [https://huggingface.co/spaces/coqui/xtts](https://huggingface.co/spaces/coqui/xtts)
+- Official GitHub repository: [https://github.com/coqui-ai/TTS](https://github.com/coqui-ai/TTS)
+
+
 
 ## THG - Avatar
+
+Detailed information about the usage and code implementation of digital human generation can be found in [THG - Building Intelligent Digital Humans](./TFG/README.md).
 
 ### SadTalker
 
@@ -257,42 +233,11 @@ Before usage, download the Wav2Lip model:
 | Expert Discriminator         | Weights of the expert discriminator                   | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQRvmiZg-HRAjvI6zqN9eTEBP74KefynCwPWVmF57l-AYA?e=ZRPHKP) |
 | Visual Quality Discriminator | Weights of the visual disc trained in a GAN setup     | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQVqH88dTm1HjlK11eNba5gBbn15WMS0B0EZbDBttqrqkg?e=ic0ljo) |
 
-```python
-class Wav2Lip:
-    def __init__(self, path = 'checkpoints/wav2lip.pth'):
-        self.fps = 25
-        self.resize_factor = 1
-        self.mel_step_size = 16
-        self.static = False
-        self.img_size = 96
-        self.face_det_batch_size = 2
-        self.box = [-1, -1, -1, -1]
-        self.pads = [0, 10, 0, 0]
-        self.nosmooth = False
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.model = self.load_model(path)
 
-    def load_model(self, checkpoint_path):
-        model = wav2lip_mdoel()
-        print("Load checkpoint from: {}".format(checkpoint_path))
-        if self.device == 'cuda':
-            checkpoint = torch.load(checkpoint_path)
-        else:
-            checkpoint = torch.load(checkpoint_path,
-                                    map_location=lambda storage, loc: storage)
-        s = checkpoint["state_dict"]
-        new_s = {}
-        for k, v in s.items():
-            new_s[k.replace('module.', '')] = v
-        model.load_state_dict(new_s)
-
-        model = model.to(self.device)
-        return model.eval()
-```
 
 ### ER-NeRF (Coming Soon)
 
-ER-NeRF (ICCV 2023) is a digital persona built using the latest NeRF technology, possessing customized digital persona features. It only requires about five minutes of a person's video to reconstruct. For more details, refer to [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF).
+ER-NeRF (ICCV 2023) is a digital human built using the latest NeRF technology. It allows for the customization of digital characters and can reconstruct them using just a five-minute video of a person. For more details, please refer to [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF).
 
 Further updates will be provided regarding this.
 
@@ -300,9 +245,11 @@ Further updates will be provided regarding this.
 
 ## LLM - Conversation
 
+For detailed information about the usage and code implementation of Large Language Models (LLM), please refer to [LLM - Empowering Digital Humans with Powerful Language Models](./LLM/README.md).
+
 ### Linly-AI
 
-Linly-AI from CVI , Shenzhen University, see [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
+Linly-AI is a Large Language model developed by CVI at Shenzhen University. You can find more information about Linly-AI on their GitHub repository: https://github.com/CVI-SZU/Linly
 
 Download Linly models: [https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf](https://huggingface.co/Linly-AI/Chinese-LLaMA-2-7B-hf)
 
@@ -327,166 +274,15 @@ $env:HF_ENDPOINT="https://hf-mirror.com"
 huggingface-cli download --resume-download Linly-AI/Chinese-LLaMA-2-7B-hf --local-dir Linly-AI/Chinese-LLaMA-2-7B-hf
 ```
 
-Or use the API:
-
-```bash
-# CLI
-curl -X POST -H "Content-Type: application/json" -d '{"question": "What are fun places in Beijing?"}' http://url:port
-
-# Python
-import requests
-
-url = "http://url:port"  
-headers = {
-  "Content-Type": "application/json" 
-}
-
-data = {
-  "question": "What are fun places in Beijing?"
-}
-
-response = requests.post(url, headers=headers, json=data)
-# response_text = response.content.decode("utf-8")
-answer, tag = response.json()
-# print(answer)
-if tag == 'success':
-    response_text =  answer[0]
-else:
-    print("fail")
-print(response_text)
-```
-
-API deployment is recommended with **FastAPI**, which has now been updated to a new version for API usage. FastAPI is a high-performance, user-friendly, and modern Python web framework. It leverages the latest Python features and asynchronous programming to provide the capability for rapid development of Web APIs. This framework is not only easy to learn and use but also comes with powerful features such as automatic documentation generation and data validation. Whether you are building a small project or a large application, FastAPI is a robust and effective tool.
-
-To begin with the API deployment, first, install the libraries used:
-
-```bash
-pip install fastapi==0.104.1
-pip install uvicorn==0.24.0.post1
-```
-
-Other usage methods are generally similar, with the main difference lying in the code implementation, which is simpler and more streamlined. Additionally, it handles concurrency more effectively.
-
-Here is the translation:
-
-```python
-from fastapi import FastAPI, Request
-from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
-import uvicorn
-import json
-import datetime
-import torch
-from configs import model_path, api_port
-
-# Set device parameters
-DEVICE = "cuda"  # Use CUDA
-DEVICE_ID = "0"  # CUDA device ID, empty if not set
-CUDA_DEVICE = f"{DEVICE}:{DEVICE_ID}" if DEVICE_ID else DEVICE  # Combine CUDA device information
-
-# Function to clean GPU memory
-def torch_gc():
-    if torch.cuda.is_available():  # Check if CUDA is available
-        with torch.cuda.device(CUDA_DEVICE):  # Specify CUDA device
-            torch.cuda.empty_cache()  # Clear CUDA cache
-            torch.cuda.ipc_collect()  # Collect CUDA memory fragments
-
-# Create FastAPI application
-app = FastAPI()
-
-# Endpoint to handle POST requests
-@app.post("/")
-async def create_item(request: Request):
-    global model, tokenizer  # Declare global variables for model and tokenizer
-    json_post_raw = await request.json()  # Get JSON data from POST request
-    json_post = json.dumps(json_post_raw)  # Convert JSON data to string
-    json_post_list = json.loads(json_post)  # Convert string to Python object
-    prompt = json_post_list.get('prompt')  # Get prompt from the request
-    history = json_post_list.get('history')  # Get history from the request
-    max_length = json_post_list.get('max_length')  # Get max length from the request
-    top_p = json_post_list.get('top_p')  # Get top_p parameter from the request
-    temperature = json_post_list.get('temperature')  # Get temperature parameter from the request
-
-    # Generate response using the model
-    prompt = f"Please answer the following question in less than 25 words ### Instruction:{prompt}  ### Response:"
-    inputs = tokenizer(prompt, return_tensors="pt").to("cuda:0")
-    generate_ids = model.generate(inputs.input_ids,
-                                  max_new_tokens=max_length if max_length else 2048,
-                                  do_sample=True,
-                                  top_k=20,
-                                  top_p=top_p,
-                                  temperature=temperature if temperature else 0.84,
-                                  repetition_penalty=1.15, eos_token_id=2, bos_token_id=1, pad_token_id=0)
-    response = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
-    response = response.split("### Response:")[-1]
-    now = datetime.datetime.now()  # Get current time
-    time = now.strftime("%Y-%m-%d %H:%M:%S")  # Format time as string
-
-    # Build response JSON
-    answer = {
-        "response": response,
-        "status": 200,
-        "time": time
-    }
-
-    # Build log information
-    log = "[" + time + "] " + '", prompt:"' + prompt + '", response:"' + repr(response) + '"'
-    print(log)  # Print log
-    torch_gc()  # Execute GPU memory cleanup
-    return answer  # Return response
-
-# Main function entry point
-if __name__ == '__main__':
-    # Load pretrained tokenizer and model
-    model = AutoModelForCausalLM.from_pretrained(model_path, device_map="cuda:0",
-                                                    torch_dtype=torch.bfloat16, trust_remote_code=True)
-    tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
-    model.eval()  # Set model to evaluation mode
-
-    # Start FastAPI application
-    uvicorn.run(app, host='0.0.0.0', port=api_port, workers=1)  # Start the application on the specified port and host
-```
-
-The default deployment is on port 7871, and you can make a POST call using curl, as shown below:
-
-```bash
-curl -X POST "http://127.0.0.1:7871" \
-     -H 'Content-Type: application/json' \
-     -d '{"prompt": "如何应对压力"}'
-```
-
-You can also use the requests library in Python, as shown below:
-
-```python
-import requests
-import json
-
-def get_completion(prompt):
-    headers = {'Content-Type': 'application/json'}
-    data = {"prompt": prompt}
-    response = requests.post(url='http://127.0.0.1:7871', headers=headers, data=json.dumps(data))
-    return response.json()['response']
-
-if __name__ == '__main__':
-    print(get_completion('你好如何应对压力'))
-```
-
-The returned value will be:
-
-```json
-{
-  "response": "寻求支持和放松，并采取积极的措施解决问题。",
-  "status": 200,
-  "time": "2024-01-12 01:43:37"
-}
-```
-
 
 
 ### Qwen
 
-Qwen from Alibaba Cloud, see [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
+Qwen is an AI model developed by Alibaba Cloud. You can check out the GitHub repository for Qwen here: https://github.com/QwenLM/Qwen
 
-Download Qwen models: [https://huggingface.co/Qwen/Qwen-1_8B-Chat](https://huggingface.co/Qwen/Qwen-1_8B-Chat)
+If you want to quickly use Qwen, you can choose the 1.8B model, which has fewer parameters and can run smoothly even with limited GPU memory. Of course, this part can be replaced with other options.
+
+You can download the Qwen 1.8B model from this link: https://huggingface.co/Qwen/Qwen-1_8B-Chat
 
 You can use `git` to download:
 
@@ -513,9 +309,9 @@ huggingface-cli download --resume-download Qwen/Qwen-1_8B-Chat --local-dir Qwen/
 
 ### Gemini-Pro
 
-Gemini-Pro from Google, see [https://deepmind.google/technologies/gemini/](https://deepmind.google/technologies/gemini/)
+Gemini-Pro is an AI model developed by Google. To learn more about Gemini-Pro, you can visit their website: https://deepmind.google/technologies/gemini/
 
-Request API-keys: [https://makersuite.google.com/](https://makersuite.google.com/)
+If you want to request an API key for Gemini-Pro, you can visit this link: https://makersuite.google.com/
 
 
 
@@ -559,7 +355,23 @@ Specifically, we create a Gradio Interface in app.py that takes image and text i
 
 In summary, Gradio provides visualization and user interaction interfaces for Linly-Talker, serving as effective means for showcasing system capabilities and enabling end users.
 
-## Usage
+## Start WebUI
+
+Previously, I had separated many versions, but it became cumbersome to run multiple versions. Therefore, I have added a WebUI feature to provide a single interface for a seamless experience. I will continue to update it in the future.
+
+The current features available in the WebUI are as follows:
+
+- [x] Text/Voice-based dialogue with virtual characters (fixed characters with male and female roles)
+- [x] Dialogue with virtual characters using any image (you can upload any character image)
+- [x] Multi-turn GPT dialogue (incorporating historical dialogue data to maintain context)
+- [x] Voice cloning dialogue (based on GPT-SoVITS settings for voice cloning, including a built-in smoky voice that can be cloned based on the voice of the dialogue)
+
+```bash
+# WebUI
+python webui.py
+```
+
+![](docs/WebUI.png)
 
 There are three modes for the current startup, and you can choose a specific setting based on the scenario.
 
@@ -595,123 +407,104 @@ python app_multi.py
 
 ![](docs/UI3.png)
 
-The folder structure is as follows:
+## Folder structure
 
-[Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+The folder structure of the weight files is as follows:
+
+- `Baidu (百度云盘)`: You can download the weights from [here](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`).
+- `huggingface`: You can access the weights at [this link](https://huggingface.co/Kedreamix/Linly-Talker).
+- `modelscope`: The weights will be available soon at [this link](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files).
 
 ```bash
 Linly-Talker/ 
-├── app.py
-├── app_img.py
-├── utils.py
-├── Linly-api.py
-├── Linly-api-fast.py
-├── Linly-example.ipynb
-├── README.md
-├── README_zh.md
-├── request-Linly-api.py
-├── requirements_app.txt
-├── scripts
-│   └── download_models.sh
-├──	src
-│   ├── audio2exp_models
-│   ├── audio2pose_models
-│   ├── config
-│   ├── cost_time.py
-│   ├── face3d
-│   ├── facerender
-│   ├── generate_batch.py
-│   ├── generate_facerender_batch.py
-│   ├── Record.py
-│   ├── test_audio2coeff.py
-│   └── utils
-├── inputs
-│   ├── example.png
-│   └── first_frame_dir
-│       ├── example_landmarks.txt
-│       ├── example.mat
-│       └── example.png
-├── examples
-│   └── source_image
-│       ├── art_0.png
-│       ├── ......
-│       └── sad.png
-├── TFG
-│   ├── __init__.py
-│   ├── Wav2Lip.py
-│   └── SadTalker.py
-└── TTS
-│   ├── __init__.py
-│   ├── EdgeTTS.py
-│   └── TTS_app.py
-├── ASR
-│   ├── __init__.py
-│   ├── FunASR.py
-│   └── Whisper.py
-├── LLM
-│   ├── __init__.py
-│   ├── Gemini.py
-│   ├── Linly.py
-│   └── Qwen.py
-....... // 以下是需要下载的权重路径（可选）
-├── checkpoints // SadTalker 权重路径
-│   ├── mapping_00109-model.pth.tar
-│   ├── mapping_00229-model.pth.tar
-│   ├── SadTalker_V0.0.2_256.safetensors
-│   └── SadTalker_V0.0.2_512.safetensors
-│   ├── lipsync_expert.pth
-│   ├── visual_quality_disc.pth
-│   ├── wav2lip_gan.pth
-│   └── wav2lip.pth // Wav2Lip 权重陆军
-├── gfpgan // GFPGAN 权重路径
-│   └── weights
-│       ├── alignment_WFLW_4HG.pth
-│       └── detection_Resnet50_Final.pth
-├── Linly-AI // Linly 权重路径
-│   └── Chinese-LLaMA-2-7B-hf 
-│       ├── config.json
-│       ├── generation_config.json
-│       ├── pytorch_model-00001-of-00002.bin
-│       ├── pytorch_model-00002-of-00002.bin
-│       ├── pytorch_model.bin.index.json
-│       ├── README.md
-│       ├── special_tokens_map.json
-│       ├── tokenizer_config.json
-│       └── tokenizer.model
-├── Qwen // Qwen 权重路径
-│   └── Qwen-1_8B-Chat
-│       ├── cache_autogptq_cuda_256.cpp
-│       ├── cache_autogptq_cuda_kernel_256.cu
-│       ├── config.json
-│       ├── configuration_qwen.py
-│       ├── cpp_kernels.py
-│       ├── examples
-│       │   └── react_prompt.md
-│       ├── generation_config.json
-│       ├── LICENSE
-│       ├── model-00001-of-00002.safetensors
-│       ├── model-00002-of-00002.safetensors
-│       ├── modeling_qwen.py
-│       ├── model.safetensors.index.json
-│       ├── NOTICE
-│       ├── qwen_generation_utils.py
-│       ├── qwen.tiktoken
-│       ├── README.md
-│       ├── tokenization_qwen.py
-│       └── tokenizer_config.json
+├── checkpoints
+│   ├── hub
+│   │   └── checkpoints
+│   │       └── s3fd-619a316812.pth
+│   ├── lipsync_expert.pth
+│   ├── mapping_00109-model.pth.tar
+│   ├── mapping_00229-model.pth.tar
+│   ├── SadTalker_V0.0.2_256.safetensors
+│   ├── visual_quality_disc.pth
+│   ├── wav2lip_gan.pth
+│   └── wav2lip.pth
+├── gfpgan
+│   └── weights
+│       ├── alignment_WFLW_4HG.pth
+│       └── detection_Resnet50_Final.pth
+├── GPT_SoVITS
+│   └── pretrained_models
+│       ├── chinese-hubert-base
+│       │   ├── config.json
+│       │   ├── preprocessor_config.json
+│       │   └── pytorch_model.bin
+│       ├── chinese-roberta-wwm-ext-large
+│       │   ├── config.json
+│       │   ├── pytorch_model.bin
+│       │   └── tokenizer.json
+│       ├── README.md
+│       ├── s1bert25hz-2kh-longer-epoch=68e-step=50232.ckpt
+│       ├── s2D488k.pth
+│       ├── s2G488k.pth
+│       └── speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch
+├── Qwen
+│   └── Qwen-1_8B-Chat
+│       ├── assets
+│       │   ├── logo.jpg
+│       │   ├── qwen_tokenizer.png
+│       │   ├── react_showcase_001.png
+│       │   ├── react_showcase_002.png
+│       │   └── wechat.png
+│       ├── cache_autogptq_cuda_256.cpp
+│       ├── cache_autogptq_cuda_kernel_256.cu
+│       ├── config.json
+│       ├── configuration_qwen.py
+│       ├── cpp_kernels.py
+│       ├── examples
+│       │   └── react_prompt.md
+│       ├── generation_config.json
+│       ├── LICENSE
+│       ├── model-00001-of-00002.safetensors
+│       ├── model-00002-of-00002.safetensors
+│       ├── modeling_qwen.py
+│       ├── model.safetensors.index.json
+│       ├── NOTICE
+│       ├── qwen_generation_utils.py
+│       ├── qwen.tiktoken
+│       ├── README.md
+│       ├── tokenization_qwen.py
+│       └── tokenizer_config.json
+└── README.md
 ```
 
 
 
 ## Reference
 
+**ASR**
+
 - [https://github.com/openai/whisper](https://github.com/openai/whisper)
+- [https://github.com/alibaba-damo-academy/FunASR](https://github.com/alibaba-damo-academy/FunASR)
+
+**TTS**
+
 - [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)  
+
+**LLM**
+
 - [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
 - [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
 - [https://deepmind.google/technologies/gemini/](https://deepmind.google/technologies/gemini/)
-- [https://github.com/OpenTalker/SadTalker](https://github.com/OpenTalker/SadTalker)
 
+**THG**
+
+- [https://github.com/OpenTalker/SadTalker](https://github.com/OpenTalker/SadTalker)
+- [https://github.com/Rudrabha/Wav2Lip](https://github.com/Rudrabha/Wav2Lip)
+
+**Voice Clone**
+
+- [https://github.com/RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
+- [https://github.com/coqui-ai/TTS](
 
 ## Star History
 
