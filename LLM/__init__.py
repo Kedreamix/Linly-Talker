@@ -1,6 +1,7 @@
 from .Linly import Linly
 from .Qwen import Qwen
 from .Gemini import Gemini
+from .ChatGPT import ChatGPT
 # import Linly
 # import Qwen
 # import Gemini
@@ -17,6 +18,11 @@ def test_Qwen(question = "如何应对压力？", mode='offline', model_path="Qw
     
 def test_Gemini(question = "如何应对压力？", model_path='gemini-pro', api_key=None, proxy_url=None):
     llm = Gemini(model_path, api_key, proxy_url)
+    answer = llm.generate(question)
+    print(answer)
+    
+def test_ChatGPT(question = "如何应对压力？", model_path = 'gpt-3.5-turbo', api_key = None, proxy_url = None):
+    llm = ChatGPT(model_path, api_key, proxy_url)
     answer = llm.generate(question)
     print(answer)
     
@@ -50,6 +56,10 @@ class LLM:
         answer = llm.generate(question)
         print(answer)
     
+    def test_ChatGPT(self, question="如何应对压力？", model_path = 'gpt-3.5-turbo', api_key = None, proxy_url = None):
+        llm = ChatGPT(model_path, api_key, proxy_url)
+        answer = llm.generate(question)
+        print(answer)
 
 if __name__ == '__main__':
     llm = LLM(mode='offline')
