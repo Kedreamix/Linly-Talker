@@ -70,6 +70,7 @@ class SadTalker():
         # save_dir = os.path.join(result_dir, time_tag)
         # os.makedirs(save_dir, exist_ok=True)
         save_dir = result_dir
+        os.makedirs(save_dir, exist_ok=True)
         # input_dir = os.path.join(save_dir, 'input')
         # os.makedirs(input_dir, exist_ok=True)
 
@@ -185,7 +186,7 @@ class SadTalker():
         use_idle_mode = False,
         length_of_audio = 0, use_blink=True, fps = 20,
         result_dir='./results/'):
-
+        os.makedirs(result_dir, exist_ok=True)
         self.sadtalker_paths = init_path(self.checkpoint_path, self.config_path, size, False, preprocess)
         print(self.sadtalker_paths)
             
