@@ -36,6 +36,9 @@
 
 ---
 
+<details>
+<summary>目录</summary>
+
 <!-- TOC -->
 
 - [数字人对话系统 - Linly-Talker —— “数字人交互，与虚拟的自己互动”](#数字人对话系统---linly-talker--数字人交互与虚拟的自己互动)
@@ -67,6 +70,8 @@
   - [Star History](#star-history)
 
 <!-- /TOC -->
+
+</details>
 
 ## 介绍
 

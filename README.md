@@ -35,6 +35,9 @@
 
 ---
 
+<details>
+<summary>Content</summary>
+
 <!-- TOC -->
 
 - [Digital Avatar Conversational System - Linly-Talker —— "Digital Persona Interaction: Interact with Your Virtual Self”](#digital-avatar-conversational-system---linly-talker--digital-persona-interaction-interact-with-your-virtual-self)
@@ -66,6 +69,10 @@
   - [Star History](#star-history)
 
 <!-- /TOC -->
+
+</details>
+
+
 ## Introduction
 
 Linly-Talker is an intelligent AI system that combines large language models (LLMs) with visual models to create a novel human-AI interaction method. It integrates various technologies like Whisper, Linly, Microsoft Speech Services and SadTalker talking head generation system. The system is deployed on Gradio to allow users to converse with an AI assistant by providing images as prompts. Users can have free-form conversations or generate content according to their preferences.
