@@ -27,6 +27,7 @@ google-generativeai
 tiktoken
 accelerate
 protobuf==3.19.6
+openai
 # gfpgan
 # ========Qwen Need========#
 # transformers==4.32.0
