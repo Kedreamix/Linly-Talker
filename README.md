@@ -145,12 +145,22 @@ Next, you need to install the corresponding models. You can download them using 
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files) (coming soon)
+- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary)
 
-```bash
-# Download pre-trained models from Hugging Face
+````bash
+# Download pre-trained models from HuggingFace Or ModelScope
+# huggingface
 git lfs install
 git clone https://huggingface.co/Kedreamix/Linly-Talker
+
+# modelscope
+# 1. git method
+git lfs install
+git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
+
+# 2. Python SDK
+from modelscope import snapshot_download
+model_dir = snapshot_download('Kedreamix/Linly-Talker')
 
 # Move all models to the current directory
 # Checkpoint contains SadTalker and Wav2Lip
@@ -161,11 +171,11 @@ mv Linly-Talker/chechpoints/* ./checkpoints/
 # mv Linly-Talker/gfpan ./
 
 # Voice cloning models
-mv Linly-Talker/GPT_SoVITS/pretrained_models/ ./GPT_SoVITS/pretrained_models/
+mv Linly-Talker/GPT_SoVITS/pretrained_models/* ./GPT_SoVITS/pretrained_models/
 
 # Qwen large model
 mv Linly-Talker/Qwen ./
-```
+````
 
 For the convenience of deployment and usage, an `configs.py` file has been updated. You can modify some hyperparameters in this file for customization:
 

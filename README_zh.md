@@ -145,12 +145,22 @@ pip install -r VITS/requirements_gptsovits.txt
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files) comming soon
+- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary) 
 
 ```bash
 # 从huggingface下载预训练模型
 git lfs install
 git clone https://huggingface.co/Kedreamix/Linly-Talker
+
+# 从modelscope下载预训练模型
+# 1. git 方法
+git lfs install
+git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
+
+# 2. Python 代码下载
+pip install modelscope
+from modelscope import snapshot_download
+model_dir = snapshot_download('Kedreamix/Linly-Talker')
 
 # 移动所有模型到当前目录
 # checkpoint中含有SadTalker和Wav2Lip
@@ -161,7 +171,7 @@ mv Linly-Talker/chechpoints/* ./checkpoints/
 # mv Linly-Talker/gfpan ./
 
 # 语音克隆模型
-mv Linly-Talker/GPT_SoVITS/pretrained_models/ ./GPT_SoVITS/pretrained_models/
+mv Linly-Talker/GPT_SoVITS/pretrained_models/* ./GPT_SoVITS/pretrained_models/
 
 # Qwen大模型
 mv Linly-Talker/Qwen ./
