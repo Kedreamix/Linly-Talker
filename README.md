@@ -2,6 +2,7 @@
 
 <div align="center">
 <h1>Linly-Talker WebUI</h1>
+
 [![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/Kedreamix/Linly-Talker)
 
 <img src="docs/linly_logo.png" /><br>
