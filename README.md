@@ -92,7 +92,6 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 - [x] GPT `Multi-turn Dialogue System` (Enhance the interactivity and realism of digital entities, bolstering their intelligence)
 - [x] Optimized the Gradio interface by incorporating additional models such as Wav2Lip, FunASR, and others.
 - [x] `Voice Cloning` Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
-- [ ] Integrate the `Langchain` framework and establish a local knowledge base.
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
@@ -147,24 +146,38 @@ Next, you need to install the corresponding models. You can download them using 
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
 - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary)
 
-````bash
-# Download pre-trained models from HuggingFace Or ModelScope
-# huggingface
+**HuggingFace Download**
+
+If the download speed is too slow, consider using a mirror site. For more information, refer to [Efficiently Obtain Hugging Face Models Using Mirror Sites](https://kedreamix.github.io/2024/01/05/Note/HuggingFace/?highlight=镜像).
+
+```bash
+# Download pre-trained models from Hugging Face
 git lfs install
 git clone https://huggingface.co/Kedreamix/Linly-Talker
+```
 
-# modelscope
-# 1. git method
+**ModelScope Download**
+
+```bash
+# Download pre-trained models from ModelScope
+# 1. Git method
 git lfs install
 git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
 
-# 2. Python SDK
+# 2. Python code download
+pip install modelscope
 from modelscope import snapshot_download
 model_dir = snapshot_download('Kedreamix/Linly-Talker')
+```
 
+**Move All Models to the Current Directory**
+
+If you downloaded from Baidu Netdisk, you can refer to the directory structure at the end of the document to move the models.
+
+```bash
 # Move all models to the current directory
-# Checkpoint contains SadTalker and Wav2Lip
-mv Linly-Talker/chechpoints/* ./checkpoints/
+# Checkpoints contain SadTalker and Wav2Lip
+mv Linly-Talker/checkpoints/* ./checkpoints/
 
 # Enhanced GFPGAN for SadTalker
 # pip install gfpgan
@@ -175,22 +188,26 @@ mv Linly-Talker/GPT_SoVITS/pretrained_models/* ./GPT_SoVITS/pretrained_models/
 
 # Qwen large model
 mv Linly-Talker/Qwen ./
-````
+```
 
 For the convenience of deployment and usage, an `configs.py` file has been updated. You can modify some hyperparameters in this file for customization:
 
 ```bash
-# 设备运行端口 (Device running port)
+# Device Running Port
 port = 7870
-# api运行端口及IP (API running port and IP)
-ip = '127.0.0.1' 
+
+# API Running Port and IP
+# Localhost port is 127.0.0.1; for global port forwarding, use "0.0.0.0"
+ip = '127.0.0.1'
 api_port = 7871
-# Linly模型路径 (Linly model path)
-mode = 'api' # api 需要先运行Linly-api-fast.py
+
+# Linly Model Path
+mode = 'api'  # For 'api', Linly-api-fast.py must be run first
 mode = 'offline'
 model_path = 'Linly-AI/Chinese-LLaMA-2-7B-hf'
-# ssl证书 (SSL certificate) 麦克风对话需要此参数
-# 最好绝对路径
+
+# SSL Certificate (required for microphone interaction)
+# Preferably an absolute path
 ssl_certfile = "./https_cert/cert.pem"
 ssl_keyfile = "./https_cert/key.pem"
 ```

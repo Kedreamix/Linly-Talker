@@ -91,7 +91,6 @@ Linly-Talker是一个将大型语言模型与视觉模型相结合的智能AI系
 - [x] GPT`多轮对话`系统（提高数字人的交互性和真实感，增强数字人的智能）
 - [x] 优化Gradio界面，加入更多模型，如Wav2Lip，FunASR等
 - [x] `语音克隆`技术，加入GPT-SoVITS，只需要一分钟的语音简单微调即可（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
-- [ ] 加入`Langchain`的框架，建立本地知识库
 - [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
 
 🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
@@ -146,11 +145,19 @@ pip install -r VITS/requirements_gptsovits.txt
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
 - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary) 
 
+**HuggingFace下载**
+
+如果速度太慢可以考虑镜像，参考[简便快捷获取 Hugging Face 模型（使用镜像站点）](https://kedreamix.github.io/2024/01/05/Note/HuggingFace/?highlight=镜像)
+
 ```bash
 # 从huggingface下载预训练模型
 git lfs install
 git clone https://huggingface.co/Kedreamix/Linly-Talker
+```
 
+**ModelScope下载**
+
+```bash
 # 从modelscope下载预训练模型
 # 1. git 方法
 git lfs install
@@ -160,7 +167,13 @@ git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
 pip install modelscope
 from modelscope import snapshot_download
 model_dir = snapshot_download('Kedreamix/Linly-Talker')
+```
 
+**移动所有模型到当前目录**
+
+如果百度网盘下载后，可以参考文档最后目录结构来移动
+
+```bash
 # 移动所有模型到当前目录
 # checkpoint中含有SadTalker和Wav2Lip
 mv Linly-Talker/chechpoints/* ./checkpoints/
@@ -183,6 +196,8 @@ mv Linly-Talker/Qwen ./
 port = 7860
 # api运行端口及IP (API running port and IP)
 mode = 'api' # api 需要先运行Linly-api-fast.py，暂时仅仅适用于Linly
+
+# 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
 ip = '127.0.0.1' 
 api_port = 7871
 
