@@ -1,8 +1,7 @@
-# Digital Avatar Conversational System - Linly-Talker —— "Digital Persona Interaction: Interact with Your Virtual Self”
+# Digital Human Intelligent Dialogue System - Linly-Talker — 'Interactive Dialogue with Your Virtual Self'
 
 <div align="center">
 <h1>Linly-Talker WebUI</h1>
-
 [![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/Kedreamix/Linly-Talker)
 
 <img src="docs/linly_logo.png" /><br>
@@ -75,7 +74,17 @@
 
 ## Introduction
 
-Linly-Talker is an intelligent AI system that combines large language models (LLMs) with visual models to create a novel human-AI interaction method. It integrates various technologies like Whisper, Linly, Microsoft Speech Services and SadTalker talking head generation system. The system is deployed on Gradio to allow users to converse with an AI assistant by providing images as prompts. Users can have free-form conversations or generate content according to their preferences.
+Linly-Talker is an innovative digital human conversation system that integrates the latest artificial intelligence technologies, including Large Language Models (LLM), Automatic Speech Recognition (ASR), Text-to-Speech (TTS), and voice cloning technology. This system offers an interactive web interface through the Gradio platform, allowing users to upload images and engage in personalized dialogues with AI.
+
+The core features of the system include:
+
+1. **Multi-Model Integration**: Linly-Talker combines major models such as Linly, GeminiPro, Qwen, as well as visual models like Whisper, SadTalker, to achieve high-quality dialogues and visual generation.
+2. **Multi-Turn Conversational Ability**: Through the multi-turn dialogue system powered by GPT models, Linly-Talker can understand and maintain contextually relevant and coherent conversations, significantly enhancing the authenticity of the interaction.
+3. **Voice Cloning**: Utilizing technologies like GPT-SoVITS, users can upload a one-minute voice sample for fine-tuning, and the system will clone the user's voice, enabling the digital human to converse in the user's voice.
+4. **Real-Time Interaction**: The system supports real-time speech recognition and video captioning, allowing users to communicate naturally with the digital human via voice.
+5. **Visual Enhancement**: With digital human generation technologies, Linly-Talker can create realistic digital human avatars, providing a more immersive experience.
+
+The design philosophy of Linly-Talker is to create a new form of human-computer interaction that goes beyond simple Q&A. By integrating advanced technologies, it offers an intelligent digital human capable of understanding, responding to, and simulating human communication.
 
 ![The system architecture of multimodal human–computer interaction.](docs/HOI.png)
 
@@ -95,6 +104,8 @@ Linly-Talker is an intelligent AI system that combines large language models (LL
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
+
+> If you encounter any issues during deployment, please consult the [Common Issues Summary](https://github.com/Kedreamix/Linly-Talker/blob/main/常见问题汇总.md) section, where I have compiled a list of all potential problems. Additionally, a discussion group is available here, and I will provide regular updates. Thank you for your attention and use of Linly-Talker!
 
 ## Example
 
