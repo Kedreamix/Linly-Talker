@@ -75,7 +75,7 @@
 
 ## Introduction
 
-Linly-Talker is an innovative digital human conversation system that integrates the latest artificial intelligence technologies, including Large Language Models (LLM), Automatic Speech Recognition (ASR), Text-to-Speech (TTS), and voice cloning technology. This system offers an interactive web interface through the Gradio platform, allowing users to upload images and engage in personalized dialogues with AI.
+Linly-Talker is an innovative digital human conversation system that integrates the latest artificial intelligence technologies, including Large Language Models (LLM) 🤖, Automatic Speech Recognition (ASR) 🎙️, Text-to-Speech (TTS) 🗣️, and voice cloning technology 🎤. This system offers an interactive web interface through the Gradio platform 🌐, allowing users to upload images 📷 and engage in personalized dialogues with AI 💬.
 
 The core features of the system include:
 
