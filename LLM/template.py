@@ -3,10 +3,12 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 class LLMTemplate:
     def __init__(self, model_name_or_path, mode='offline'):
         self.mode = mode
+        # 模型初始化
         self.model, self.tokenizer = self.init_model(model_name_or_path)
         self.history = None
     
     def init_model(self, model_name_or_path):
+        # TODO: 模型加载
         model = AutoModelForCausalLM.from_pretrained(model_name_or_path, 
                                                      device_map="auto", 
                                                      trust_remote_code=True).eval()
@@ -14,6 +16,9 @@ class LLMTemplate:
         return model, tokenizer   
     
     def generate(self, prompt, system_prompt=""):
+        # TODO: 模型预测
+        # 这一块需要尤其注意，这里的模板是借鉴了HuggingFace上的一些推理模板，需要根据自己的模型进行调整
+        # 这里的模板主要是为了方便调试，因为模型预测的时候，会有很多不同的输入，所以可以根据自己的模型进行调整
         if self.mode != 'api':
             try:
                 response, self.history = self.model.chat(self.tokenizer, prompt, history=self.history, system = system_prompt)
