@@ -64,13 +64,14 @@ class LLM:
         answer = llm.generate(question)
         print(answer)
         
-    def test_LLM(self, question="如何应对压力？", model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
+    def test_ChatGLM(self, question="如何应对压力？", model_path="THUDM/chatglm-6b"):
         llm = ChatGLM(mode=self.mode, model_name_or_path=model_path)
         answer = llm.generate(question)
         print(answer)
 
 if __name__ == '__main__':
     llm = LLM(mode='offline')
-    llm.test_Qwen()
+    # llm.test_Qwen()
     # llm.test_Linly()
     # llm.test_Gemini()
+    # llm.test_ChatGLM()
