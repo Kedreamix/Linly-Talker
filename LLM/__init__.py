@@ -2,6 +2,7 @@ from .Linly import Linly
 from .Qwen import Qwen
 from .Gemini import Gemini
 from .ChatGPT import ChatGPT
+from .ChatGLM import ChatGLM
 # import Linly
 # import Qwen
 # import Gemini
@@ -31,7 +32,7 @@ class LLM:
         self.mode = mode
         
     def init_model(self, model_name, model_path, api_key=None, proxy_url=None):
-        if model_name not in ['Linly', 'Qwen', 'Gemini']:
+        if model_name not in ['Linly', 'Qwen', 'Gemini', 'ChatGLM']:
             raise ValueError("model_name must be 'Linly', 'Qwen', or 'Gemini'(其他模型还未集成)")
         if model_name == 'Linly':
             llm = Linly(self.mode, model_path)
@@ -39,6 +40,8 @@ class LLM:
             llm = Qwen(self.mode, model_path)
         elif model_name == 'Gemini':
             llm = Gemini(model_path, api_key, proxy_url)
+        elif model_name == 'ChatGLM':
+            llm = ChatGLM(self.mode, model_path)
         return llm
     
     def test_Linly(self, question="如何应对压力？", model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
@@ -58,6 +61,11 @@ class LLM:
     
     def test_ChatGPT(self, question="如何应对压力？", model_path = 'gpt-3.5-turbo', api_key = None, proxy_url = None):
         llm = ChatGPT(model_path, api_key, proxy_url)
+        answer = llm.generate(question)
+        print(answer)
+        
+    def test_LLM(self, question="如何应对压力？", model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
+        llm = ChatGLM(mode=self.mode, model_name_or_path=model_path)
         answer = llm.generate(question)
         print(answer)
 
