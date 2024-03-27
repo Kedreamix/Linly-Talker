@@ -6,17 +6,17 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 class ChatGLM:
-    def __init__(self, mode='offline', model_name_or_path = 'THUDM/chatglm-6b'):
+    def __init__(self, mode='offline', model_path = 'THUDM/chatglm3-6b'):
         self.mode = mode
-        self.model, self.tokenizer = self.init_model(model_name_or_path)
+        self.model, self.tokenizer = self.init_model(model_path)
         self.history = None
         assert self.mode == 'offline', "ChatGLM只支持离线模式"
     
-    def init_model(self, model_name_or_path):
-        model = AutoModelForCausalLM.from_pretrained(model_name_or_path, 
+    def init_model(self, model_path):
+        model = AutoModelForCausalLM.from_pretrained(model_path, 
                                                      device_map="auto", 
                                                      trust_remote_code=True).eval()
-        tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, trust_remote_code=True)
+        tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
         return model, tokenizer   
     
     def generate(self, prompt, system_prompt=""):
@@ -43,3 +43,11 @@ class ChatGLM:
     
     def clear_history(self):
         self.history = []
+
+def test():
+    llm = ChatGLM(mode='offline',model_path='THUDM/chatglm3-6b')
+    answer = llm.generate("如何应对压力？")
+    print(answer)
+
+if __name__ == '__main__':
+    test()
