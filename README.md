@@ -87,7 +87,7 @@ The core features of the system include:
 
 The design philosophy of Linly-Talker is to create a new form of human-computer interaction that goes beyond simple Q&A. By integrating advanced technologies, it offers an intelligent digital human capable of understanding, responding to, and simulating human communication.
 
-![The system architecture of multimodal human–computer interaction.](docs/HOI.png)
+![The system architecture of multimodal human–computer interaction.](docs/HOI_en.png)
 
 > You can watch the demo video [here](https://www.bilibili.com/video/BV1rN4y1a76x/).
 
