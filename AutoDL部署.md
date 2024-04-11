@@ -1,12 +1,32 @@
 # 在AutoDL平台部署Linly-Talker (0基础小白超详细教程)
 
+<!-- TOC -->
 
+- [在AutoDL平台部署Linly-Talker 0基础小白超详细教程](#%E5%9C%A8autodl%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2linly-talker-0%E5%9F%BA%E7%A1%80%E5%B0%8F%E7%99%BD%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B)
+    - [一、注册AutoDL](#%E4%B8%80%E6%B3%A8%E5%86%8Cautodl)
+    - [二、创建实例](#%E4%BA%8C%E5%88%9B%E5%BB%BA%E5%AE%9E%E4%BE%8B)
+        - [登录AutoDL，进入算力市场，选择RTX 3090机器。](#%E7%99%BB%E5%BD%95autodl%E8%BF%9B%E5%85%A5%E7%AE%97%E5%8A%9B%E5%B8%82%E5%9C%BA%E9%80%89%E6%8B%A9rtx-3090%E6%9C%BA%E5%99%A8)
+        - [配置基础镜像](#%E9%85%8D%E7%BD%AE%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F)
+        - [无卡模式开机](#%E6%97%A0%E5%8D%A1%E6%A8%A1%E5%BC%8F%E5%BC%80%E6%9C%BA)
+    - [三、部署环境](#%E4%B8%89%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83)
+        - [进入终端](#%E8%BF%9B%E5%85%A5%E7%BB%88%E7%AB%AF)
+        - [下载代码文件](#%E4%B8%8B%E8%BD%BD%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6)
+        - [下载模型文件](#%E4%B8%8B%E8%BD%BD%E6%A8%A1%E5%9E%8B%E6%96%87%E4%BB%B6)
+    - [四、Linly-Talker项目](#%E5%9B%9Blinly-talker%E9%A1%B9%E7%9B%AE)
+        - [环境安装](#%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85)
+        - [端口设置](#%E7%AB%AF%E5%8F%A3%E8%AE%BE%E7%BD%AE)
+        - [有卡开机](#%E6%9C%89%E5%8D%A1%E5%BC%80%E6%9C%BA)
+        - [运行网页版对话webui](#%E8%BF%90%E8%A1%8C%E7%BD%91%E9%A1%B5%E7%89%88%E5%AF%B9%E8%AF%9Dwebui)
+        - [端口映射](#%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84)
+    - [体验Linly-Talker（成功）](#%E4%BD%93%E9%AA%8Clinly-talker%E6%88%90%E5%8A%9F)
+
+<!-- /TOC -->
 
 ## 一、注册AutoDL
 
 [AutoDL官网](https://www.autodl.com/home) 注册账户好并充值，自己选择机器，我觉得如果正常跑一下，5元已经够了
 
-![image-20240411124225368](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411124225368.png)
+![注册AutoDL](https://pic1.zhimg.com/v2-f56bc692a0d22fb1ae749b7697ff5d0f.png)
 
 ## 二、创建实例
 
@@ -14,22 +34,24 @@
 
 这一部分实际上我觉得12g都OK的，无非是速度问题而已
 
-![image-20240411124450789](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411124450789.png)
+![选择RTX 3090机器](https://picx.zhimg.com/v2-824956d591eead5d3ed4de87c59258a6.png)
 
 
 
 ### 2.2 配置基础镜像
 
-![image-20240411124343235](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411124343235.png)
+选择镜像，最好选择2.0以上可以体验克隆声音功能，其他无所谓
+
+![配置基础镜像](https://pic1.zhimg.com/v2-8d064d809e15673dc6f2be8f2ef83ae7.png)
 
 
 
-### 2.3. 无卡模式开机
+### 2.3 无卡模式开机
 
 创建成功后为了省钱先关机，然后使用无卡模式开机。
 无卡模式一个小时只需要0.1元，比较适合部署环境。
 
-![image-20240411124601353](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411124601353.png)
+![无卡模式开机](https://picx.zhimg.com/v2-118eead549c35ad06d946b00cd93c668.png)
 
 ## 三、部署环境
 
@@ -37,7 +59,7 @@
 
 打开jupyterLab，进入数据盘（autodl-tmp），打开终端，将Linly-Talker模型下载到数据盘中。
 
-![image-20240411124731491](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411124731491.png)
+![进入终端](https://pica.zhimg.com/v2-7c29a3f68c04b9af0963d4acaa63f59c.png)
 
 
 
@@ -68,7 +90,7 @@ curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.s
 sudo apt-get install git-lfs
 ```
 
-![image-20240411130221473](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411130221473.png)
+![安装git lfs](https://pic1.zhimg.com/v2-084b5f048d1a70d8712bd6a6891c673c.png)
 
 根据 [https://www.modelscope.cn/Kedreamix/Linly-Talker](https://www.modelscope.cn/Kedreamix/Linly-Talker) 下载模型文件，走modelscope还是很快的，不过文件有点多，还是得等一下，记住是在Linly-Talker代码路径下执行这个文件
 
@@ -78,7 +100,7 @@ git lfs install
 git lfs clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
 ```
 
-![image-20240411130012502](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411130012502.png)
+![下载模型文件](https://picx.zhimg.com/v2-1f61be9be69053ebe16c72762c350d18.png)
 
 等待一段时间下载完以后，利用命令将模型移动到指定目录，直接复制即可
 
@@ -124,7 +146,7 @@ pip install -r VITS/requirements_gptsovits.txt
 
 由于似乎autodl开放的是6006端口，所以这里面的端口映射也可以改一下成6006，这里吗只需要修改configs.py文件里面的port为6006即可
 
-![image-20240411131244391](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411131244391.png)
+![端口设置](https://picx.zhimg.com/v2-d9516998de3e6ffea282c4c6776c126f.png)
 
 除此之外，我发现其实对于autodl来说，不是很支持https的端口映射，所以需要注释掉几行代码即可，在webui.py的最后几行注释掉代码ssl相关代码
 
@@ -141,7 +163,7 @@ pip install -r VITS/requirements_gptsovits.txt
 
 如果使用app.py同理
 
-![image-20240411134349454](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411134349454.png)
+![http设置](https://picx.zhimg.com/v2-fd4aed3c765b8a4a425e12520a1461ae.png)
 
 ### 4.3 有卡开机
 
@@ -153,7 +175,7 @@ pip install -r VITS/requirements_gptsovits.txt
 nvidia-smi
 ```
 
-![image-20240411133712289](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411133712289.png)
+![有卡开机](https://pic1.zhimg.com/v2-baff41e6634fd25fb5d39806b86b1c40.png)
 
 
 
@@ -165,7 +187,7 @@ nvidia-smi
 python webui.py
 ```
 
-![image-20240411133612053](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411133612053.png)
+![运行网页版对话webui](https://pic1.zhimg.com/v2-c1c8a2653cef9d4b044fb85555411928.png)
 
 
 
@@ -173,7 +195,7 @@ python webui.py
 
 这可以直接打开autodl的自定义服务，默认是6006端口，我们已经设置了，所以直接使用即可
 
-![image-20240411133745340](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411133745340.png)
+![端口映射](https://picx.zhimg.com/v2-19a51c44478a1fad9e0de593ee4d547f.png)
 
 
 
@@ -181,7 +203,7 @@ python webui.py
 
 点开网页，即可正确执行Linly-Talker，这一部分就跟视频一模一样了
 
-![image-20240411133853911](/Users/pikachu/Library/Application Support/typora-user-images/image-20240411133853911.png)
+![体验Linly-Talker](https://picx.zhimg.com/v2-1b67099f2903fdcac732b784477851aa.png)
 
 
 
