@@ -189,7 +189,7 @@ If you downloaded from Baidu Netdisk, you can refer to the directory structure a
 ```bash
 # Move all models to the current directory
 # Checkpoints contain SadTalker and Wav2Lip
-mv Linly-Talker/checkpoints/* ./checkpoints/
+mv Linly-Talker/checkpoints/ ./
 
 # Enhanced GFPGAN for SadTalker
 # pip install gfpgan
@@ -587,7 +587,7 @@ Linly-Talker/
 **Voice Clone**
 
 - [https://github.com/RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
-- [https://github.com/coqui-ai/TTS](
+- [https://github.com/coqui-ai/TTS](https://github.com/coqui-ai/TTS)
 
 ## Star History
 

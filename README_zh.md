@@ -187,7 +187,7 @@ model_dir = snapshot_download('Kedreamix/Linly-Talker')
 ```bash
 # 移动所有模型到当前目录
 # checkpoint中含有SadTalker和Wav2Lip
-mv Linly-Talker/chechpoints/* ./checkpoints/
+mv Linly-Talker/checkpoints/ ./
 
 # SadTalker的增强GFPGAN
 # pip install gfpgan
