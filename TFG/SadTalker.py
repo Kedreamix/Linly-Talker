@@ -204,11 +204,11 @@ class SadTalker():
 
         print(source_image)
         pic_path = os.path.join(input_dir, os.path.basename(source_image)) 
-        shutil.move(source_image, input_dir)
+        shutil.copy(source_image, input_dir)
 
         if driven_audio is not None and os.path.isfile(driven_audio):
             audio_path = os.path.join(input_dir, os.path.basename(driven_audio))  
-            shutil.move(driven_audio, input_dir)
+            shutil.copy(driven_audio, input_dir)
 
         elif use_idle_mode:
             audio_path = os.path.join(input_dir, 'idlemode_'+str(length_of_audio)+'.wav') ## generate audio from this new audio_path
