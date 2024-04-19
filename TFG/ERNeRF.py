@@ -1,9 +1,10 @@
+import os
 import sys
-sys.path.append('/data/dengkaijun/Linly-Talker/NeRF')
+sys.path.append('./NeRF')
 import torch
 import argparse
 
-from nerf_triplane.provider import NeRFDataset,NeRFDataset_Test
+from nerf_triplane.provider import NeRFDataset_Test
 from nerf_triplane.utils import *
 from nerf_triplane.network import NeRFNetwork
 
@@ -30,7 +31,7 @@ parser.add_argument('--seed', type=int, default=0)
 parser.add_argument('--iters', type=int, default=200000, help="training iters")
 parser.add_argument('--lr', type=float, default=1e-2, help="initial learning rate")
 parser.add_argument('--lr_net', type=float, default=1e-3, help="initial learning rate")
-parser.add_argument('--ckpt', type=str, default='/data/dengkaijun/Linly-Talker/checkpoints/pretrained/ngp_kf.pth')
+parser.add_argument('--ckpt', type=str, default='../checkpoints/pretrained/ngp_kf.pth')
 parser.add_argument('--num_rays', type=int, default=4096 * 16, help="num rays sampled per image for each training step")
 parser.add_argument('--cuda_ray', action='store_true', help="use CUDA raymarching instead of pytorch")
 parser.add_argument('--max_steps', type=int, default=16, help="max num steps sampled per ray (only valid when using --cuda_ray)")
@@ -108,10 +109,11 @@ parser.add_argument('--asr', action='store_true', help="load asr for real-time a
 # parser.add_argument('--asr_wav', type=str, default='', help="load the wav and use as input")
 # parser.add_argument('--asr_play', action='store_true', help="play out the audio")
 
+parser.add_argument('--asr_model', type=str, default='ave')
 # parser.add_argument('--asr_model', type=str, default='deepspeech')
-parser.add_argument('--asr_model', type=str, default='cpierse/wav2vec2-large-xlsr-53-esperanto')
+# parser.add_argument('--asr_model', type=str, default='cpierse/wav2vec2-large-xlsr-53-esperanto')
 # parser.add_argument('--asr_model', type=str, default='facebook/wav2vec2-large-960h-lv60-self')
-parser.add_argument('--pose', type=str, default='/data/dengkaijun/Linly-Talker/checkpoints/data_kf.json')
+parser.add_argument('--pose', type=str, default='../checkpoints/data_kf.json')
 parser.add_argument('--asr_save_feats', action='store_true')
 # audio FPS
 parser.add_argument('--fps', type=int, default=50)
@@ -133,7 +135,6 @@ if opt.test:
     opt.smooth_lips = True
 
 opt.cuda_ray = True
-
 opt.torso = True
 
 class ERNeRF():
@@ -143,11 +144,16 @@ class ERNeRF():
         self.model = NeRFNetwork(opt)
         # print(self.model)
         
-    def predict(self, asr_wav):
-        opt.aud = asr_wav
+    def init_model(self, ckpt_path, pose):
         criterion = torch.nn.MSELoss(reduction='none')
+        opt.pose = pose
         metrics = []
+        opt.ckpt = ckpt_path
         self.trainer = Trainer('ngp', opt, self.model, device=self.device, workspace=opt.workspace, criterion=criterion, fp16=opt.fp16, metrics=metrics, use_checkpoint=opt.ckpt)
+                
+    def predict(self, asr_wav, ):
+        opt.aud = asr_wav
+        
         self.test_loader = NeRFDataset_Test(opt, device=self.device).dataloader()
         self.model.aud_features = self.test_loader._data.auds
         self.model.eye_areas = self.test_loader._data.eye_area
@@ -158,6 +164,8 @@ class ERNeRF():
         return os.path.join(opt.workspace, f"test_audio.mp4")    
     
 if __name__ == '__main__':
-    nerf = ERNeRF(opt)
-    wav_path = '../checkpoints/ref.wav'
+    nerf = ERNeRF()
+    nerf.init_model('./checkpoints/Obama_ave.pth', './checkpoints/Obama.json')
+    print('init done')
+    wav_path = './checkpoints/ref.wav'
     nerf.predict(wav_path)
