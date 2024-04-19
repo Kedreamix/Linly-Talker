@@ -5,6 +5,55 @@ import torch.nn.functional as F
 from encoding import get_encoder
 from .renderer import NeRFRenderer
 
+class Conv2d(nn.Module):
+    def __init__(self, cin, cout, kernel_size, stride, padding, residual=False, leakyReLU=False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.conv_block = nn.Sequential(
+            nn.Conv2d(cin, cout, kernel_size, stride, padding),
+            nn.BatchNorm2d(cout)
+        )
+        if leakyReLU:
+            self.act = nn.LeakyReLU(0.02)
+        else:
+            self.act = nn.ReLU()
+        self.residual = residual
+
+    def forward(self, x):
+        out = self.conv_block(x)
+        if self.residual:
+            out += x
+        return self.act(out)
+
+class AudioEncoder(nn.Module):
+    def __init__(self):
+        super(AudioEncoder, self).__init__()
+
+        self.audio_encoder = nn.Sequential(
+            Conv2d(1, 32, kernel_size=3, stride=1, padding=1),
+            Conv2d(32, 32, kernel_size=3, stride=1, padding=1, residual=True),
+            Conv2d(32, 32, kernel_size=3, stride=1, padding=1, residual=True),
+
+            Conv2d(32, 64, kernel_size=3, stride=(3, 1), padding=1),
+            Conv2d(64, 64, kernel_size=3, stride=1, padding=1, residual=True),
+            Conv2d(64, 64, kernel_size=3, stride=1, padding=1, residual=True),
+
+            Conv2d(64, 128, kernel_size=3, stride=3, padding=1),
+            Conv2d(128, 128, kernel_size=3, stride=1, padding=1, residual=True),
+            Conv2d(128, 128, kernel_size=3, stride=1, padding=1, residual=True),
+
+            Conv2d(128, 256, kernel_size=3, stride=(3, 2), padding=1),
+            Conv2d(256, 256, kernel_size=3, stride=1, padding=1, residual=True),
+
+            Conv2d(256, 512, kernel_size=3, stride=1, padding=0),
+            Conv2d(512, 512, kernel_size=1, stride=1, padding=0), )
+
+    def forward(self, x):
+        out = self.audio_encoder(x)
+        out = out.squeeze(2).squeeze(2)
+
+        return out
+
+
 # Audio feature extractor
 class AudioAttNet(nn.Module):
     def __init__(self, dim_aud=64, seq_len=8):
@@ -90,6 +139,26 @@ class MLP(nn.Module):
         return x
 
 
+# Audio feature extractor
+class AudioNet_ave(nn.Module):
+    def __init__(self, dim_in=29, dim_aud=64, win_size=16):
+        super(AudioNet_ave, self).__init__()
+        self.win_size = win_size
+        self.dim_aud = dim_aud
+        self.encoder_fc1 = nn.Sequential(
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.02, True),
+            nn.Linear(256, 128),
+            nn.LeakyReLU(0.02, True),
+            nn.Linear(128, dim_aud),
+        )
+    def forward(self, x):
+        # half_w = int(self.win_size/2)
+        # x = x[:, :, 8-half_w:8+half_w]
+        # x = self.encoder_conv(x).squeeze(-1)
+        x = self.encoder_fc1(x).permute(1,0,2).squeeze(0)
+        return x
+
 class NeRFNetwork(NeRFRenderer):
     def __init__(self,
                  opt,
@@ -115,7 +184,14 @@ class NeRFNetwork(NeRFRenderer):
 
         # audio network
         self.audio_dim = audio_dim
-        self.audio_net = AudioNet(self.audio_in_dim, self.audio_dim)
+        # self.audio_net = AudioNet(self.audio_in_dim, self.audio_dim)
+
+        # audio network
+        self.audio_dim = audio_dim
+        if self.opt.asr_model == 'ave':
+            self.audio_net = AudioNet_ave(self.audio_in_dim, self.audio_dim)
+        else:
+            self.audio_net = AudioNet(self.audio_in_dim, self.audio_dim)
 
         self.att = self.opt.att
         if self.att > 0:

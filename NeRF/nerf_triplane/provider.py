@@ -13,7 +13,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-from .utils import get_audio_features, get_rays, get_bg_coords, convert_poses
+from .utils import get_audio_features, get_rays, get_bg_coords, convert_poses, AudDataset
 
 # ref: https://github.com/NVlabs/instant-ngp/blob/b76004c8cf478880227401ae763be4c02f80b62f/include/neural-graphics-primitives/nerf_loader.h#L50
 def nerf_matrix_to_ngp(pose, scale=0.33, offset=[0, 0, 0]):
@@ -124,54 +124,96 @@ class NeRFDataset_Test:
             if self.opt.aud.endswith('npy'):
                 aud_features = np.load(self.opt.aud)
             elif self.opt.aud.endswith('wav'):
-                import argparse
-                parser = argparse.ArgumentParser()
-                parser.add_argument('--wav', type=str, default='')
-                parser.add_argument('--play', action='store_true', help="play out the audio")
-                
-                parser.add_argument('--model', type=str, default='cpierse/wav2vec2-large-xlsr-53-esperanto')
-                # parser.add_argument('--model', type=str, default='facebook/wav2vec2-large-960h-lv60-self')
+                if self.opt.asr_model == 'cpierse/wav2vec2-large-xlsr-53-esperanto':
+                    
+                    import argparse
+                    parser = argparse.ArgumentParser()
+                    parser.add_argument('--wav', type=str, default='')
+                    parser.add_argument('--play', action='store_true', help="play out the audio")
+                    
+                    parser.add_argument('--model', type=str, default='cpierse/wav2vec2-large-xlsr-53-esperanto')
+                    # parser.add_argument('--model', type=str, default='facebook/wav2vec2-large-960h-lv60-self')
 
-                parser.add_argument('--save_feats', action='store_true')
-                # audio FPS
-                parser.add_argument('--fps', type=int, default=50)
-                # sliding window left-middle-right length.
-                parser.add_argument('-l', type=int, default=10)
-                parser.add_argument('-m', type=int, default=50)
-                parser.add_argument('-r', type=int, default=10)
-                
-                opt = parser.parse_args()
-                # fix
-                opt.asr_wav = self.opt.aud
-                opt.asr_play = opt.play
-                opt.asr_save_feats = True
-                opt.asr_model = opt.model
-                # 利用预训练的Wav2vec来跑一下
-                with ASR(opt) as asr:
-                    asr.run()
-                # os.system(f"ls")
-                # os.system(f"python NeRF/nerf_triplane/wav2vec.py --wav {self.opt.aud} --save_feats")
-                aud_features = np.load(opt.asr_wav.replace('.wav', '_eo.npy'))
+                    parser.add_argument('--save_feats', action='store_true')
+                    # audio FPS
+                    parser.add_argument('--fps', type=int, default=50)
+                    # sliding window left-middle-right length.
+                    parser.add_argument('-l', type=int, default=10)
+                    parser.add_argument('-m', type=int, default=50)
+                    parser.add_argument('-r', type=int, default=10)
+                    
+                    opt = parser.parse_args()
+                    # fix
+                    opt.asr_wav = self.opt.aud
+                    opt.asr_play = opt.play
+                    opt.asr_save_feats = True
+                    opt.asr_model = opt.model
+                    # 利用预训练的Wav2vec来跑一下
+                    with ASR(opt) as asr:
+                        asr.run()
+                    # os.system(f"ls")
+                    # os.system(f"python NeRF/nerf_triplane/wav2vec.py --wav {self.opt.aud} --save_feats")
+                    aud_features = np.load(opt.aud.replace('.wav', '_eo.npy'))
+                elif self.opt.asr_model == 'deepspeech':
+                    os.system(f"python NeRF/data_utils/deepspeech_features/extract_ds_features.py --input {self.opt.aud}")
+                    aud_features = np.load(opt.aud.replace('.wav', '.npy'))
+                elif self.opt.asr_model == 'ave':
+                    from .network import AudioEncoder
+                    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+                    model = AudioEncoder().to(device).eval()
+                    ckpt = torch.load('./checkpoints/audio_visual_encoder.pth')
+                    model.load_state_dict({f'audio_encoder.{k}': v for k, v in ckpt.items()})
+                    dataset = AudDataset(self.opt.aud)
+                    data_loader = DataLoader(dataset, batch_size=64, shuffle=False)
+                    outputs = []
+                    for mel in data_loader:
+                        mel = mel.to(device)
+                        with torch.no_grad():
+                            out = model(mel)
+                        outputs.append(out)
+                    outputs = torch.cat(outputs, dim=0).cpu()
+                    first_frame, last_frame = outputs[:1], outputs[-1:]
+                    aud_features = torch.cat([first_frame.repeat(2, 1), outputs, last_frame.repeat(2, 1)], dim=0).numpy()
+                else:
+                    try:
+                        aud_features = np.load(self.opt.aud)
+                    except:
+                        print(f'[ERROR] If do not use Audio Visual Encoder, replace it with the npy file path')
             else:
                 raise NotImplementedError
                 
-            # aud_features = np.load(self.opt.aud)
+            if self.opt.asr_model == 'ave':
+                aud_features = torch.from_numpy(aud_features).unsqueeze(0)
 
-            aud_features = torch.from_numpy(aud_features)
+                # support both [N, 16] labels and [N, 16, K] logits
+                if len(aud_features.shape) == 3:
+                    aud_features = aud_features.float().permute(1, 0, 2)  # [N, 16, 29] --> [N, 29, 16]
 
-            # support both [N, 16] labels and [N, 16, K] logits
-            if len(aud_features.shape) == 3:
-                aud_features = aud_features.float().permute(0, 2, 1) # [N, 16, 29] --> [N, 29, 16]    
+                    if self.opt.emb:
+                        print(f'[INFO] argmax to aud features {aud_features.shape} for --emb mode')
+                        aud_features = aud_features.argmax(1)  # [N, 16]
 
-                if self.opt.emb:
-                    print(f'[INFO] argmax to aud features {aud_features.shape} for --emb mode')
-                    aud_features = aud_features.argmax(1) # [N, 16]
-            
+                else:
+                    assert self.opt.emb, "aud only provide labels, must use --emb"
+                    aud_features = aud_features.long()
+
+                print(f'[INFO] load {self.opt.aud} aud_features: {aud_features.shape}')
             else:
-                assert self.opt.emb, "aud only provide labels, must use --emb"
-                aud_features = aud_features.long()
+                aud_features = torch.from_numpy(aud_features)
 
-            print(f'[INFO] load {self.opt.aud} aud_features: {aud_features.shape}')
+                # support both [N, 16] labels and [N, 16, K] logits
+                if len(aud_features.shape) == 3:
+                    aud_features = aud_features.float().permute(0, 2, 1)  # [N, 16, 29] --> [N, 29, 16]
+
+                    if self.opt.emb:
+                        print(f'[INFO] argmax to aud features {aud_features.shape} for --emb mode')
+                        aud_features = aud_features.argmax(1)  # [N, 16]
+
+                else:
+                    assert self.opt.emb, "aud only provide labels, must use --emb"
+                    aud_features = aud_features.long()
+
+                print(f'[INFO] load {self.opt.aud} aud_features: {aud_features.shape}')
 
         self.poses = []
         self.auds = []
