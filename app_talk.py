@@ -29,10 +29,6 @@ preprocess_type = 'crop'
 facerender = 'facevid2vid'
 enhancer = False
 is_still_mode = False
-pic_path = "girl.png"
-crop_pic_path = "./inputs/first_frame_dir_girl/girl.png"
-first_coeff_path = "./inputs/first_frame_dir_girl/girl.mat"
-crop_info = ((403, 403), (19, 30, 502, 513), [40.05956541381802, 40.17324339233366, 443.7892505041507, 443.9029284826663])
 
 exp_weight = 1
 
@@ -77,10 +73,10 @@ def Talker_response(source_image, source_video, method = 'SadTalker', driven_aud
                         fps=20)
     elif method == 'Wav2Lip':
         video = wav2lip.predict(source_image, driven_audio, batch_size)
-    elif method == 'ERNeRF':
-        # video = ernerf.predict(source_image, driven_audio, batch_size)
-        pass
+    elif method == 'ER-NeRF':
+        video = ernerf.predict(driven_audio)
     else:
+        gr.Warning("不支持的方法：" + method)
         return None
     return video
 
@@ -136,25 +132,7 @@ def main():
 
             video_button.click(fn=Talker_response,inputs=[source_image, source_video, method, input_audio, batch_size] ,
                                outputs=[gen_video])
-
-        # with gr.Row():
-        #     with gr.Column(variant='panel'):
-        #             gr.Markdown("## Text Examples")
-        #             examples =  ['应对压力最有效的方法是什么？',
-        #                 '如何进行时间管理？',
-        #                 '为什么有些人选择使用纸质地图或寻求方向，而不是依赖GPS设备或智能手机应用程序？',
-        #                 '近日，苹果公司起诉高通公司，状告其未按照相关合约进行合作，高通方面尚未回应。这句话中“其”指的是谁？',
-        #                 '三年级同学种树80颗，四、五年级种的棵树比三年级种的2倍多14棵，三个年级共种树多少棵?',
-        #                 '撰写一篇交响乐音乐会评论，讨论乐团的表演和观众的整体体验。',
-        #                 '翻译成中文：Luck is a dividend of sweat. The more you sweat, the luckier you get.',
-        #                 ]
-        #             gr.Examples(
-        #                 examples = examples,
-        #                 fn = Talker_response,
-        #                 inputs = [input_text],
-        #                 outputs=[gen_video],
-        #                 # cache_examples = True,
-        #             )
+            
         with gr.Row():
             examples = [
                 [
@@ -198,19 +176,23 @@ if __name__ == "__main__":
         sadtalker = SadTalker(lazy_load=True)
     except Exception as e:
         print("SadTalker Error: ", e)
-        # print("如果使用SadTalker，请先下载SadTalker模型")
-        gr.Warning("如果使用SadTalker，请先下载SadTalker模型")
+        print("如果使用SadTalker，请先下载SadTalker模型")
+
     try:
         from TFG import Wav2Lip
         wav2lip = Wav2Lip("checkpoints/wav2lip_gan.pth")
     except Exception as e:
         print("Wav2Lip Error: ", e)
         print("如果使用Wav2Lip，请先下载Wav2Lip模型")
-    # try:
-    #     from TFG import ERNeRF
-    #     ernerf = ERNeRF()
-    # except Exception as e:
         
+    try:
+        from TFG import ERNeRF
+        ernerf = ERNeRF()
+        ernerf.init_model('checkpoints/Obama_ave.pth', 'checkpoints/Obama.json')
+    except Exception as e:
+        print("ERNeRF Error: ", e)
+        print("如果使用ERNeRF，请先下载ERNeRF模型")
+
     tts = EdgeTTS()
     gr.close_all()
     demo = main()
