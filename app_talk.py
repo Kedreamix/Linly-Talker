@@ -1,7 +1,7 @@
 import os
 import random 
 import gradio as gr
-from TTS import EdgeTTS
+
 from src.cost_time import calculate_time
 
 from configs import *
@@ -39,12 +39,20 @@ use_idle_mode = False
 length_of_audio = 5
 
 @calculate_time
-def TTS_response(text, voice, rate, volume, pitch):
-    try:
-        tts.predict(text, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
-    except:
-        os.system(f'edge-tts --text "{text}" --voice {voice} --write-media answer.wav')
-    return 'answer.wav'
+def TTS_response(text, 
+                 voice, rate, volume, pitch,
+                 am, voc, lang, male,
+                 tts_method = 'PaddleTTS', save_path = 'answer.wav'):
+    print(text, voice, rate, volume, pitch, am, voc, lang, male, tts_method, save_path)
+    if tts_method == 'Edge-TTS':
+        try:
+            edgetts.predict(text, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
+        except:
+            os.system(f'edge-tts --text "{text}" --voice {voice} --write-media answer.wav')
+        return 'answer.wav'
+    elif tts_method == 'PaddleTTS':
+        paddletts.predict(text, am, voc, lang = lang, male=male, save_path = save_path)
+        return save_path
 
 @calculate_time
 def Talker_response(source_image, source_video, method = 'SadTalker', driven_audio = '', batch_size = 2):
@@ -95,9 +103,15 @@ def main():
                 with gr.Tabs():
                     input_audio = gr.Audio(sources=['upload', 'microphone'], type="filepath", label = '语音')
                     input_text = gr.Textbox(label="Input Text", lines=3)
-                    
-                    with gr.Accordion("Advanced Settings(高级设置语音参数) ", open=False):
-                        voice = gr.Dropdown(tts.SUPPORTED_VOICE, 
+                    with gr.Column():
+                        tts_method = gr.Radio(["Edge-TTS", "PaddleTTS"], label="Text To Speech Method (Edge-TTS利用微软的TTS，PaddleSpeech是离线的TTS，不过第一次运行会自动下载模型)", 
+                                              value = 'Edge-TTS')
+                        
+                with gr.Tabs("TTS Method"):
+                    # with gr.Accordion("Advanced Settings(高级设置语音参数) ", open=False):
+                    with gr.Tab("Edge-TTS"):
+                        
+                        voice = gr.Dropdown(edgetts.SUPPORTED_VOICE, 
                                             value='zh-CN-XiaoxiaoNeural', 
                                             label="Voice")
                         rate = gr.Slider(minimum=-100,
@@ -115,13 +129,20 @@ def main():
                                             value=0,
                                             step=1,
                                             label='Pitch')
+                    with gr.Tab("PaddleTTS"):
+                        am = gr.Dropdown(["FastSpeech2"], label="声学模型选择", value = 'FastSpeech2')
+                        voc = gr.Dropdown(["PWGan", "HifiGan"], label="声码器选择", value = 'PWGan')
+                        lang = gr.Dropdown(["zh", "en", "mix", "canton"], label="语言选择", value = 'zh')
+                        male = gr.Checkbox(label="男声(Male)", value=False)
+                    with gr.Column(variant='panel'): 
                         batch_size = gr.Slider(minimum=1,
                                             maximum=10,
                                             value=2,
                                             step=1,
                                             label='Talker Batch size')
-                    button_text = gr.Button('语音生成')
-                    button_text.click(fn=TTS_response,inputs=[input_text, voice, rate, volume, pitch],outputs=[input_audio])
+                button_text = gr.Button('语音生成')
+                button_text.click(fn=TTS_response,inputs=[input_text, voice, rate, volume, pitch, am, voc, lang, male, tts_method],
+                                  outputs=[input_audio])
                         
             with gr.Column(variant='panel'): 
                 with gr.Tabs():
@@ -167,8 +188,6 @@ def main():
                             ], 
                         )
     return inference
-
-
     
 if __name__ == "__main__":
     try:
@@ -192,8 +211,21 @@ if __name__ == "__main__":
     except Exception as e:
         print("ERNeRF Error: ", e)
         print("如果使用ERNeRF，请先下载ERNeRF模型")
-
-    tts = EdgeTTS()
+    
+    try:
+        from TTS import EdgeTTS
+        edgetts = EdgeTTS()
+    except Exception as e:
+        print("EdgeTTS Error: ", e)
+        print("如果使用EdgeTTS，请先下载EdgeTTS模型")
+    
+    try:
+        from TTS import PaddleTTS
+        paddletts = PaddleTTS()
+    except Exception as e:
+        print("PaddleTTS Error: ", e)
+        print("如果使用PaddleTTS，请先下载PaddleTTS模型")
+        
     gr.close_all()
     demo = main()
     demo.queue()
