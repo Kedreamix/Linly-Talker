@@ -1,0 +1,3 @@
+paddlepaddle==2.5.1
+paddlespeech==1.4.1
+opencc==1.1.1

@@ -24,3 +24,10 @@ class ChatGPT():
         except Exception as e:
             print(e)
             return "对不起，你的请求出错了，请再次尝试。\nSorry, your request has encountered an error. Please try again.\n"
+        
+if __name__ == '__main__':
+    API_KEY = '******'
+    # 若使用ChatGPT，要保证自己的APIKEY可用，并且服务器可访问OPENAI
+    llm = ChatGPT(model_path='gpt-3.5-turbo', api_key=API_KEY, proxy_url=None)
+    answer = llm.generate("如何应对压力？")
+    print(answer)
