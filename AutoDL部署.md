@@ -107,7 +107,7 @@ git lfs clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
 ```bash
 # 移动所有模型到当前目录
 # checkpoint中含有SadTalker和Wav2Lip
-mv Linly-Talker/checkpoints/ ./
+mv Linly-Talker/checkpoints/* ./checkpoints
 
 # SadTalker的增强GFPGAN
 # pip install gfpgan
