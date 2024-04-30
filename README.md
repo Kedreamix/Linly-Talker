@@ -33,6 +33,12 @@
 - **I have incorporated the GPT-SoVITS model, which is a voice cloning method. By fine-tuning it with just one minute of a person's speech data, it can effectively clone their voice. The results are quite impressive and worth recommending.**
 - **I have integrated a web user interface (WebUI) that allows for better execution of Linly-Talker.**
 
+**2024.04 Update** 📆
+
+- **Updated the offline mode for Paddle TTS, excluding Edge TTS.**
+- **Updated ER-NeRF as one of the choices for Avatar generation.**
+- **Updated app_talk.py to allow for the free upload of voice and images/videos for generation without being based on a dialogue scenario.**
+
 ---
 
 <details>
@@ -102,6 +108,7 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 - [x] GPT `Multi-turn Dialogue System` (Enhance the interactivity and realism of digital entities, bolstering their intelligence)
 - [x] Optimized the Gradio interface by incorporating additional models such as Wav2Lip, FunASR, and others.
 - [x] `Voice Cloning` Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
+- [x] Integrate offline TTS (Text-to-Speech) along with NeRF-based methods and models.
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
@@ -150,6 +157,26 @@ pip install -r requirements_app.txt
 
 # Install dependencies for voice cloning
 pip install -r VITS/requirements_gptsovits.txt
+```
+
+If you wish to use NeRF-based models, you may need to set up the corresponding environment:
+
+```bash
+# Install dependencies for NeRF
+pip install "git+https://github.com/facebookresearch/pytorch3d.git"
+pip install -r TFG/requirements_nerf.txt
+
+# Note the following modules. If installation is unsuccessful, you can navigate to the path and use pip install . or python setup.py install to compile and install.
+# NeRF/freqencoder
+# NeRF/gridencoder
+# NeRF/raymarching
+# NeRF/shencoder
+```
+
+If you are using PaddleTTS, you can set up the corresponding environment with:
+
+```bash
+pip install -r TTS/requirements_paddle.txt
 ```
 
 Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
@@ -242,13 +269,17 @@ The speech recognition performance of Alibaba's FunASR is quite impressive and i
 
 
 
-## TTS - Edge TTS
+## TTS - Text To Speech
 
 For detailed information about the usage and code implementation of Text-to-Speech (TTS), please refer to [TTS - Empowering Digital Humans with Natural Speech Interaction](./TTS/README.md).
 
+### Edge TTS
+
 To use Microsoft Edge's online text-to-speech service from Python without needing Microsoft Edge or Windows or an API key, you can refer to the GitHub repository at [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts). It provides a Python module called "edge-tts" that allows you to utilize the service. You can find detailed installation instructions and usage examples in the repository's README file.
 
+### PaddleTTS
 
+In practical use, there may be scenarios that require offline operation. Since Edge TTS requires an online environment to generate speech, we have chosen PaddleSpeech, another open-source alternative, for Text-to-Speech (TTS). Although there might be some differences in the quality, PaddleSpeech supports offline operations. For more information, you can refer to the GitHub page of PaddleSpeech: [https://github.com/PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech).
 
 
 
@@ -316,7 +347,7 @@ Before usage, download the Wav2Lip model:
 
 ER-NeRF (ICCV 2023) is a digital human built using the latest NeRF technology. It allows for the customization of digital characters and can reconstruct them using just a five-minute video of a person. For more details, please refer to [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF).
 
-Further updates will be provided regarding this.
+Updates have been made in the app_talk.py section. If better results are desired, it might be considered to clone and customize the voice of a digital human to achieve improved effects.
 
 
 
@@ -489,6 +520,18 @@ Now, the part of voice cloning has been added, allowing for freely switching bet
 ```bash
 python app_vits.py
 ```
+
+A fourth method has been added, which does not fixate on a specific scenario for conversation. Instead, it allows for direct input of voice or the generation of voice for the creation of a digital human. It incorporates methods such as Sadtalker, Wav2Lip, and ER-NeRF.
+
+> ER-NeRF is trained on videos of a single individual, so a specific model needs to be replaced to render and obtain the correct results. It comes with pre-installed weights for Obama, which can be used directly with the following command:
+
+```bash
+python app_talk.py
+```
+
+![](docs/UI4.png)
+
+
 
 ## Folder structure
 

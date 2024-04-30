@@ -33,6 +33,12 @@
 - **加入了语音克隆方法GPT-SoVITS模型，能够通过微调一分钟对应人的语料进行克隆，效果还是相当不错的，值得推荐。**
 - **集成一个WebUI界面，能够更好的运行Linly-Talker。**
 
+**2024.04 更新** 📆
+
+- **更新了除 Edge TTS的 Paddle TTS的离线方式。**
+- **更新了ER-NeRF作为Avatar生成的选择之一。**
+- **更新了app_talk.py，在不基于对话场景可自由上传语音和图片视频生成。**
+
 ---
 
 <details>
@@ -100,6 +106,7 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 - [x] GPT`多轮对话`系统（提高数字人的交互性和真实感，增强数字人的智能）
 - [x] 优化Gradio界面，加入更多模型，如Wav2Lip，FunASR等
 - [x] `语音克隆`技术，加入GPT-SoVITS，只需要一分钟的语音简单微调即可（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
+- [x] 加入离线TTS以及NeRF-based的方法和模型
 - [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
 
 🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
@@ -148,6 +155,26 @@ pip install -r requirements_app.txt
 
 # 安装语音克隆对应的依赖
 pip install -r VITS/requirements_gptsovits.txt
+```
+
+若希望使用NeRF-based等模型等话，可能需要安装一下对应的环境
+
+```bash
+# 安装NeRF对应的依赖
+pip install "git+https://github.com/facebookresearch/pytorch3d.git"
+pip install -r TFG/requirements_nerf.txt
+
+# 注意以下几个模块，若安装不成功，可以进入路径利用pip install . 或者 python setup.py install编译安装
+# NeRF/freqencoder
+# NeRF/gridencoder
+# NeRF/raymarching
+# NeRF/shencoder
+```
+
+若使用PaddleTTS，可安装对应的环境
+
+```bash
+pip install -r TTS/requirements_paddle.txt
 ```
 
 接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明。
@@ -238,11 +265,19 @@ ssl_keyfile = "./https_cert/key.pem"
 
 
 
-## TTS - Edge TTS
+## TTS Text To Speech
 
 详细有关于语音识别的**使用介绍**与**代码实现**可见 [TTS - 赋予数字人真实的语音交互能力](./TTS/README.md)
 
+### Edge TTS
+
 借鉴使用微软语音服务，具体使用方法参考[https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)
+
+
+
+### PaddleTTS
+
+在实际使用过程中，可能会遇到需要离线操作的情况。由于Edge TTS需要在线环境才能生成语音，因此我们选择了同样开源的PaddleSpeech作为文本到语音（TTS）的替代方案。虽然可能在效果上会有所差异，但PaddleSpeech支持离线操作。更多信息可参考PaddleSpeech的GitHub页面：[https://github.com/PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)。https://github.com/PaddlePaddle/PaddleSpeech)
 
 
 
@@ -308,11 +343,11 @@ bash scripts/sadtalker_download_models.sh
 
 
 
-### ER-NeRF（Comming Soon）
+### ER-NeRF
 
 ER-NeRF（ICCV2023）是使用最新的NeRF技术构建的数字人，拥有定制数字人的特性，只需要一个人的五分钟左右到视频即可重建出来，具体可参考 [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF)
 
-后续会针对此更新
+已在app_talk.py部分更新，若考虑更好的效果，可能考虑克隆定制数字人的声音以得到更好的效果。
 
 
 
@@ -440,6 +475,16 @@ python app_multi.py
 ```bash
 python app_vits.py
 ```
+
+加入了第四种方式，不固定场景进行对话，直接输入语音或者生成语音进行数字人生成，内置了Sadtalker，Wav2Lip，ER-NeRF等方式
+
+> ER-NeRF是针对单独一个人的视频进行训练的，所以需要替换特定的模型才能进行渲染得到正确的结果，内置了Obama的权重，可直接用
+
+```bash
+python app_talk.py
+```
+
+![](docs/UI4.png)
 
 ## 文件夹结构
 
