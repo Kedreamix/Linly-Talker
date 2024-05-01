@@ -96,6 +96,13 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 ![The system architecture of multimodal human–computer interaction.](docs/HOI_en.png)
 
 > You can watch the demo video [here](https://www.bilibili.com/video/BV1rN4y1a76x/).
+>
+> I have recorded a series of videos on Bilibili, which also represent every step of my updates and methods of use. For detailed information, please refer to [Digital Human Dialogue System - Linly-Talker Collection](https://space.bilibili.com/241286257/channel/collectiondetail?sid=2065753).
+>
+> - [🔥🔥🔥 Digital Human Dialogue System Linly-Talker 🔥🔥🔥](https://www.bilibili.com/video/BV1rN4y1a76x/)
+> - [🚀 The Future of Digital Humans: The Empowerment Path of Linly-Talker + GPT-SoVIT Voice Cloning Technology](https://www.bilibili.com/video/BV1S4421A7gh/)
+> - [Deploying Linly-Talker on AutoDL Platform (Super Detailed Tutorial for Beginners)](https://www.bilibili.com/video/BV1uT421m74z/)
+> - [Linly-Talker Update: Offline TTS Integration and Customized Digital Human Solutions](https://www.bilibili.com/video/BV1Mr421u7NN/)
 
 ## TO DO LIST
 

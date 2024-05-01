@@ -94,6 +94,13 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 ![The system architecture of multimodal human–computer interaction.](docs/HOI.png)
 
 > 查看我们的介绍视频 [demo video](https://www.bilibili.com/video/BV1rN4y1a76x/)
+>
+> 在B站上我录了一系列视频，也代表我更新的每一步与使用方法，详细查看[数字人智能对话系统 - Linly-Talker合集](https://space.bilibili.com/241286257/channel/collectiondetail?sid=2065753)
+>
+> -  [🔥🔥🔥数字人对话系统 Linly-Talker🔥🔥🔥](https://www.bilibili.com/video/BV1rN4y1a76x/)
+> - [🚀数字人的未来：Linly-Talker+GPT-SoVIT语音克隆技术的赋能之道](https://www.bilibili.com/video/BV1S4421A7gh/)
+> - [AutoDL平台部署Linly-Talker (0基础小白超详细教程)](https://www.bilibili.com/video/BV1uT421m74z/)
+> - [Linly-Talker 更新离线TTS集成及定制数字人方案](https://www.bilibili.com/video/BV1Mr421u7NN/)
 
 ## TO DO LIST
 
