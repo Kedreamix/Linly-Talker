@@ -118,15 +118,15 @@ def LLM_response(question_audio, question, voice = 'zh-CN-XiaoxiaoNeural', rate 
 def Talker_response(question_audio = None, method = 'SadTalker', text = '', voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, batch_size = 2, character = '女性角色'):
     if character == '女性角色':
         # 女性角色
-        source_image, pic_path = r'girl.png', r"girl.png"
+        source_image, pic_path = r'inputs/girl.png', r'inputs/girl.png'
         crop_pic_path = "./inputs/first_frame_dir_girl/girl.png"
         first_coeff_path = "./inputs/first_frame_dir_girl/girl.mat"
         crop_info = ((403, 403), (19, 30, 502, 513), [40.05956541381802, 40.17324339233366, 443.7892505041507, 443.9029284826663])
         default_voice = 'zh-CN-XiaoxiaoNeural'
     elif character == '男性角色':
         # 男性角色
-        source_image = r'boy.png'
-        pic_path = "boy.png"
+        source_image = r'./inputs/boy.png'
+        pic_path = "./inputs/boy.png"
         crop_pic_path = "./inputs/first_frame_dir_boy/boy.png"
         first_coeff_path = "./inputs/first_frame_dir_boy/boy.mat"
         crop_info = ((876, 747), (0, 0, 886, 838), [10.382158280494476, 0, 886, 747.7078990925525])
@@ -184,15 +184,15 @@ def human_respone(history, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0,
     driven_audio, video_vtt = 'answer.wav', 'answer.vtt'
     if character == '女性角色':
         # 女性角色
-        source_image, pic_path = r'girl.png', r"girl.png"
+        source_image, pic_path = r'./inputs/girl.png', r"./inputs/girl.png"
         crop_pic_path = "./inputs/first_frame_dir_girl/girl.png"
         first_coeff_path = "./inputs/first_frame_dir_girl/girl.mat"
         crop_info = ((403, 403), (19, 30, 502, 513), [40.05956541381802, 40.17324339233366, 443.7892505041507, 443.9029284826663])
         default_voice = 'zh-CN-XiaoxiaoNeural'
     elif character == '男性角色':
         # 男性角色
-        source_image = r'boy.png'
-        pic_path = "boy.png"
+        source_image = r'./inputs/boy.png'
+        pic_path = "./inputs/boy.png"
         crop_pic_path = "./inputs/first_frame_dir_boy/boy.png"
         first_coeff_path = "./inputs/first_frame_dir_boy/boy.mat"
         crop_info = ((876, 747), (0, 0, 886, 838), [10.382158280494476, 0, 886, 747.7078990925525])

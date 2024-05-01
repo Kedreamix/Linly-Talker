@@ -28,14 +28,14 @@ description = """<p style="text-align: center; font-weight: bold;">
 """
 
 # 设定默认参数值，可修改
-source_image = r'boy.png'
+source_image = r'./inputs/boy.png'
 blink_every = True
 size_of_image = 256
 preprocess_type = 'crop'
 facerender = 'facevid2vid'
 enhancer = False
 is_still_mode = False
-pic_path = "boy.png"
+pic_path = "./inputs/boy.png"
 crop_pic_path = "./inputs/first_frame_dir_boy/boy.png"
 first_coeff_path = "./inputs/first_frame_dir_boy/boy.mat"
 crop_info = ((876, 747), (0, 0, 886, 838), [10.382158280494476, 0, 886, 747.7078990925525])

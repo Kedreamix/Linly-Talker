@@ -37,7 +37,7 @@ facerender = 'facevid2vid'
 enhancer = False
 is_still_mode = False
 # pose_style = gr.Slider(minimum=0, maximum=45, step=1, label="Pose style", value=0)
-pic_path = "girl.png"
+pic_path = "./inputs/girl.png"
 crop_pic_path = "./inputs/first_frame_dir_girl/girl.png"
 first_coeff_path = "./inputs/first_frame_dir_girl/girl.mat"
 crop_info = ((403, 403), (19, 30, 502, 513), [40.05956541381802, 40.17324339233366, 443.7892505041507, 443.9029284826663])
