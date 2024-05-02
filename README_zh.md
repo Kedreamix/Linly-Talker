@@ -171,6 +171,9 @@ pip install -r VITS/requirements_gptsovits.txt
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 pip install -r TFG/requirements_nerf.txt
 
+# 若pyaudio出现问题，可安装对应依赖
+# sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
+
 # 注意以下几个模块，若安装不成功，可以进入路径利用pip install . 或者 python setup.py install编译安装
 # NeRF/freqencoder
 # NeRF/gridencoder

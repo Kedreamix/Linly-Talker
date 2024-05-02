@@ -173,6 +173,9 @@ If you wish to use NeRF-based models, you may need to set up the corresponding e
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 pip install -r TFG/requirements_nerf.txt
 
+# If there are issues with PyAudio, you can install the corresponding dependencies
+# sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
+
 # Note the following modules. If installation is unsuccessful, you can navigate to the path and use pip install . or python setup.py install to compile and install.
 # NeRF/freqencoder
 # NeRF/gridencoder
