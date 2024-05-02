@@ -3,9 +3,10 @@
 <!-- TOC -->
 
 - [在AutoDL平台部署Linly-Talker 0基础小白超详细教程](#%E5%9C%A8autodl%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2linly-talker-0%E5%9F%BA%E7%A1%80%E5%B0%8F%E7%99%BD%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B)
+    - [快速上手直接使用镜像以下安装操作全免](#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8%E9%95%9C%E5%83%8F%E4%BB%A5%E4%B8%8B%E5%AE%89%E8%A3%85%E6%93%8D%E4%BD%9C%E5%85%A8%E5%85%8D)
     - [一、注册AutoDL](#%E4%B8%80%E6%B3%A8%E5%86%8Cautodl)
     - [二、创建实例](#%E4%BA%8C%E5%88%9B%E5%BB%BA%E5%AE%9E%E4%BE%8B)
-        - [登录AutoDL，进入算力市场，选择RTX 3090机器。](#%E7%99%BB%E5%BD%95autodl%E8%BF%9B%E5%85%A5%E7%AE%97%E5%8A%9B%E5%B8%82%E5%9C%BA%E9%80%89%E6%8B%A9rtx-3090%E6%9C%BA%E5%99%A8)
+        - [登录AutoDL，进入算力市场，选择机器](#%E7%99%BB%E5%BD%95autodl%E8%BF%9B%E5%85%A5%E7%AE%97%E5%8A%9B%E5%B8%82%E5%9C%BA%E9%80%89%E6%8B%A9%E6%9C%BA%E5%99%A8)
         - [配置基础镜像](#%E9%85%8D%E7%BD%AE%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F)
         - [无卡模式开机](#%E6%97%A0%E5%8D%A1%E6%A8%A1%E5%BC%8F%E5%BC%80%E6%9C%BA)
     - [三、部署环境](#%E4%B8%89%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83)
@@ -18,9 +19,26 @@
         - [有卡开机](#%E6%9C%89%E5%8D%A1%E5%BC%80%E6%9C%BA)
         - [运行网页版对话webui](#%E8%BF%90%E8%A1%8C%E7%BD%91%E9%A1%B5%E7%89%88%E5%AF%B9%E8%AF%9Dwebui)
         - [端口映射](#%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84)
-    - [体验Linly-Talker（成功）](#%E4%BD%93%E9%AA%8Clinly-talker%E6%88%90%E5%8A%9F)
+        - [体验Linly-Talker（成功）](#%E4%BD%93%E9%AA%8Clinly-talker%E6%88%90%E5%8A%9F)
 
 <!-- /TOC -->
+
+
+
+## 快速上手直接使用镜像(以下安装操作全免)
+
+若使用我设定好的镜像，可以直接运行即可，不需要安装环境，直接运行webui.py或者是app_talk.py即可体验，不需要安装任何环境，可直接跳到4.4即可
+
+访问后在自定义设置里面打开端口，默认是6006端口，直接使用运行即可！
+
+```bash
+python webui.py
+python app_talk.py
+```
+
+环境模型都安装好了，直接使用即可，镜像地址在：[https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker)，感谢大家的支持
+
+
 
 ## 一、注册AutoDL
 
@@ -30,7 +48,7 @@
 
 ## 二、创建实例
 
-### 2.1 登录AutoDL，进入算力市场，选择RTX 3090机器。
+### 2.1 登录AutoDL，进入算力市场，选择机器
 
 这一部分实际上我觉得12g都OK的，无非是速度问题而已
 
@@ -199,7 +217,7 @@ python webui.py
 
 
 
-## 4.5 体验Linly-Talker（成功）
+### 4.5 体验Linly-Talker（成功）
 
 点开网页，即可正确执行Linly-Talker，这一部分就跟视频一模一样了
 
