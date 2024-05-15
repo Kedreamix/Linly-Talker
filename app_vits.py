@@ -66,7 +66,7 @@ def LLM_response(question_audio, question, voice = 'zh-CN-XiaoxiaoNeural', rate 
         try:
             tts.predict(answer, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
         except:
-            os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
+            os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav --write-subtitles answer.vtt')
     elif voice == "克隆烟嗓音":
         gpt_path = "../GPT-SoVITS/GPT_weights/yansang-e15.ckpt"
         sovits_path = "../GPT-SoVITS/SoVITS_weights/yansang_e16_s144.pth"

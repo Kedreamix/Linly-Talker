@@ -40,14 +40,19 @@ def Asr(audio):
     return question
 
 @calculate_time
+def TTS_response(text, 
+                 voice, rate, volume, pitch,):
+    try:
+        tts.predict(text, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
+    except:
+        os.system(f'edge-tts --text "{text}" --voice {voice} --write-media answer.wav')
+    return 'answer.wav', 'answer.vtt'
+
+@calculate_time
 def LLM_response(question, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0):
-    #answer = llm.predict(question)
     answer = llm.generate(question)
     print(answer)
-    try:
-        tts.predict(answer, voice, rate, volume, pitch , 'answer.wav', 'answer.vtt')
-    except:
-        os.system(f'edge-tts --text "{answer}" --voice {voice} --write-media answer.wav')
+    TTS_response(answer, voice, rate, volume, pitch)
     return 'answer.wav', 'answer.vtt', answer
 
 @calculate_time
