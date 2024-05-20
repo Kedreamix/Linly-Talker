@@ -1,11 +1,11 @@
+import sys
+sys.path.append('./')
+
 import numpy as np
 import cv2, os,  subprocess
 from tqdm import tqdm
 import torch
 import platform
-
-# import sys
-# sys.path.append('..')
 from src.models import Wav2Lip as wav2lip_mdoel
 from src.utils import audio
 import face_detection
@@ -49,7 +49,7 @@ class Wav2Lip:
     #     else:
     #         return None
                    
-    def predict(self, face, audio_file, batch_size):
+    def predict(self, face, audio_file, batch_size, enhance = False):
         os.makedirs('results', exist_ok=True)
         os.makedirs('temp', exist_ok=True)
         frame = cv2.imread(face)
@@ -99,9 +99,29 @@ class Wav2Lip:
                 out.write(f)
 
         out.release()
+        if enhance:
+            import imageio
+            from src.utils.face_enhancer import enhancer_generator_with_len, enhancer_list
+            enhancer = 'gfpgan'
+            background_enhancer = None
+            video_save_dir = 'results'
+            video_name_enhance = 'res_enhanced.mp4'
+            enhanced_path = os.path.join(video_save_dir, 'temp_'+video_name_enhance)
+            av_path_enhancer = os.path.join(video_save_dir, video_name_enhance) 
+            return_path = av_path_enhancer
+            full_video_path = 'temp/result.avi'
+            try:
+                enhanced_images_gen_with_len = enhancer_generator_with_len(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
+                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(self.fps))
 
-        command = 'ffmpeg -y -i {} -i {} -strict -2 -q:v 1 {}'.format(audio_file, 'temp/result.avi', 'results/example_answer.mp4')
-        subprocess.call(command, shell=platform.system() != 'Windows')
+            except:
+                enhanced_images_gen_with_len = enhancer_list(full_video_path, method=enhancer, bg_upsampler=background_enhancer)
+                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(self.fps))
+            command = 'ffmpeg -y -i {} -i {} -strict -2 -q:v 1 {}'.format(audio_file, enhanced_path, 'results/example_answer.mp4')
+            subprocess.call(command, shell=platform.system() != 'Windows')
+        else:
+            command = 'ffmpeg -y -i {} -i {} -strict -2 -q:v 1 {}'.format(audio_file, 'temp/result.avi', 'results/example_answer.mp4')
+            subprocess.call(command, shell=platform.system() != 'Windows')
         return 'results/example_answer.mp4'
 
 
@@ -212,5 +232,7 @@ class Wav2Lip:
         return boxes
     
 if __name__ == '__main__':
-    wav2lip = Wav2Lip('../checkpoints/wav2lip.pth')
-    wav2lip.predict('../example.png', '../answer.wav', 2)
+    current_dir = './'
+    wav2lip = Wav2Lip(os.path.join(current_dir,'checkpoints/wav2lip.pth'))
+    wav2lip.predict(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 2, enhance=False)
+    wav2lip.predict(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 2, enhance=True)

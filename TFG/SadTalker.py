@@ -1,3 +1,6 @@
+import sys
+sys.path.append('./')
+
 import torch, uuid
 import os, sys, shutil, platform
 # from src.facerender.pirender_animate import AnimateFromCoeff_PIRender
@@ -293,3 +296,11 @@ class SadTalker():
         import gc; gc.collect()
         
         return return_path
+    
+    
+if __name__ == '__main__':
+    sadtalker = SadTalker()
+    source_image = "inputs/girl.png"
+    source_audio = "answer.wav"
+    sadtalker.test2(source_image, source_audio, use_idle_mode=True, length_of_audio=5, result_dir='results/')
+    
