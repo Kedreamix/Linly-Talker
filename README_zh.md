@@ -39,11 +39,14 @@
 - **更新了ER-NeRF作为Avatar生成的选择之一。**
 - **更新了app_talk.py，在不基于对话场景可自由上传语音和图片视频生成。**
 
+**2024.05 更新** 📆
+
+- **更新了WebUI.py，Linly-Talker WebUI支持多模块、多模型和多选项**
+
 ---
 
 <details>
 <summary>目录</summary>
-
 <!-- TOC -->
 
 - [数字人对话系统 - Linly-Talker —— “数字人交互，与虚拟的自己互动”](#数字人对话系统---linly-talker--数字人交互与虚拟的自己互动)
@@ -114,6 +117,8 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 - [x] 优化Gradio界面，加入更多模型，如Wav2Lip，FunASR等
 - [x] `语音克隆`技术，加入GPT-SoVITS，只需要一分钟的语音简单微调即可（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
 - [x] 加入离线TTS以及NeRF-based的方法和模型
+- [x] Linly-Talker WebUI支持多模块、多模型和多选项
+- [ ] 为Linly-Talker添加MuseV和MuseTalk功能
 - [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
 
 🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
@@ -130,6 +135,12 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 | 翻译成中文：Luck is a dividend of sweat. The more you sweat, the luckier you get. | <video src="https://github.com/Kedreamix/Linly-Talker/assets/61195303/118eec13-a9f7-4c38-b4ad-044d36ba9776"></video> |
 
 ## 创建环境
+
+AutoDL已发布镜像，可以直接使用，[https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker)，也可以使用docker来直接创建环境，我也会持续不断的更新镜像
+
+```bash
+docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:XAw1l9jRjl
+```
 
 首先使用anaconda安装环境，安装pytorch环境，具体操作如下：
 
@@ -154,7 +165,7 @@ pip install -r requirements_app.txt
 conda create -n linly python=3.10  
 conda activate linly
 
-pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
+pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
 conda install -q ffmpeg # ffmpeg==4.2.2
 
@@ -187,6 +198,12 @@ pip install -r TFG/requirements_nerf.txt
 pip install -r TTS/requirements_paddle.txt
 ```
 
+若使用FunASA语音识别模型，可安装环境
+
+```
+pip intall -r ASR/requirements_funasr.py
+```
+
 接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明。
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
@@ -195,12 +212,17 @@ pip install -r TTS/requirements_paddle.txt
 
 **HuggingFace下载**
 
-如果速度太慢可以考虑镜像，参考[简便快捷获取 Hugging Face 模型（使用镜像站点）](https://kedreamix.github.io/2024/01/05/Note/HuggingFace/?highlight=镜像)
+如果速度太慢可以考虑镜像，参考 [简便快捷获取 Hugging Face 模型（使用镜像站点）](https://kedreamix.github.io/2024/01/05/Note/HuggingFace/?highlight=镜像)
 
 ```bash
 # 从huggingface下载预训练模型
 git lfs install
 git clone https://huggingface.co/Kedreamix/Linly-Talker
+# git lfs clone https://huggingface.co/Kedreamix/Linly-Talker
+
+# pip install -U huggingface_hub
+# export HF_ENDPOINT=https://hf-mirror.com # 使用镜像网站
+huggingface-cli download --resume-download --local-dir-use-symlinks False Kedreamix/Linly-Talker --local-dir Linly-Talker
 ```
 
 **ModelScope下载**
@@ -210,6 +232,7 @@ git clone https://huggingface.co/Kedreamix/Linly-Talker
 # 1. git 方法
 git lfs install
 git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
+# git lfs clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
 
 # 2. Python 代码下载
 pip install modelscope
@@ -219,14 +242,14 @@ model_dir = snapshot_download('Kedreamix/Linly-Talker')
 
 **移动所有模型到当前目录**
 
-如果百度网盘下载后，可以参考文档最后目录结构来移动
+如果百度网盘下载后，可以参考文档最后目录结构来移动目录
 
 ```bash
 # 移动所有模型到当前目录
-# checkpoint中含有SadTalker和Wav2Lip
+# checkpoint中含有SadTalker和Wav2Lip等权重
 mv Linly-Talker/checkpoints/* ./checkpoints
 
-# SadTalker的增强GFPGAN
+# 若使用GFPGAN增强，安装对应的库
 # pip install gfpgan
 # mv Linly-Talker/gfpan ./
 
@@ -241,7 +264,8 @@ mv Linly-Talker/Qwen ./
 
 ```bash
 # 设备运行端口 (Device running port)
-port = 7860
+port = 6006
+
 # api运行端口及IP (API running port and IP)
 mode = 'api' # api 需要先运行Linly-api-fast.py，暂时仅仅适用于Linly
 
@@ -249,7 +273,7 @@ mode = 'api' # api 需要先运行Linly-api-fast.py，暂时仅仅适用于Linly
 ip = '127.0.0.1' 
 api_port = 7871
 
-# L模型路径 (Linly model path)
+# LLM模型路径 (Linly model path)
 mode = 'offline'
 model_path = 'Qwen/Qwen-1_8B-Chat'
 
@@ -275,6 +299,10 @@ ssl_keyfile = "./https_cert/key.pem"
 
 
 
+### Coming Soon
+
+欢迎大家提出建议，激励我不断更新模型，丰富Linly-Talker的功能。
+
 ## TTS Text To Speech
 
 详细有关于语音识别的**使用介绍**与**代码实现**可见 [TTS - 赋予数字人真实的语音交互能力](./TTS/README.md)
@@ -287,7 +315,11 @@ ssl_keyfile = "./https_cert/key.pem"
 
 ### PaddleTTS
 
-在实际使用过程中，可能会遇到需要离线操作的情况。由于Edge TTS需要在线环境才能生成语音，因此我们选择了同样开源的PaddleSpeech作为文本到语音（TTS）的替代方案。虽然可能在效果上会有所差异，但PaddleSpeech支持离线操作。更多信息可参考PaddleSpeech的GitHub页面：[https://github.com/PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)。https://github.com/PaddlePaddle/PaddleSpeech)
+在实际使用过程中，可能会遇到需要离线操作的情况。由于Edge TTS需要在线环境才能生成语音，因此我们选择了同样开源的PaddleSpeech作为文本到语音（TTS）的替代方案。虽然效果可能有所不同，但PaddleSpeech支持离线操作。更多信息可参考PaddleSpeech的GitHub页面：[PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)。
+
+### Coming Soon
+
+欢迎大家提出建议，激励我不断更新模型，丰富Linly-Talker的功能。
 
 
 
@@ -317,6 +349,10 @@ Coqui XTTS是一个领先的深度学习文本到语音任务（TTS语音生成�
 - 官方Github库 https://github.com/coqui-ai/TTS
 
 
+
+### Coming Soon
+
+欢迎大家提出建议，激励我不断更新模型，丰富Linly-Talker的功能。
 
 
 
@@ -357,7 +393,13 @@ bash scripts/sadtalker_download_models.sh
 
 ER-NeRF（ICCV2023）是使用最新的NeRF技术构建的数字人，拥有定制数字人的特性，只需要一个人的五分钟左右到视频即可重建出来，具体可参考 [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF)
 
-已在app_talk.py部分更新，若考虑更好的效果，可能考虑克隆定制数字人的声音以得到更好的效果。
+已更新，以奥巴马形象作为参考，若考虑更好的效果，可能考虑克隆定制数字人的声音以得到更好的效果。
+
+
+
+### Coming Soon
+
+欢迎大家提出建议，激励我不断更新模型，丰富Linly-Talker的功能。
 
 
 
@@ -389,19 +431,27 @@ Linly来自深圳大学数据工程国家重点实验室，参考 [https://githu
 
 
 
+### ChatGPT
+
+来自OpenAI的，需要申请API，了解更多请访问 [https://platform.openai.com/docs/introduction](https://platform.openai.com/docs/introduction)
+
+
+
+### ChatGLM
+
+来自清华的，了解更多请访问 [https://github.com/THUDM/ChatGLM3](https://github.com/THUDM/ChatGLM3)
+
+
+
 ### LLM 多模型选择
 
-在 app.py 文件中，轻松选择您需要的模型。
+在 webui.py 文件中，轻松选择您需要的模型，⚠️第一次运行要先下载模型，参考Qwen1.8B
 
-```python
-# 可以注释掉选择模型
-# llm = LLM(mode='offline').init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
-# llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
-# llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
 
-# 可以通过config来设置模型
-llm = LLM(mode=mode).init_model('Qwen', model_path)
-```
+
+### Coming Soon
+
+欢迎大家提出建议，激励我不断更新模型，丰富Linly-Talker的功能。
 
 
 
@@ -410,9 +460,14 @@ llm = LLM(mode=mode).init_model('Qwen', model_path)
 一些优化:
 
 - 使用固定的输入人脸图像,提前提取特征,避免每次读取
+
 - 移除不必要的库,缩短总时间
+
 - 只保存最终视频输出,不保存中间结果,提高性能
+
 - 使用OpenCV生成最终视频,比mimwrite更快
+
+  
 
 ## Gradio
 
@@ -428,16 +483,37 @@ Gradio是一个Python库,提供了一种简单的方式将机器学习模型作�
 
 总之,Gradio为Linly-Talker提供了可视化和用户交互的接口,是展示系统功能和让最终用户使用系统的有效途径。
 
+> 若考虑实时对话，可能需要换个框架，或者对Gradio进行魔改，希望和大家一起努力
+
 ## 启动WebUI
 
 之前我将很多个版本都是分开来的，实际上运行多个会比较麻烦，所以后续我增加了变成WebUI一个界面即可体验，后续也会不断更新
 
+### WebUI
+
 现在已加入WebUI的功能如下
 
 - [x] 文本/语音数字人对话（固定数字人，分男女角色）
-- [x] 任意图片数字人对话（可上传任意数字人）
+
+- [x] 任意图片数字人对话（可上传任意图片数字人）
+
 - [x] 多轮GPT对话（加入历史对话数据，链接上下文）
-- [x] 语音克隆对话（基于GPT-SoVITS设置进行语音克隆，内置烟嗓音，可根据语音对话的声音进行克隆）
+
+- [x] 语音克隆对话（基于GPT-SoVITS设置进行语音克隆，也可根据语音对话的声音进行克隆）
+
+- [x] 数字人文本/语音播报（根据输入的文字/语音进行播报）
+
+- [x] 多模块➕多模型➕多选择
+
+  - [ ] 角色多选择：女性角色/男性角色/自定义角色(每一部分都可以自动上传图片) Comming Soon
+  - [x] TTS模型多选择：EdgeTTS / PaddleTTS/ GPT-SoVITS/Comming Soon
+  - [x] LLM模型多选择： Linly/ Qwen / ChatGLM/ GeminiPro/ ChatGPT/Comming Soon
+  - [x] Talker模型多选择：Wav2Lip/ SadTalker/ ERNeRF/ MuseTalk(comming soon)/Comming Soon
+  - [x] ASR模型多选择：Whisper/ FunASR/Comming Soon
+
+  ![](docs/WebUI2.png)
+
+可以直接运行webui来得到结果，可以看到的页面如下
 
 ```bash
 # WebUI
@@ -448,7 +524,17 @@ python webui.py
 
 
 
-现在的启动一共有几种模式，可以选择特定的场景进行设置
+这次更新了一下界面，我们可以自由选择GPT-SoVITS微调后的模型来实现，上传参考音频即可很好的克隆声音
+
+![](docs/WebUI3.png)
+
+
+
+### Old Verison
+
+> 这一部分是为了保证每部份代码都是正确的，所以会先对每一个模块都进行测试和改进
+
+启动一共有几种模式，可以选择特定的场景进行设置
 
 第一种只有固定了人物问答，设置好了人物，省去了预处理时间
 
@@ -496,29 +582,40 @@ python app_talk.py
 
 ![](docs/UI4.png)
 
+
+
 ## 文件夹结构
 
-所有的权重部分可以从这下载
+所有的权重部分可以从这下载，百度网盘可能有时候会更新慢一点
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files) comming soon
+- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files)
 
 权重文件夹结构如下
 
 ```bash
 Linly-Talker/ 
 ├── checkpoints
-│   ├── hub
-│   │   └── checkpoints
-│   │       └── s3fd-619a316812.pth
-│   ├── lipsync_expert.pth
-│   ├── mapping_00109-model.pth.tar
-│   ├── mapping_00229-model.pth.tar
-│   ├── SadTalker_V0.0.2_256.safetensors
-│   ├── visual_quality_disc.pth
-│   ├── wav2lip_gan.pth
-│   └── wav2lip.pth
+│   ├── audio_visual_encoder.pth
+│   ├── hub
+│   │   └── checkpoints
+│   │       └── s3fd-619a316812.pth
+│   ├── lipsync_expert.pth
+│   ├── mapping_00109-model.pth.tar
+│   ├── mapping_00229-model.pth.tar
+│   ├── May.json
+│   ├── May.pth
+│   ├── Obama_ave.pth
+│   ├── Obama.json
+│   ├── Obama.pth
+│   ├── ref_eo.npy
+│   ├── ref.npy
+│   ├── ref.wav
+│   ├── SadTalker_V0.0.2_256.safetensors
+│   ├── visual_quality_disc.pth
+│   ├── wav2lip_gan.pth
+│   └── wav2lip.pth
 ├── gfpgan
 │   └── weights
 │       ├── alignment_WFLW_4HG.pth
@@ -538,6 +635,20 @@ Linly-Talker/
 │       ├── s2D488k.pth
 │       ├── s2G488k.pth
 │       └── speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch
+├── MuseTalk
+│   ├── dwpose
+│   │   └── dw-ll_ucoco_384.pth
+│   ├── face-parse-bisent
+│   │   ├── 79999_iter.pth
+│   │   └── resnet18-5c106cde.pth
+│   ├── musetalk
+│   │   ├── musetalk.json
+│   │   └── pytorch_model.bin
+│   ├── sd-vae-ft-mse
+│   │   ├── config.json
+│   │   └── diffusion_pytorch_model.bin
+│   └── whisper
+│       └── tiny.pt
 ├── Qwen
 │   └── Qwen-1_8B-Chat
 │       ├── assets
@@ -580,17 +691,21 @@ Linly-Talker/
 **TTS**
 
 - [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)  
+- [https://github.com/PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)
 
 **LLM**
 
 - [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
 - [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
 - [https://deepmind.google/technologies/gemini/](https://deepmind.google/technologies/gemini/)
+- [https://github.com/THUDM/ChatGLM3](https://github.com/THUDM/ChatGLM3)
+- [https://openai.com](https://openai.com)
 
 **THG**
 
 - [https://github.com/OpenTalker/SadTalker](https://github.com/OpenTalker/SadTalker)
 - [https://github.com/Rudrabha/Wav2Lip](https://github.com/Rudrabha/Wav2Lip)
+- [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF)
 
 **Voice Clone**
 

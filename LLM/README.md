@@ -208,21 +208,15 @@ model_dir = snapshot_download('qwen/Qwen-1_8B-Chat')
 
 
 
-### LLM 多模型选择
+### ChatGPT
 
-在 app.py 文件中，轻松选择您需要的模型。
-
-```python
-# 可以注释掉选择模型
-# llm = LLM(mode='offline').init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
-# llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
-# llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
-
-# 可以通过config来设置模型
-llm = LLM(mode=mode).init_model('Qwen', model_path)
-```
+ChatGPT由OpenAI开发，需要申请API。更多信息请访问 [OpenAI平台文档](https://platform.openai.com/docs/introduction)。
 
 
+
+### ChatGLM
+
+ChatGLM由清华大学开发，更多信息请访问 [ChatGLM GitHub页面](https://github.com/THUDM/ChatGLM3)。
 
 
 
