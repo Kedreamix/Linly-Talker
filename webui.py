@@ -973,7 +973,7 @@ def talker_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
         except Exception as e:
             gr.Warning("ER-NeRF模型下载失败", e)
     else:
-        gr.Warning("未知ASR模型，可提issue和PR 或者 建议更新模型")
+        gr.Warning("未知TFG模型，可提issue和PR 或者 建议更新模型")
     return model_name
 
 def tts_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
