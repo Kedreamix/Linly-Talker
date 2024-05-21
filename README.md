@@ -39,6 +39,10 @@
 - **Updated ER-NeRF as one of the choices for Avatar generation.**
 - **Updated app_talk.py to allow for the free upload of voice and images/videos for generation without being based on a dialogue scenario.**
 
+**2024.05 Update** 📆
+
+- **Updated WebUI.py: Linly-Talker WebUI now supports multiple modules, multiple models, and multiple options**
+
 ---
 
 <details>
@@ -116,6 +120,8 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 - [x] Optimized the Gradio interface by incorporating additional models such as Wav2Lip, FunASR, and others.
 - [x] `Voice Cloning` Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
 - [x] Integrate offline TTS (Text-to-Speech) along with NeRF-based methods and models.
+- [x] Linly-Talker WebUI supports multiple modules, multiple models, and multiple options
+- [ ] Add MuseV and MuseTalk functionality to Linly-Talker
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
@@ -132,6 +138,12 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 | 翻译成中文：Luck is a dividend of sweat. The more you sweat, the luckier you get. | <video src="https://github.com/Kedreamix/Linly-Talker/assets/61195303/118eec13-a9f7-4c38-b4ad-044d36ba9776"></video> |
 
 ## Setup Environment
+
+AutoDL has released an image, which can be used directly at [https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker). You can also create an environment directly using Docker. I will continue to update the image.
+
+```bash
+docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:XAw1l9jRjl
+```
 
 To install the environment using Anaconda and PyTorch, follow the steps below:
 
@@ -156,7 +168,7 @@ If you want to use models like voice cloning, you may need a higher version of P
 conda create -n linly python=3.10  
 conda activate linly
 
-pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
+pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
 conda install -q ffmpeg # ffmpeg==4.2.2
 
@@ -189,6 +201,12 @@ If you are using PaddleTTS, you can set up the corresponding environment with:
 pip install -r TTS/requirements_paddle.txt
 ```
 
+If you are using the FunASA speech recognition model, you can install the environment with:
+
+```
+pip install -r ASR/requirements_funasr.py
+```
+
 Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
@@ -200,20 +218,26 @@ Next, you need to install the corresponding models. You can download them using 
 If the download speed is too slow, consider using a mirror site. For more information, refer to [Efficiently Obtain Hugging Face Models Using Mirror Sites](https://kedreamix.github.io/2024/01/05/Note/HuggingFace/?highlight=镜像).
 
 ```bash
-# Download pre-trained models from Hugging Face
+# Download pre-trained models from HuggingFace
 git lfs install
 git clone https://huggingface.co/Kedreamix/Linly-Talker
+# git lfs clone https://huggingface.co/Kedreamix/Linly-Talker
+
+# pip install -U huggingface_hub
+# export HF_ENDPOINT=https://hf-mirror.com # Use a mirror site
+huggingface-cli download --resume-download --local-dir-use-symlinks False Kedreamix/Linly-Talker --local-dir Linly-Talker
 ```
 
 **ModelScope Download**
 
 ```bash
-# Download pre-trained models from ModelScope
-# 1. Git method
+# Download pre-trained models from Modelscope
+# 1. Using git
 git lfs install
 git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
+# git lfs clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
 
-# 2. Python code download
+# 2. Download using Python code
 pip install modelscope
 from modelscope import snapshot_download
 model_dir = snapshot_download('Kedreamix/Linly-Talker')
@@ -279,6 +303,10 @@ The speech recognition performance of Alibaba's FunASR is quite impressive and i
 
 
 
+### Coming Soon
+
+Welcome everyone to provide suggestions, motivating me to continuously update the models and enrich the functionality of Linly-Talker.
+
 ## TTS - Text To Speech
 
 For detailed information about the usage and code implementation of Text-to-Speech (TTS), please refer to [TTS - Empowering Digital Humans with Natural Speech Interaction](./TTS/README.md).
@@ -291,7 +319,9 @@ To use Microsoft Edge's online text-to-speech service from Python without needin
 
 In practical use, there may be scenarios that require offline operation. Since Edge TTS requires an online environment to generate speech, we have chosen PaddleSpeech, another open-source alternative, for Text-to-Speech (TTS). Although there might be some differences in the quality, PaddleSpeech supports offline operations. For more information, you can refer to the GitHub page of PaddleSpeech: [https://github.com/PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech).
 
+### Coming Soon
 
+Welcome everyone to provide suggestions, motivating me to continuously update the models and enrich the functionality of Linly-Talker.
 
 ## Voice Clone
 
@@ -318,7 +348,9 @@ Coqui XTTS is a leading deep learning toolkit for Text-to-Speech (TTS) tasks, al
 - Experience XTTS online [https://huggingface.co/spaces/coqui/xtts](https://huggingface.co/spaces/coqui/xtts)
 - Official GitHub repository: [https://github.com/coqui-ai/TTS](https://github.com/coqui-ai/TTS)
 
+### Coming Soon
 
+Welcome everyone to provide suggestions, motivating me to continuously update the models and enrich the functionality of Linly-Talker.
 
 ## THG - Avatar
 
@@ -357,9 +389,13 @@ Before usage, download the Wav2Lip model:
 
 ER-NeRF (ICCV 2023) is a digital human built using the latest NeRF technology. It allows for the customization of digital characters and can reconstruct them using just a five-minute video of a person. For more details, please refer to [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF).
 
-Updates have been made in the app_talk.py section. If better results are desired, it might be considered to clone and customize the voice of a digital human to achieve improved effects.
+Updated: Taking inspiration from the likeness of Obama, for better results, consider cloning and customizing the voice of digital personas for improved effectiveness.
 
 
+
+### Coming Soon
+
+Welcome everyone to provide suggestions, motivating me to continuously update the models and enrich the functionality of Linly-Talker.
 
 ## LLM - Conversation
 
@@ -431,24 +467,21 @@ Gemini-Pro is an AI model developed by Google. To learn more about Gemini-Pro, y
 
 If you want to request an API key for Gemini-Pro, you can visit this link: https://makersuite.google.com/
 
+### ChatGPT
 
+From OpenAI, requires API application. For more information, please visit [https://platform.openai.com/docs/introduction](https://platform.openai.com/docs/introduction).
 
-### LLM Model Selection
+### ChatGLM
 
-In the app.py file, tailor your model choice with ease.
+From Tsinghua University, for more information please visit [https://github.com/THUDM/ChatGLM3](https://github.com/THUDM/ChatGLM3).
 
-```python
-# Uncomment and set up the model of your choice:
+### LLM Multiple Model Selection
 
-# llm = LLM(mode='offline').init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
-# llm = LLM(mode='offline').init_model('Gemini', 'gemini-pro', api_key = "your api key")
-# llm = LLM(mode='offline').init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
+In the `webui.py` file, easily select the model you need. ⚠️ For the first run, make sure to download the model first. Refer to Qwen1.8B.
 
-# Manual download with a specific path
-llm = LLM(mode=mode).init_model('Qwen', model_path)
-```
+### Coming Soon
 
-
+Welcome everyone to provide suggestions, motivating me to continuously update the models and enrich the functionality of Linly-Talker.
 
 ## Optimizations
 
@@ -473,16 +506,36 @@ Specifically, we create a Gradio Interface in app.py that takes image and text i
 
 In summary, Gradio provides visualization and user interaction interfaces for Linly-Talker, serving as effective means for showcasing system capabilities and enabling end users.
 
+> If considering real-time conversation, it may be necessary to switch to a different framework or customize Gradio. Looking forward to working together with everyone.
+
 ## Start WebUI
 
 Previously, I had separated many versions, but it became cumbersome to run multiple versions. Therefore, I have added a WebUI feature to provide a single interface for a seamless experience. I will continue to update it in the future.
 
+### WebUI
+
 The current features available in the WebUI are as follows:
 
 - [x] Text/Voice-based dialogue with virtual characters (fixed characters with male and female roles)
+
 - [x] Dialogue with virtual characters using any image (you can upload any character image)
+
 - [x] Multi-turn GPT dialogue (incorporating historical dialogue data to maintain context)
+
 - [x] Voice cloning dialogue (based on GPT-SoVITS settings for voice cloning, including a built-in smoky voice that can be cloned based on the voice of the dialogue)
+
+- [x] Digital Persona Text/Voice Playback (based on input text/voice)
+
+- [x] Multiple modules➕Multiple models➕Multiple choices
+  - [ ] Multiple role selections: Female/Male/Custom (each part can automatically upload images) Coming Soon
+  - [x] Multiple TTS model selections: EdgeTTS / PaddleTTS / GPT-SoVITS / Coming Soon
+  - [x] Multiple LLM model selections: Linly / Qwen / ChatGLM / GeminiPro / ChatGPT / Coming Soon
+  - [x] Multiple Talker model selections: Wav2Lip / SadTalker / ERNeRF / MuseTalk (coming soon) / Coming Soon
+  - [x] Multiple ASR model selections: Whisper / FunASR / Coming Soon
+  
+  ![](docs/WebUI2.png)
+
+You can directly run the web UI to obtain results. The page you will see is as follows:
 
 ```bash
 # WebUI
@@ -490,6 +543,12 @@ python webui.py
 ```
 
 ![](docs/WebUI.png)
+
+This time, we've updated the interface. We can freely select the fine-tuned model of GPT-SoVITS to achieve voice cloning. Simply upload a reference audio file to clone the voice.
+
+![](docs/WebUI3.png)
+
+## Old Verison
 
 There are three modes for the current startup, and you can choose a specific setting based on the scenario.
 
@@ -554,16 +613,25 @@ The folder structure of the weight files is as follows:
 ```bash
 Linly-Talker/ 
 ├── checkpoints
-│   ├── hub
-│   │   └── checkpoints
-│   │       └── s3fd-619a316812.pth
-│   ├── lipsync_expert.pth
-│   ├── mapping_00109-model.pth.tar
-│   ├── mapping_00229-model.pth.tar
-│   ├── SadTalker_V0.0.2_256.safetensors
-│   ├── visual_quality_disc.pth
-│   ├── wav2lip_gan.pth
-│   └── wav2lip.pth
+│   ├── audio_visual_encoder.pth
+│   ├── hub
+│   │   └── checkpoints
+│   │       └── s3fd-619a316812.pth
+│   ├── lipsync_expert.pth
+│   ├── mapping_00109-model.pth.tar
+│   ├── mapping_00229-model.pth.tar
+│   ├── May.json
+│   ├── May.pth
+│   ├── Obama_ave.pth
+│   ├── Obama.json
+│   ├── Obama.pth
+│   ├── ref_eo.npy
+│   ├── ref.npy
+│   ├── ref.wav
+│   ├── SadTalker_V0.0.2_256.safetensors
+│   ├── visual_quality_disc.pth
+│   ├── wav2lip_gan.pth
+│   └── wav2lip.pth
 ├── gfpgan
 │   └── weights
 │       ├── alignment_WFLW_4HG.pth
@@ -583,6 +651,20 @@ Linly-Talker/
 │       ├── s2D488k.pth
 │       ├── s2G488k.pth
 │       └── speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch
+├── MuseTalk
+│   ├── dwpose
+│   │   └── dw-ll_ucoco_384.pth
+│   ├── face-parse-bisent
+│   │   ├── 79999_iter.pth
+│   │   └── resnet18-5c106cde.pth
+│   ├── musetalk
+│   │   ├── musetalk.json
+│   │   └── pytorch_model.bin
+│   ├── sd-vae-ft-mse
+│   │   ├── config.json
+│   │   └── diffusion_pytorch_model.bin
+│   └── whisper
+│       └── tiny.pt
 ├── Qwen
 │   └── Qwen-1_8B-Chat
 │       ├── assets
@@ -625,17 +707,21 @@ Linly-Talker/
 **TTS**
 
 - [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)  
+- [https://github.com/PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)
 
 **LLM**
 
 - [https://github.com/CVI-SZU/Linly](https://github.com/CVI-SZU/Linly)
 - [https://github.com/QwenLM/Qwen](https://github.com/QwenLM/Qwen)
 - [https://deepmind.google/technologies/gemini/](https://deepmind.google/technologies/gemini/)
+- [https://github.com/THUDM/ChatGLM3](https://github.com/THUDM/ChatGLM3)
+- [https://openai.com](https://openai.com)
 
 **THG**
 
 - [https://github.com/OpenTalker/SadTalker](https://github.com/OpenTalker/SadTalker)
 - [https://github.com/Rudrabha/Wav2Lip](https://github.com/Rudrabha/Wav2Lip)
+- [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF)
 
 **Voice Clone**
 
