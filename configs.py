@@ -1,11 +1,11 @@
 # 设备运行端口 (Device running port)
-port = 7860
+port = 6006
 # api运行端口及IP (API running port and IP)
 mode = 'api' # api 需要先运行Linly-api-fast.py，暂时仅仅适用于Linly
 ip = '127.0.0.1' 
 api_port = 7871
 
-# L模型路径 (Linly model path)
+# L模型路径 (Linly model path) 已不用了
 mode = 'offline'
 model_path = 'Qwen/Qwen-1_8B-Chat'
 
