@@ -287,6 +287,62 @@ suffix_prompt = ", beautiful, masterpiece, best quality"
 suffix_prompt = ""
 
 
+# test_data_parameters
+def load_yaml(path):
+    tasks = OmegaConf.to_container(
+        OmegaConf.load(path), structured_config_mode=SCMode.INSTANTIATE, resolve=True
+    )
+    return tasks
+
+
+# if test_data_path.endswith(".yaml"):
+#     test_datas_src = load_yaml(test_data_path)
+# elif test_data_path.endswith(".csv"):
+#     test_datas_src = generate_tasks_from_table(test_data_path)
+# else:
+#     raise ValueError("expect yaml or csv, but given {}".format(test_data_path))
+
+# test_datas = [
+#     test_data
+#     for test_data in test_datas_src
+#     if target_datas == "all" or test_data.get("name", None) in target_datas
+# ]
+
+# test_datas = fiss_tasks(test_datas)
+# test_datas = generate_prompts(test_datas)
+
+# n_test_datas = len(test_datas)
+# if n_test_datas == 0:
+#     raise ValueError(
+#         "n_test_datas == 0, set target_datas=None or set atleast one of {}".format(
+#             " ".join(list(d.get("name", "None") for d in test_datas_src))
+#         )
+#     )
+# print("n_test_datas", n_test_datas)
+# # pprint(test_datas)
+
+
+def read_image(path):
+    name = os.path.basename(path).split(".")[0]
+    image = read_image_as_5d(path)
+    return image, name
+
+
+def read_image_lst(path):
+    images_names = [read_image(x) for x in path]
+    images, names = zip(*images_names)
+    images = np.concatenate(images, axis=2)
+    name = "_".join(names)
+    return images, name
+
+
+def read_image_and_name(path):
+    if isinstance(path, str):
+        path = [path]
+    images, name = read_image_lst(path)
+    return images, name
+
+
 # sd model parameters
 
 if sd_model_name != "None":
@@ -425,63 +481,6 @@ print("negprompt", negative_prompt_name, negative_prompt)
 output_dir = args.output_dir
 os.makedirs(output_dir, exist_ok=True)
 
-
-# test_data_parameters
-def load_yaml(path):
-    tasks = OmegaConf.to_container(
-        OmegaConf.load(path), structured_config_mode=SCMode.INSTANTIATE, resolve=True
-    )
-    return tasks
-
-
-# if test_data_path.endswith(".yaml"):
-#     test_datas_src = load_yaml(test_data_path)
-# elif test_data_path.endswith(".csv"):
-#     test_datas_src = generate_tasks_from_table(test_data_path)
-# else:
-#     raise ValueError("expect yaml or csv, but given {}".format(test_data_path))
-
-# test_datas = [
-#     test_data
-#     for test_data in test_datas_src
-#     if target_datas == "all" or test_data.get("name", None) in target_datas
-# ]
-
-# test_datas = fiss_tasks(test_datas)
-# test_datas = generate_prompts(test_datas)
-
-# n_test_datas = len(test_datas)
-# if n_test_datas == 0:
-#     raise ValueError(
-#         "n_test_datas == 0, set target_datas=None or set atleast one of {}".format(
-#             " ".join(list(d.get("name", "None") for d in test_datas_src))
-#         )
-#     )
-# print("n_test_datas", n_test_datas)
-# # pprint(test_datas)
-
-
-def read_image(path):
-    name = os.path.basename(path).split(".")[0]
-    image = read_image_as_5d(path)
-    return image, name
-
-
-def read_image_lst(path):
-    images_names = [read_image(x) for x in path]
-    images, names = zip(*images_names)
-    images = np.concatenate(images, axis=2)
-    name = "_".join(names)
-    return images, name
-
-
-def read_image_and_name(path):
-    if isinstance(path, str):
-        path = [path]
-    images, name = read_image_lst(path)
-    return images, name
-
-
 if referencenet_model_name is not None and not use_v2v_predictor:
     referencenet = load_referencenet_by_name(
         model_name=referencenet_model_name,
@@ -506,24 +505,6 @@ else:
     vision_clip_extractor = None
     logger.info(f"vision_clip_extractor, None")
 
-if ip_adapter_model_name is not None and not use_v2v_predictor:
-    ip_adapter_image_proj = load_ip_adapter_image_proj_by_name(
-        model_name=ip_adapter_model_name,
-        ip_image_encoder=ip_adapter_model_params_dict.get(
-            "ip_image_encoder", vision_clip_model_path
-        ),
-        ip_ckpt=ip_adapter_model_params_dict["ip_ckpt"],
-        cross_attention_dim=cross_attention_dim,
-        clip_embeddings_dim=ip_adapter_model_params_dict["clip_embeddings_dim"],
-        clip_extra_context_tokens=ip_adapter_model_params_dict[
-            "clip_extra_context_tokens"
-        ],
-        ip_scale=ip_adapter_model_params_dict["ip_scale"],
-        device=device,
-    )
-else:
-    ip_adapter_image_proj = None
-    ip_adapter_model_name = "no"
     
 import cuid
 
@@ -537,6 +518,25 @@ class MuseV():
         self.prefix_prompt = ''
         self.suffix_prompt = ', beautiful, masterpiece, best quality'
         self.suffix_prompt = ''
+        global ip_adapter_model_name
+        if ip_adapter_model_name is not None and not use_v2v_predictor:
+            ip_adapter_image_proj = load_ip_adapter_image_proj_by_name(
+                model_name=ip_adapter_model_name,
+                ip_image_encoder=ip_adapter_model_params_dict.get(
+                    "ip_image_encoder", vision_clip_model_path
+                ),
+                ip_ckpt=ip_adapter_model_params_dict["ip_ckpt"],
+                cross_attention_dim=cross_attention_dim,
+                clip_embeddings_dim=ip_adapter_model_params_dict["clip_embeddings_dim"],
+                clip_extra_context_tokens=ip_adapter_model_params_dict[
+                    "clip_extra_context_tokens"
+                ],
+                ip_scale=ip_adapter_model_params_dict["ip_scale"],
+                device=device,
+            )
+        else:
+            ip_adapter_image_proj = None
+            ip_adapter_model_name = "no"
         for model_name, sd_model_params in sd_model_params_dict.items():
             self.model_name = model_name
             lora_dict = sd_model_params.get("lora", None)
