@@ -63,7 +63,8 @@ def Asr(audio):
 def TTS_response(text, 
                  voice, rate, volume, pitch,
                  am, voc, lang, male,
-                 inp_ref, prompt_text, prompt_language, text_language, how_to_cut, question_audio, question, use_mic_voice,
+                 inp_ref, prompt_text, prompt_language, text_language, how_to_cut, 
+                 question_audio, question, use_mic_voice,
                  tts_method = 'PaddleTTS', save_path = 'answer.wav'):
     # print(text, voice, rate, volume, pitch, am, voc, lang, male, tts_method, save_path)
     if tts_method == 'Edge-TTS':
@@ -105,7 +106,7 @@ def TTS_response(text,
             except Exception as e:
                 gr.Warning("无克隆环境或者无克隆模型权重，无法克隆声音", e)
                 return None, None
-     
+    return None, None
 @calculate_time
 def LLM_response(question_audio, question, 
                  voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0,
@@ -211,7 +212,7 @@ def Talker_response_img(question_audio, method, text, voice, rate, volume, pitch
                         fps, progress=gr.Progress(track_tqdm=True)
                     ):
     if enhancer:
-        gr.Warning("记得请先安装GFPGAN库，pip install gfpgan")
+        gr.Warning("记得请先安装GFPGAN库，pip install gfpgan, 已安装可忽略")
     if not voice:
         gr.Warning("请先选择声音")
     driven_audio, driven_vtt, _ = LLM_response(question_audio, text, voice, rate, volume, pitch, 
@@ -330,11 +331,14 @@ def clear_session():
     llm.clear_history()
     return '', []
 
-def human_respone(history, question_audio, talker_method, voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0, batch_size = 2, 
+
+def human_response(history, question_audio, talker_method, 
+                   voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 0, pitch = 0, batch_size = 2, 
                   am = 'fastspeech2', voc = 'pwgan', lang = 'zh', male = False, 
                   inp_ref = None, prompt_text = "", prompt_language = "", text_language = "", how_to_cut = "", use_mic_voice = False,
                   tts_method = 'Edge-TTS', character = '女性角色', progress=gr.Progress(track_tqdm=True)):
     response = history[-1][1]
+    qusetion = history[-1][0]
     # driven_audio, video_vtt = 'answer.wav', 'answer.vtt'
     if character == '女性角色':
         # 女性角色
@@ -353,9 +357,9 @@ def human_respone(history, question_audio, talker_method, voice = 'zh-CN-Xiaoxia
         default_voice = 'zh-CN-YunyangNeural'
     voice = default_voice if not voice else voice
     # tts.predict(response, voice, rate, volume, pitch, driven_audio, video_vtt)
-    driven_audio, driven_vtt = TTS_response(question_audio,response, voice, rate, volume, pitch, 
+    driven_audio, driven_vtt = TTS_response(response, voice, rate, volume, pitch, 
                  am, voc, lang, male, 
-                 inp_ref, prompt_text, prompt_language, text_language, how_to_cut, use_mic_voice,
+                 inp_ref, prompt_text, prompt_language, text_language, how_to_cut, question_audio, qusetion, use_mic_voice,
                  tts_method)
     
     if talker_method == 'SadTalker':
@@ -607,12 +611,12 @@ def app_multi():
 
                 chatbot = gr.Chatbot(height=400, show_copy_button=True)
                 with gr.Group():
-                    audio = gr.Audio(sources=['microphone','upload'], type="filepath", label='语音对话', autoplay=False)
+                    question_audio = gr.Audio(sources=['microphone','upload'], type="filepath", label='语音对话', autoplay=False)
                     asr_text = gr.Button('🎤 语音识别（语音对话后点击）')
                 
                 # 创建一个文本框组件，用于输入 prompt。
                 msg = gr.Textbox(label="Prompt/问题")
-                asr_text.click(fn=Asr,inputs=[audio],outputs=[msg])
+                asr_text.click(fn=Asr,inputs=[question_audio],outputs=[msg])
                 
                 with gr.Row():
                     clear_history = gr.Button("🧹 清除历史对话")
@@ -630,9 +634,11 @@ def app_multi():
                         inputs=[system_input],
                         outputs=[system_state, system_input, chatbot])
             
-            video_button.click(fn = human_respone, inputs = [chatbot, talker_method, voice, rate, volume, pitch,
-                                                             am, voc, lang, male, inp_ref, prompt_text, prompt_language, text_language, how_to_cut,  use_mic_voice, tts_method, 
-                                                             batch_size, character], outputs = [video])
+            video_button.click(fn = human_response, inputs = [chatbot, question_audio, talker_method, 
+                                                              voice, rate, volume, pitch, batch_size,
+                                                             am, voc, lang, male, 
+                                                             inp_ref, prompt_text, prompt_language, text_language, how_to_cut,  
+                                                             use_mic_voice, tts_method, character], outputs = [video])
             
         exmaple_setting(asr_method, msg, character, talker_method, tts_method, voice, llm_method)
     return inference
@@ -730,19 +736,19 @@ def app_img():
         with gr.Row():
             examples = [
                 [
-                    'examples/source_image/full_body_2.png',
+                    'examples/source_image/full_body_2.png', 'SadTalker',
                     'crop',
                     False,
                     False
                 ],
                 [
-                    'examples/source_image/full_body_1.png',
+                    'examples/source_image/full_body_1.png', 'SadTalker',
                     'full',
                     True,
                     False
                 ],
                 [
-                    'examples/source_image/full4.jpeg',
+                    'examples/source_image/full4.jpeg', 'SadTalker',
                     'crop',
                     False,
                     True
@@ -750,7 +756,7 @@ def app_img():
             ]
             gr.Examples(examples=examples,
                         inputs=[
-                            source_image,
+                            source_image, talker_method,
                             preprocess_type,
                             is_still_mode,
                             enhancer], 
