@@ -41,6 +41,7 @@
 
 **2024.05 Update** 📆
 
+- **Updated the beginner-friendly AutoDL deployment tutorial, and also updated the codewithgpu image, allowing for one-click experience and learning.**
 - **Updated WebUI.py: Linly-Talker WebUI now supports multiple modules, multiple models, and multiple options**
 
 ---
