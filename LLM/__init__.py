@@ -1,6 +1,9 @@
 from .Linly import Linly
 from .Qwen import Qwen
-from .Gemini import Gemini
+try:
+    from .Gemini import Gemini
+except Exception as e:
+    print("Gemini模型加载失败，可能是因为没有google-generativeai库，但是Gemini模型不是必顂的，可以忽略")
 from .ChatGPT import ChatGPT
 from .ChatGLM import ChatGLM
 from .Llama2Chinese import Llama2Chinese
