@@ -202,7 +202,7 @@ pip install -r TTS/requirements_paddle.txt
 若使用FunASA语音识别模型，可安装环境
 
 ```
-pip intall -r ASR/requirements_funasr.py
+pip intall -r ASR/requirements_funasr.txt
 ```
 
 接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明。

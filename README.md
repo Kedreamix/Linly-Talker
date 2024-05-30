@@ -205,7 +205,7 @@ pip install -r TTS/requirements_paddle.txt
 If you are using the FunASA speech recognition model, you can install the environment with:
 
 ```
-pip install -r ASR/requirements_funasr.py
+pip install -r ASR/requirements_funasr.txt
 ```
 
 Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
