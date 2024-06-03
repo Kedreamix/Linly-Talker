@@ -7,7 +7,7 @@ except Exception as e:
 from .ChatGPT import ChatGPT
 from .ChatGLM import ChatGLM
 from .Llama2Chinese import Llama2Chinese
-
+from .GPT4Free import GPT4FREE
 def test_Linly(question = "如何应对压力？", mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
     llm = Linly(mode, model_path)
     answer = llm.generate(question)
@@ -33,8 +33,8 @@ class LLM:
         self.mode = mode
         
     def init_model(self, model_name, model_path, api_key=None, proxy_url=None):
-        if model_name not in ['Linly', 'Qwen', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese']:
-            raise ValueError("model_name must be 'Linly', 'Qwen', 'ChatGPT' or 'Gemini'(其他模型还未集成)")
+        if model_name not in ['Linly', 'Qwen', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']:
+            raise ValueError("model_name must be one of ['Linly', 'Qwen', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']")
         if model_name == 'Linly':
             llm = Linly(self.mode, model_path)
         elif model_name == 'Qwen':
@@ -47,6 +47,8 @@ class LLM:
             llm = ChatGPT(model_path, api_key, proxy_url)
         elif model_name == 'Llama2Chinese':
             llm = Llama2Chinese(model_path, self.mode)
+        elif model_name == 'GPT4Free':
+            llm = GPT4FREE()
         return llm
     
     def test_Linly(self, question="如何应对压力？", model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):

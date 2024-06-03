@@ -14,7 +14,7 @@ class Qwen:
         self.data = {
             "question": "北京有什么好玩的地方？"
         }
-        self.prompt = '''请用少于25个字回答以下问题 '''
+        self.prefix_prompt = '''请用少于25个字回答以下问题\n\n'''
         self.mode = mode
         self.model, self.tokenizer = self.init_model(model_path)
         self.history = None
@@ -29,7 +29,7 @@ class Qwen:
     
     def generate(self, question, system_prompt=""):
         if self.mode != 'api':
-            self.data["question"] = self.prompt + question
+            self.data["question"] = self.prefix_prompt + question
             try:
                 response, self.history = self.model.chat(self.tokenizer, self.data["question"], history=self.history, system = system_prompt)
                 # print(self.history)
