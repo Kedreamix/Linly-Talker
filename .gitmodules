@@ -1,0 +1,3 @@
+[submodule "ChatTTS"]
+	path = ChatTTS
+	url = https://github.com/2noise/ChatTTS.git
