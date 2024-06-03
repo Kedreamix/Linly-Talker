@@ -512,7 +512,7 @@ def webui_setting(talk = True):
     talker_method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'ER-NeRF', 'MuseTalk', 'Comming Soon!!!'], 
                       value = 'SadTalker', label = '数字人模型选择')
     talker_method.change(fn = talker_model_change, inputs=[talker_method], outputs = [talker_method])
-    llm_method = gr.Dropdown(choices = ['Qwen', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'Comming Soon!!!'], value = 'Qwen', label = 'LLM 模型选择')
+    llm_method = gr.Dropdown(choices = ['Qwen', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', 'Comming Soon!!!'], value = 'Qwen', label = 'LLM 模型选择')
     llm_method.change(fn = llm_model_change, inputs=[llm_method], outputs = [llm_method])
     return  (source_image, voice, rate, volume, pitch, 
              am, voc, lang, male, 
@@ -942,6 +942,12 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     #         gr.Info("Llama2Chinese模型导入成功")
     #     except Exception as e:
     #         gr.Warning(f"Llama2Chinese模型下载失败 {e}")
+    elif model_name == 'GPT4Free':
+        try:
+            llm = llm_class.init_model('GPT4Free')
+            gr.Info("GPT4Free模型导入成功, 请注意GPT4Free可能不稳定")
+        except Exception as e:
+            gr.Warning(f"GPT4Free模型下载失败 {e}")
     else:
         gr.Warning("未知LLM模型，可提issue和PR 或者 建议更新模型")
     return model_name
