@@ -199,7 +199,7 @@ pip install -r TFG/requirements_nerf.txt
 pip install -r TTS/requirements_paddle.txt
 ```
 
-若使用FunASA语音识别模型，可安装环境
+若使用FunAS/r语音识别模型，可安装环境
 
 ```
 pip intall -r ASR/requirements_funasr.txt

@@ -18,7 +18,7 @@ class Linly:
             "question": "北京有什么好玩的地方？"
         }
         # 全局设定的prompt
-        self.prompt = '''请用少于25个字回答以下问题 '''
+        self.prefix_prompt = '''请用少于25个字回答以下问题\n\n'''
         self.mode = mode
         if mode != 'api':
             self.model, self.tokenizer = self.init_model(model_path)
@@ -54,7 +54,7 @@ class Linly:
             return self.predict_api(question)
     
     def message_to_prompt(self, message, system_prompt=""):
-        system_prompt = self.prompt + system_prompt
+        system_prompt = self.prefix_prompt + system_prompt
         for interaction in self.history:
             user_prompt, bot_prompt = str(interaction[0]).strip(' '), str(interaction[1]).strip(' ')
             system_prompt = f"{system_prompt} User: {user_prompt} Bot: {bot_prompt}"

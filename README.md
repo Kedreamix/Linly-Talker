@@ -202,7 +202,7 @@ If you are using PaddleTTS, you can set up the corresponding environment with:
 pip install -r TTS/requirements_paddle.txt
 ```
 
-If you are using the FunASA speech recognition model, you can install the environment with:
+If you are using the FunASR speech recognition model, you can install the environment with:
 
 ```
 pip install -r ASR/requirements_funasr.txt
