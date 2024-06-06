@@ -133,7 +133,9 @@ def get_landmark_and_bbox(img_list,upperbondrange =0):
     print("********************************************bbox_shift parameter adjustment**********************************************************")
     print(f"Total frame:「{len(frames)}」 Manually adjust range : [ -{int(sum(average_range_minus) / len(average_range_minus))}~{int(sum(average_range_plus) / len(average_range_plus))} ] , the current value: {upperbondrange}")
     print("*************************************************************************************************************************************")
-    return coords_list,frames
+    text_range=f"Total frame:「{len(frames)}」 Manually adjust range : [ -{int(sum(average_range_minus) / len(average_range_minus))}~{int(sum(average_range_plus) / len(average_range_plus))} ] , the current value: {upperbondrange}"
+
+    return coords_list, frames, text_range
     
 
 if __name__ == "__main__":
