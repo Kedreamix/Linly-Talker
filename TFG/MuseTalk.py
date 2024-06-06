@@ -179,7 +179,24 @@ class MuseTalk_RealTime:
             self.idx = self.idx + 1
     
     def prepare_material(self, video_path, bbox_shift, progress=gr.Progress(track_tqdm=True)):
-        # print("preparing data materials ... ...")
+        self.video_path = video_path
+        self.bbox_shift = bbox_shift
+        self.avatar_id = os.path.basename(video_path).split(".")[0]
+        self.avatar_path = f"./results/avatars/{self.avatar_id}"
+        self.full_imgs_path = f"{self.avatar_path}/full_imgs" 
+        self.coords_path = f"{self.avatar_path}/coords.pkl"
+        self.latents_out_path= f"{self.avatar_path}/latents.pt"
+        self.video_out_path = f"{self.avatar_path}/vid_output/"
+        self.mask_out_path =f"{self.avatar_path}/mask"
+        self.mask_coords_path =f"{self.avatar_path}/mask_coords.pkl"
+        self.avatar_info_path = f"{self.avatar_path}/avator_info.json"
+        # 若存在先删除
+        if os.path.exists(self.full_imgs_path):
+            shutil.rmtree(self.full_imgs_path)
+            shutil.rmtree(self.mask_out_path)
+            shutil.rmtree(self.video_out_path)
+        osmakedirs([self.avatar_path,self.full_imgs_path,self.video_out_path,self.mask_out_path])
+        print("preparing data materials ... ...")
         progress(0, desc = "preparing data materials ...")
         if os.path.isfile(video_path):
             video2imgs(video_path, self.full_imgs_path, ext = 'png')
@@ -191,10 +208,11 @@ class MuseTalk_RealTime:
             for filename in files:
                 shutil.copyfile(f"{video_path}/{filename}", f"{self.full_imgs_path}/{filename}")
         input_img_list = sorted(glob.glob(os.path.join(self.full_imgs_path, '*.[jpJP][pnPN]*[gG]')))
+        # bbox_shift_text = get_bbox_range(input_img_list, self.bbox_shift)
         
         progress(0, desc = "extracting landmarks...")
-        # print("extracting landmarks ...")
-        coord_list, frame_list = get_landmark_and_bbox(input_img_list, bbox_shift)
+        print("extracting landmarks ...")
+        coord_list, frame_list, bbox_shift_text = get_landmark_and_bbox(input_img_list, bbox_shift)
         input_latent_list = []
         idx = -1
         # maker if the bbox is not sufficient 
@@ -232,7 +250,7 @@ class MuseTalk_RealTime:
             pickle.dump(self.coord_list_cycle, f)
             
         torch.save(self.input_latent_list_cycle, os.path.join(self.latents_out_path)) 
-        return video_path
+        return video_path, bbox_shift_text
     
     def prepare_material_(self):
         print("preparing data materials ... ...")
@@ -290,6 +308,75 @@ class MuseTalk_RealTime:
         torch.save(self.input_latent_list_cycle, os.path.join(self.latents_out_path)) 
         return bbox_shift_text
     
+    def inference_noprepare(self, audio_path,
+                    source_video, bbox_shift,
+                    batch_size = 4,
+                    fps = 25,
+                    progress = gr.Progress(track_tqdm=True)):
+        
+        out_vid_name = "res"
+        os.makedirs(self.avatar_path+'/tmp',exist_ok =True)   
+        print("start inference")
+        ############################################## extract audio feature ##############################################
+        start_time = time.time()
+        whisper_feature = self.audio_processor.audio2feat(audio_path)
+        whisper_chunks = self.audio_processor.feature2chunks(feature_array=whisper_feature,fps=fps)
+        print(f"processing audio:{audio_path} costs {(time.time() - start_time) * 1000}ms")
+        ############################################## inference batch by batch ##############################################
+        video_num = len(whisper_chunks)   
+        res_frame_queue = queue.Queue()
+        self.idx = 0
+        # # Create a sub-thread and start it
+        process_thread = threading.Thread(target=self.process_frames, args=(res_frame_queue, video_num))
+        process_thread.start()
+
+        gen = datagen(whisper_chunks,
+                      self.input_latent_list_cycle, 
+                      batch_size)
+        start_time = time.time()
+        res_frame_list = []
+        
+        for i, (whisper_batch,latent_batch) in enumerate(tqdm(gen,total=int(np.ceil(float(video_num)/batch_size)))):
+            audio_feature_batch = torch.from_numpy(whisper_batch)
+            audio_feature_batch = audio_feature_batch.to(device=self.unet.device,
+                                                         dtype=self.unet.model.dtype)
+            audio_feature_batch = self.pe(audio_feature_batch)
+            latent_batch = latent_batch.to(dtype=self.unet.model.dtype)
+
+            pred_latents = self.unet.model(latent_batch, 
+                                      self.timesteps, 
+                                      encoder_hidden_states=audio_feature_batch).sample
+            recon = self.vae.decode_latents(pred_latents)
+            for res_frame in recon:
+                res_frame_queue.put(res_frame)
+        # Close the queue and sub-thread after all tasks are completed
+        process_thread.join()
+        
+        if self.skip_save_images is True:
+            print('Total process time of {} frames without saving images = {}s'.format(
+                        video_num,
+                        time.time()-start_time))
+        else:
+            print('Total process time of {} frames including saving images = {}s'.format(
+                        video_num,
+                        time.time()-start_time))
+
+        if out_vid_name is not None and self.skip_save_images is False: 
+            # optional
+            cmd_img2video = f"ffmpeg -y -v warning -r {fps} -f image2 -i {self.avatar_path}/tmp/%08d.png -vcodec libx264 -vf format=rgb24,scale=out_color_matrix=bt709,format=yuv420p -crf 18 {self.avatar_path}/temp.mp4"
+            print(cmd_img2video)
+            os.system(cmd_img2video)
+
+            output_vid = os.path.join(self.video_out_path, out_vid_name+".mp4") # on
+            cmd_combine_audio = f"ffmpeg -y -v warning -i {audio_path} -i {self.avatar_path}/temp.mp4 {output_vid}"
+            print(cmd_combine_audio)
+            os.system(cmd_combine_audio)
+
+            os.remove(f"{self.avatar_path}/temp.mp4")
+            shutil.rmtree(f"{self.avatar_path}/tmp")
+            print(f"result is save to {output_vid}")
+        print("\n")
+        return output_vid
     def inference(self, audio_path,
                   source_video, bbox_shift, 
                   batch_size = 4,
@@ -666,13 +753,15 @@ if __name__ == "__main__":
     # musetalk = MuseTalk()
     musetalk = MuseTalk_RealTime()
     audio_path = "Musetalk/data/audio/sun.wav"
-    audio_path = "answer.wav"
     video_path = "Musetalk/data/video/yongen.mp4"
     bbox_shift = 5
-    # musetalk.prepare_material(video_path, bbox_shift)
-    # res_video = musetalk.inference(video_path, audio_path, bbox_shift)
+    video_path, bbox_shift_text = musetalk.prepare_material(video_path, bbox_shift)
+    # print(video_path, bbox_shift_text)
+    print("Inference Params:", audio_path, video_path, bbox_shift)
+    res_video = musetalk.inference_noprepare(audio_path, video_path, bbox_shift)
+
     # output_video = musetalk.check_video(video_path)
     # print("output_video:", output_video)
-    res_video, bbox_shift_scale = musetalk.inference(audio_path, video_path, bbox_shift)
+    # res_video, bbox_shift_scale = musetalk.inference(audio_path, video_path, bbox_shift)
     # print(bbox_shift_scale)
     
