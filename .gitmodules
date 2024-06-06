@@ -1,0 +1,3 @@
+[submodule "MuseV"]
+	path = MuseV
+	url = https://github.com/TMElyralab/MuseV.git
