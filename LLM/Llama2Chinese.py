@@ -19,7 +19,7 @@ class Llama2Chinese:
         """
         self.mode = mode
         self.load_in_8bit = True
-        self.prompt = '''请用少于25个字回答以下问题 '''
+        self.prefix_prompt = '''请用少于25个字回答以下问题 '''
         self.history = []
         self.model, self.tokenizer = self.init_model(model_path)
         self.model.eval()    
@@ -106,7 +106,7 @@ class Llama2Chinese:
             return self.predict_api(prompt)
     
     def message_to_prompt(self, message, system_prompt=""):
-        system_prompt = self.prompt + system_prompt
+        system_prompt = self.prefix_prompt + system_prompt
         for interaction in self.history:
             user_prompt, bot_prompt = str(interaction[0]).strip(' '), str(interaction[1]).strip(' ')
             system_prompt = f"{system_prompt} ### Instruction:\n{user_prompt}\n\n### Response: {bot_prompt}\n\n"

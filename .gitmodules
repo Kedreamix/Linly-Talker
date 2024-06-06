@@ -1,3 +1,7 @@
 [submodule "MuseV"]
 	path = MuseV
 	url = https://github.com/TMElyralab/MuseV.git
+
+[submodule "ChatTTS"]
+	path = ChatTTS
+	url = https://github.com/2noise/ChatTTS.git
