@@ -1,0 +1,12 @@
+# =======MuseTalk===========#
+ffmpeg-python
+moviepy
+imageio[ffmpeg]
+xformers==0.0.21
+diffusers @ git+https://github.com/TMElyralab/diffusers.git@tme
+ip_adapter @ git+https://github.com/tencent-ailab/IP-Adapter.git@main
+clip @ git+https://github.com/openai/CLIP.git@main
+controlnet_aux @ git+https://github.com/TMElyralab/controlnet_aux.git@tme
+mmcm @ git+https://github.com/TMElyralab/MMCM.git@setup
+webq
+easydict
