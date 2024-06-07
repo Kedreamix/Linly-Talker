@@ -484,13 +484,20 @@ class GPT_SoVITS:
         return save_path
 if __name__ == "__main__":
     GPT_SoVITS_inference = GPT_SoVITS()
-    gpt_path = "../../GPT-SoVITS/GPT_weights/yansang-e15.ckpt"
-    sovits_path = "../../GPT-SoVITS/SoVITS_weights/yansang_e16_s144.pth"
+    gpt_path = "GPT_SoVITS/pretrained_models/Gnews-e15.ckpt"
+    sovits_path = "GPT_SoVITS/pretrained_models/Gnews_e8_s96.pth"
     GPT_SoVITS_inference.load_model(gpt_path, sovits_path)
-    ref_wav_path = "../../GPT-SoVITS/output/slicer_opt/vocal_output.wav_10.wav_0000846400_0000957760.wav"
-    prompt_text = "你为什么要一次一次的伤我的心啊？"
+    ref_wav_path = "GPT_SoVITS/reference_wav/Gnews/Gnews.mp3_0000270720_0000424960.wav"
+    # 参考音频的文本
+    from ASR import WhisperASR, FunASR
+    asr = FunASR()
+    prompt_text = ""
+    prompt_text = asr.transcribe(ref_wav_path)
     prompt_language = "中文"
     text = "大家好，这是我语音克隆的声音，本软件以MIT协议开源, 作者不对软件具备任何控制力, 使用软件者、传播软件导出的声音者自负全责.如不认可该条款, 则不能使用或引用软件包内任何代码和文件. 详见根目录LICENSE."
     text_language = "中英混合" 
     how_to_cut = "不切" # ["不切", "凑四句一切", "凑50字一切", "按中文句号。切", "按英文句号.切", "按标点符号切"]
-    GPT_SoVITS_inference.predict(ref_wav_path, prompt_text, prompt_language, text, text_language, how_to_cut)
+    print("参考音频文本：", prompt_text)
+    print("目标文本：", text)
+    save_audio_file = "./result.wav"
+    GPT_SoVITS_inference.predict(ref_wav_path, prompt_text, prompt_language, text, text_language, how_to_cut, save_audio_file)
