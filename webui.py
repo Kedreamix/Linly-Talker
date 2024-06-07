@@ -31,6 +31,8 @@ def get_title(title = 'Linly 智能对话系统 (Linly-Talker)'):
 
 # 设置默认system
 default_system = '你是一个很有帮助的助手'
+# 设置默认的prompt
+prefix_prompt = '请用少于25个字回答以下问题\n\n'
 
 edgetts = EdgeTTS()
 
@@ -113,7 +115,7 @@ def LLM_response(question_audio, question,
                  am='fastspeech2', voc='pwgan',lang='zh', male=False, 
                  inp_ref = None, prompt_text = "", prompt_language = "", text_language = "", how_to_cut = "", use_mic_voice = False,
                  tts_method = 'Edge-TTS'):
-    answer = llm.generate(question)
+    answer = llm.generate(question, default_system)
     print(answer)
     driven_audio, driven_vtt = TTS_response(answer, voice, rate, volume, pitch, 
                  am, voc, lang, male, 
@@ -419,7 +421,7 @@ def character_change(character):
         # 男性角色
         source_image = r'./inputs/boy.png'
     elif character == '自定义角色':
-        gr.Warnings("自定义角色暂未更新，请继续关注后续，可通过自由上传图片模式进行自定义角色")
+        # gr.Warnings("自定义角色暂未更新，请继续关注后续，可通过自由上传图片模式进行自定义角色")
         source_image = None
     return source_image
 
@@ -502,9 +504,9 @@ def webui_setting(talk = True):
     character = gr.Radio(['女性角色', 
                           '男性角色', 
                           '自定义角色'], 
-                         label="角色选择", value='女性角色')
+                         label="角色选择", value='自定义角色')
     # character.change(fn = character_change, inputs=[character], outputs = [source_image])
-    tts_method = gr.Radio(['Edge-TTS', 'PaddleTTS', 'GPT-SoVITS克隆声音'], label="Text To Speech Method", 
+    tts_method = gr.Radio(['Edge-TTS', 'PaddleTTS', 'GPT-SoVITS克隆声音', 'Comming Soon!!!'], label="Text To Speech Method", 
                                               value = 'Edge-TTS')
     tts_method.change(fn = tts_model_change, inputs=[tts_method], outputs = [tts_method])
     asr_method = gr.Radio(choices = ['Whisper-tiny', 'Whisper-base', 'FunASR', 'Comming Soon!!!'], value='Whisper-base', label = '语音识别模型选择')
@@ -512,7 +514,7 @@ def webui_setting(talk = True):
     talker_method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'ER-NeRF', 'MuseTalk', 'Comming Soon!!!'], 
                       value = 'SadTalker', label = '数字人模型选择')
     talker_method.change(fn = talker_model_change, inputs=[talker_method], outputs = [talker_method])
-    llm_method = gr.Dropdown(choices = ['Qwen', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', 'Comming Soon!!!'], value = 'Qwen', label = 'LLM 模型选择')
+    llm_method = gr.Dropdown(choices = ['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', 'Comming Soon!!!'], value = 'Qwen', label = 'LLM 模型选择')
     llm_method.change(fn = llm_model_change, inputs=[llm_method], outputs = [llm_method])
     return  (source_image, voice, rate, volume, pitch, 
              am, voc, lang, male, 
@@ -882,12 +884,14 @@ def asr_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     if model_name == "Whisper-tiny":
         try:
             asr = WhisperASR('tiny')
+            # asr = WhisperASR('Whisper/tiny.pt')
             gr.Info("Whisper-tiny模型导入成功")
         except Exception as e:
             gr.Warning(f"Whisper-tiny模型下载失败 {e}")
     elif model_name == "Whisper-base":
         try:
             asr = WhisperASR('base')
+            # asr = WhisperASR('Whisper/base.pt')
             gr.Info("Whisper-base模型导入成功")
         except Exception as e:
             gr.Warning(f"Whisper-base模型下载失败 {e}")
@@ -909,16 +913,22 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     proxy_url = None
     if model_name == 'Linly':
         try:
-            llm = llm_class.init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
+            llm = llm_class.init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf', prefix_prompt=prefix_prompt)
             gr.Info("Linly模型导入成功")
         except Exception as e:
             gr.Warning(f"Linly模型下载失败 {e}")
     elif model_name == 'Qwen':
         try:
-            llm = llm_class.init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
+            llm = llm_class.init_model('Qwen', 'Qwen/Qwen-1_8B-Chat', prefix_prompt=prefix_prompt)
             gr.Info("Qwen模型导入成功")
         except Exception as e:
             gr.Warning(f"Qwen模型下载失败 {e}")
+    elif model_name == 'Qwen2':
+        try:
+            llm = llm_class.init_model('Qwen2', 'Qwen/Qwen1.5-0.5B-Chat', prefix_prompt=prefix_prompt)
+            gr.Info("Qwen2模型导入成功")
+        except Exception as e:
+            gr.Warning(f"Qwen2模型下载失败 {e}")
     elif model_name == 'Gemini':
         if gemini_apikey:
             llm = llm_class.init_model('Gemini', 'gemini-pro', gemini_apikey, proxy_url)
@@ -927,13 +937,13 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
             gr.Warning("请填写Gemini的api_key")
     elif model_name == 'ChatGLM':
         try:
-            llm = llm_class.init_model('ChatGLM', 'THUDM/chatglm3-6b')
+            llm = llm_class.init_model('ChatGLM', 'THUDM/chatglm3-6b', prefix_prompt=prefix_prompt)
             gr.Info("ChatGLM模型导入成功")
         except Exception as e:
             gr.Warning(f"ChatGLM模型导入失败 {e}")
     elif model_name == 'ChatGPT':
         if openai_apikey:
-            llm = llm_class.init_model('ChatGPT', api_key=openai_apikey, proxy_url=proxy_url)
+            llm = llm_class.init_model('ChatGPT', api_key=openai_apikey, proxy_url=proxy_url, prefix_prompt=prefix_prompt)
         else:
             gr.Warning("请填写OpenAI的api_key")
     # elif model_name == 'Llama2Chinese':
@@ -944,7 +954,7 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     #         gr.Warning(f"Llama2Chinese模型下载失败 {e}")
     elif model_name == 'GPT4Free':
         try:
-            llm = llm_class.init_model('GPT4Free')
+            llm = llm_class.init_model('GPT4Free', prefix_prompt=prefix_prompt)
             gr.Info("GPT4Free模型导入成功, 请注意GPT4Free可能不稳定")
         except Exception as e:
             gr.Warning(f"GPT4Free模型下载失败 {e}")
@@ -1012,7 +1022,7 @@ def tts_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
 if __name__ == "__main__":
     llm_class = LLM(mode='offline')
     try:
-        llm = llm_class.init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
+        llm = llm_class.init_model('Qwen', 'Qwen/Qwen-1_8B-Chat', prefix_prompt=prefix_prompt)
         print("Success!!! LLM模块加载成功，默认使用Qwen模型")
     except Exception as e:
         print("Qwen Error: ", e)
