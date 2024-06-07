@@ -693,6 +693,45 @@ Linly-Talker/
 │       ├── README.md
 │       ├── tokenization_qwen.py
 │       └── tokenizer_config.json
+├── Whisper
+│   ├── base.pt
+│   └── tiny.pt
+├── FunASR
+│   ├── punc_ct-transformer_zh-cn-common-vocab272727-pytorch
+│   │   ├── configuration.json
+│   │   ├── config.yaml
+│   │   ├── example
+│   │   │   └── punc_example.txt
+│   │   ├── fig
+│   │   │   └── struct.png
+│   │   ├── model.pt
+│   │   ├── README.md
+│   │   └── tokens.json
+│   ├── speech_fsmn_vad_zh-cn-16k-common-pytorch
+│   │   ├── am.mvn
+│   │   ├── configuration.json
+│   │   ├── config.yaml
+│   │   ├── example
+│   │   │   └── vad_example.wav
+│   │   ├── fig
+│   │   │   └── struct.png
+│   │   ├── model.pt
+│   │   └── README.md
+│   └── speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch
+│       ├── am.mvn
+│       ├── asr_example_hotword.wav
+│       ├── configuration.json
+│       ├── config.yaml
+│       ├── example
+│       │   ├── asr_example.wav
+│       │   └── hotword.txt
+│       ├── fig
+│       │   ├── res.png
+│       │   └── seaco.png
+│       ├── model.pt
+│       ├── README.md
+│       ├── seg_dict
+│       └── tokens.json
 └── README.md
 ```
 
