@@ -7,7 +7,7 @@ from configs import ip, api_port, model_path
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 class Linly:
-    def __init__(self, mode='api', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf") -> None:
+    def __init__(self, mode='api', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf", prefix_prompt = '''请用少于25个字回答以下问题\n\n'''):
         # mode = api need
         # 定义设置的api的服务器,首先记得运行Linly-api-fast.py 填入ip地址和端口号
         self.url = f"http://{ip}:{api_port}" # local server: http://ip:port
@@ -18,7 +18,7 @@ class Linly:
             "question": "北京有什么好玩的地方？"
         }
         # 全局设定的prompt
-        self.prefix_prompt = '''请用少于25个字回答以下问题\n\n'''
+        self.prefix_prompt = prefix_prompt
         self.mode = mode
         if mode != 'api':
             self.model, self.tokenizer = self.init_model(model_path)
