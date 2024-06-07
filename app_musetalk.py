@@ -154,7 +154,11 @@ def main():
                 )
     return inference
 
+def success_print(text):
+    print(f"\033[1;31;42m{text}\033[0m")
 
+def error_print(text):
+    print(f"\033[1;37;41m{text}\033[0m")
     
 if __name__ == "__main__":
     # llm = LLM(mode='offline').init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf')
@@ -164,29 +168,29 @@ if __name__ == "__main__":
         from LLM import LLM
         llm = LLM(mode=mode).init_model('Qwen', 'Qwen/Qwen-1_8B-Chat')
     except Exception as e:
-        print("LLM is not ready, error: ", e)
-        print("如果使用LLM，请先下载有关的LLM模型")
+        error_print(f"LLM is not ready, error: {e}")
+        error_print("如果使用LLM，请先下载有关的LLM模型")
         
     try:
         from TTS import EdgeTTS
         tts = EdgeTTS()
     except Exception as e:
-        print("EdgeTTS Error: ", e)
-        print("如果使用EdgeTTS，请先下载EdgeTTS库，测试EdgeTTS是否可用")
+        error_print(f"EdgeTTS Error: {e}")
+        error_print("如果使用EdgeTTS，请先下载EdgeTTS库，测试EdgeTTS是否可用")
     
     try:
         from ASR import WhisperASR
         asr = WhisperASR('base')
     except Exception as e:
-        print("ASR Error: ", e)
-        print("如果使用ASR，请先下载ASR相关模型，如Whisper")
+        error_print(f"ASR Error: {e}")
+        error_print("如果使用ASR，请先下载ASR相关模型，如Whisper")
 
     try:
         from TFG import MuseTalk_RealTime
         musetalker = MuseTalk_RealTime()
     except Exception as e:
-        print("MuseTalk Error: ", e)
-        print("如果使用MuseTalk，请先下载MuseTalk相关模型")
+        error_print(f"MuseTalk Error: {e}")
+        error_print("如果使用MuseTalk，请先下载MuseTalk相关模型")
     gr.close_all()
     demo = main()
     demo.queue()

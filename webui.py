@@ -4,7 +4,6 @@ import gradio as gr
 import time
 from zhconv import convert
 from LLM import LLM
-from TFG import SadTalker
 from TTS import EdgeTTS
 from src.cost_time import calculate_time
 
@@ -32,7 +31,7 @@ def get_title(title = 'Linly 智能对话系统 (Linly-Talker)'):
 # 设置默认system
 default_system = '你是一个很有帮助的助手'
 # 设置默认的prompt
-prefix_prompt = '请用少于25个字回答以下问题\n\n'
+prefix_prompt = '''请用少于25个字回答以下问题\n\n'''
 
 edgetts = EdgeTTS()
 
@@ -398,7 +397,37 @@ def human_response(history, question_audio, talker_method,
         return video, driven_vtt
     else:
         return video
+
+
+@calculate_time
+def MuseTalker_response(source_video, bbox_shift, question_audio = None, text = '',
+                    voice = 'zh-CN-XiaoxiaoNeural', rate = 0, volume = 100, pitch = 0, 
+                    am = 'fastspeech2', voc = 'pwgan', lang = 'zh', male = False, 
+                    inp_ref = None, prompt_text = "", prompt_language = "", text_language = "", how_to_cut = "", use_mic_voice = False,
+                    tts_method = 'Edge-TTS', batch_size = 4,
+                    progress=gr.Progress(track_tqdm=True)):
+    default_voice = None    
+    voice = default_voice if not voice else voice
     
+    if not voice:
+        gr.Warning('请选择声音')
+    
+    driven_audio, driven_vtt, _ = LLM_response(question_audio, text, 
+                                               voice, rate, volume, pitch, 
+                                               am, voc, lang, male, 
+                                               inp_ref, prompt_text, prompt_language, text_language, how_to_cut, use_mic_voice,
+                                               tts_method)
+    print(driven_audio, driven_vtt)
+    video = musetalker.inference_noprepare(driven_audio, 
+                                            source_video, 
+                                            bbox_shift,
+                                            batch_size,
+                                            fps = 25) 
+    
+    if driven_vtt:
+        return (video, driven_vtt)
+    else:
+        return video 
 GPT_SoVITS_ckpt = "GPT_SoVITS/pretrained_models"
 def load_vits_model(gpt_path, sovits_path, progress=gr.Progress(track_tqdm=True)):
     global vits
@@ -878,7 +907,65 @@ def app_talk():
                     inputs = [source_image, input_text],
                 )   
     return inference
+
+def app_muse():
+    with gr.Blocks(analytics_enabled=False, title = 'Linly-Talker') as inference:
+        gr.HTML(get_title("Linly 智能对话系统 (Linly-Talker) MuseTalker数字人实时对话"))
+        with gr.Row(equal_height=False):
+            with gr.Column(variant='panel'): 
+                with gr.TabItem('MuseV Video'):
+                    gr.Markdown("MuseV: need help? please visit MuseVDemo to generate Video https://huggingface.co/spaces/AnchorFake/MuseVDemo")
+                    with gr.Row():
+                        source_video = gr.Video(label="Reference Video",sources=['upload'])
+                    gr.Markdown("BBox_shift 推荐值下限，在生成初始结果后生成相应的 bbox 范围。如果结果不理想，可以根据该参考值进行调整。\n一般来说，在我们的实验观察中，我们发现正值（向下半部分移动）通常会增加嘴巴的张开度，而负值（向上半部分移动）通常会减少嘴巴的张开度。然而，需要注意的是，这并不是绝对的规则，用户可能需要根据他们的具体需求和期望效果来调整该参数。")
+                    with gr.Row():
+                        bbox_shift = gr.Number(label="BBox_shift value, px", value=0)
+                        bbox_shift_scale = gr.Textbox(label="bbox_shift_scale", 
+                                                        value="",interactive=False)
+
+                (_, voice, rate, volume, pitch, 
+                am, voc, lang, male, 
+                inp_ref, prompt_text, prompt_language, text_language, how_to_cut, use_mic_voice,
+                tts_method, batch_size, character, talker_method, asr_method, llm_method)= webui_setting()
+            source_video.change(fn=musetalker.prepare_material, inputs=[source_video, bbox_shift], outputs=[source_video, bbox_shift_scale])
             
+            with gr.Column(variant='panel'):
+                with gr.Tabs():
+                    with gr.TabItem('对话'):
+                        with gr.Group():
+                            question_audio = gr.Audio(sources=['microphone','upload'], type="filepath", label = '语音对话')
+                            input_text = gr.Textbox(label="Input Text", lines=3)
+                            asr_text = gr.Button('语音识别（语音对话后点击）')
+                        asr_text.click(fn=Asr,inputs=[question_audio],outputs=[input_text]) 
+            
+                with gr.TabItem("MuseTalk Video"):
+                    gen_video = gr.Video(label="Generated video", format="mp4")
+                submit = gr.Button('Generate', elem_id="sadtalker_generate", variant='primary')
+                examples = [os.path.join('Musetalk/data/video', video) for video in os.listdir("Musetalk/data/video")]
+                # ['Musetalk/data/video/yongen_musev.mp4', 'Musetalk/data/video/musk_musev.mp4', 'Musetalk/data/video/monalisa_musev.mp4', 'Musetalk/data/video/sun_musev.mp4', 'Musetalk/data/video/seaside4_musev.mp4', 'Musetalk/data/video/sit_musev.mp4', 'Musetalk/data/video/man_musev.mp4']
+                
+                gr.Markdown("## MuseV Video Examples")
+                gr.Examples(
+                    examples=[
+                        ['Musetalk/data/video/yongen_musev.mp4', 5],
+                        ['Musetalk/data/video/musk_musev.mp4', 5],
+                        ['Musetalk/data/video/monalisa_musev.mp4', 5],
+                        ['Musetalk/data/video/sun_musev.mp4', 5],
+                        ['Musetalk/data/video/seaside4_musev.mp4', 5],
+                        ['Musetalk/data/video/sit_musev.mp4', 5],
+                        ['Musetalk/data/video/man_musev.mp4', 5]
+                        ],
+                    inputs =[source_video, bbox_shift], 
+                )
+
+            submit.click(
+                fn=MuseTalker_response,
+                inputs=[source_video, bbox_shift, question_audio, input_text, voice, rate, volume, pitch, am, voc, lang, male, 
+                            inp_ref, prompt_text, prompt_language, text_language, how_to_cut,  use_mic_voice,
+                            tts_method, batch_size], 
+                outputs=[gen_video]
+                )
+    return inference
 def asr_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     global asr
     if model_name == "Whisper-tiny":
@@ -1019,44 +1106,58 @@ def tts_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
         gr.Warning("未知TTS模型，可提issue和PR 或者 建议更新模型")
     return model_name
 
+def success_print(text):
+    print(f"\033[1;31;42m{text}\033[0m")
+
+def error_print(text):
+    print(f"\033[1;37;41m{text}\033[0m")
+
 if __name__ == "__main__":
     llm_class = LLM(mode='offline')
     try:
         llm = llm_class.init_model('Qwen', 'Qwen/Qwen-1_8B-Chat', prefix_prompt=prefix_prompt)
-        print("Success!!! LLM模块加载成功，默认使用Qwen模型")
+        success_print("Success!!! LLM模块加载成功，默认使用Qwen模型")
     except Exception as e:
-        print("Qwen Error: ", e)
-        print("如果使用Qwen，请先下载Qwen模型和安装环境")
+        error_print(f"Qwen Error: {e}")
+        error_print("如果使用Qwen，请先下载Qwen模型和安装环境")
     
     try:
         from VITS import *
         vits = GPT_SoVITS()
-        print("Success!!! GPT-SoVITS模块加载成功，语音克隆默认使用GPT-SoVITS模型")
+        success_print("Success!!! GPT-SoVITS模块加载成功，语音克隆默认使用GPT-SoVITS模型")
         # gpt_path = "GPT_SoVITS/pretrained_models/s1bert25hz-2kh-longer-epoch=68e-step=50232.ckpt"
         # sovits_path = "GPT_SoVITS/pretrained_models/s2G488k.pth"
         # vits.load_model(gpt_path, sovits_path)
     except Exception as e:
-        print("GPT-SoVITS Error: ", e)
-        print("如果使用VITS，请先下载GPT-SoVITS模型和安装环境")
+        error_print(f"GPT-SoVITS Error: {e}")
+        error_print("如果使用VITS，请先下载GPT-SoVITS模型和安装环境")
     
     try:
+        from TFG import SadTalker
         talker = SadTalker(lazy_load=True)
-        print("Success!!! SadTalker模块加载成功，默认使用SadTalker模型")
+        success_print("Success!!! SadTalker模块加载成功，默认使用SadTalker模型")
     except Exception as e:
-        print("SadTalker Error: ", e)
-        print("如果使用SadTalker，请先下载SadTalker模型")
+        error_print(f"SadTalker Error: {e}")
+        error_print("如果使用SadTalker，请先下载SadTalker模型")
     
     try:
         from ASR import WhisperASR
         asr = WhisperASR('base')
-        print("Success!!! WhisperASR模块加载成功，默认使用Whisper-base模型")
+        success_print("Success!!! WhisperASR模块加载成功，默认使用Whisper-base模型")
     except Exception as e:
-        print("ASR Error: ", e)
-        print("如果使用FunASR，请先下载WhisperASR模型和安装环境")
+        error_print(f"ASR Error: {e}")
+        error_print("如果使用FunASR，请先下载WhisperASR模型和安装环境")
     
+    try:
+        from TFG import MuseTalk_RealTime
+        musetalker = MuseTalk_RealTime()
+    except Exception as e:
+        error_print(f"MuseTalk Error: {e}")
+        error_print("如果使用MuseTalk，请先下载MuseTalk相关模型")
+
     tts = edgetts
     if not tts.network:
-        print("EdgeTTS模块加载失败，请检查网络是否正常连接，否则无法使用")
+        error_print("EdgeTTS模块加载失败，请检查网络是否正常连接，否则无法使用")
 
     gr.close_all()
     demo_app = app()
@@ -1064,17 +1165,20 @@ if __name__ == "__main__":
     demo_multi = app_multi()
     demo_vits = app_vits()
     demo_talk = app_talk()
+    demo_muse = app_muse()
     demo = gr.TabbedInterface(interface_list = [demo_app, 
                                                 demo_img, 
                                                 demo_multi, 
                                                 demo_vits, 
                                                 demo_talk,
+                                                demo_muse,
                                                 ], 
                               tab_names = ["文本/语音对话", 
                                            "任意图片对话", 
                                            "多轮GPT对话", 
                                            "语音克隆数字人对话", 
                                            "数字人文本/语音播报",
+                                           "MuseTalk数字人实时对话"
                                            ],
                               title = "Linly-Talker WebUI")
     demo.queue()
