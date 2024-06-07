@@ -29,6 +29,7 @@ accelerate
 protobuf==3.19.6
 openai
 google-api-python-client==2.126.0
+g4f
 # gfpgan
 # ========Qwen Need========#
 # transformers==4.32.0

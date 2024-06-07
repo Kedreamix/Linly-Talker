@@ -4,7 +4,7 @@ pip install -U openai-whisper
 '''
 import whisper
 import sys
-sys.path.append('..')
+sys.path.append('./')
 from src.cost_time import calculate_time 
 
 class WhisperASR:
@@ -121,7 +121,7 @@ class WhisperASR:
 if __name__ == "__main__":
     import os
     # 创建ASR对象并进行语音识别
-    model_path = "base"  # 模型路径
+    model_path = "./Whisper/tiny.pt"  # 模型路径
     audio_file = "output.wav"  # 音频文件路径
     if not os.path.exists(audio_file):
         os.system('edge-tts --text "hello" --write-media output.wav')

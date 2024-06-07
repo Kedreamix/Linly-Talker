@@ -5,9 +5,9 @@ https://github.com/xtekky/gpt4free
 from g4f.client import Client
 
 class GPT4FREE:
-    def __init__(self):
+    def __init__(self, prefix_prompt = '''请用少于25个字回答以下问题\n\n'''):
         self.client = Client()
-        self.prefix_prompt = '''请用少于25个字回答以下问题\n\n'''   
+        self.prefix_prompt = prefix_prompt
         self.history = []
         '''
         response = client.chat.completions.create(

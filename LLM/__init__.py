@@ -1,5 +1,6 @@
 from .Linly import Linly
 from .Qwen import Qwen
+from .Qwen2 import Qwen2
 try:
     from .Gemini import Gemini
 except Exception as e:
@@ -32,13 +33,15 @@ class LLM:
     def __init__(self, mode='offline'):
         self.mode = mode
         
-    def init_model(self, model_name, model_path, api_key=None, proxy_url=None):
-        if model_name not in ['Linly', 'Qwen', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']:
+    def init_model(self, model_name, model_path, api_key=None, proxy_url=None, prefix_prompt='''请用少于25个字回答以下问题\n\n'''):
+        if model_name not in ['Linly', 'Qwen', 'Qwen2', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']:
             raise ValueError("model_name must be one of ['Linly', 'Qwen', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']")
         if model_name == 'Linly':
             llm = Linly(self.mode, model_path)
         elif model_name == 'Qwen':
             llm = Qwen(self.mode, model_path)
+        elif model_name == 'Qwen2':
+            llm = Qwen2(self.mode, model_path)
         elif model_name == 'Gemini':
             llm = Gemini(model_path, api_key, proxy_url)
         elif model_name == 'ChatGLM':
@@ -49,6 +52,7 @@ class LLM:
             llm = Llama2Chinese(model_path, self.mode)
         elif model_name == 'GPT4Free':
             llm = GPT4FREE()
+        llm.prefix_prompt = prefix_prompt
         return llm
     
     def test_Linly(self, question="如何应对压力？", model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
