@@ -44,6 +44,10 @@
 - **Updated the beginner-friendly AutoDL deployment tutorial, and also updated the codewithgpu image, allowing for one-click experience and learning.**
 - **Updated WebUI.py: Linly-Talker WebUI now supports multiple modules, multiple models, and multiple options**
 
+**2024.06 Update** 📆
+
+- **Integrated MuseTalk into Linly-Talker and updated the WebUI, enabling basic real-time conversation capabilities.**
+
 ---
 
 <details>
@@ -66,7 +70,8 @@
   - [THG - Avatar](#thg---avatar)
     - [SadTalker](#sadtalker)
     - [Wav2Lip](#wav2lip)
-    - [ER-NeRF (Coming Soon)](#er-nerf-coming-soon)
+    - [ER-NeRF](#er-nerf)
+    - [MuseTalk](#musetalk)
   - [LLM - Conversation](#llm---conversation)
     - [Linly-AI](#linly-ai)
     - [Qwen](#qwen)
@@ -122,7 +127,8 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 - [x] `Voice Cloning` Technology (Synthesize one's own voice using voice cloning to enhance the realism and interactive experience of digital entities)
 - [x] Integrate offline TTS (Text-to-Speech) along with NeRF-based methods and models.
 - [x] Linly-Talker WebUI supports multiple modules, multiple models, and multiple options
-- [ ] Add MuseV and MuseTalk functionality to Linly-Talker
+- [x] Added MuseTalk functionality to Linly-Talker, achieving near real-time speed with very fast communication.
+- [x] Integrated MuseTalk into the Linly-Talker WebUI.
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
@@ -144,6 +150,12 @@ AutoDL has released an image, which can be used directly at [https://www.codewit
 
 ```bash
 docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:XAw1l9jRjl
+```
+
+Download the code:
+
+```bash
+git clone --recursive https://github.com/Kedreamix/Linly-Talker.git
 ```
 
 To install the environment using Anaconda and PyTorch, follow the steps below:
@@ -210,9 +222,12 @@ pip install -r ASR/requirements_funasr.txt
 
 Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
 
+We recommend downloading from Quark Netdisk for the latest updates.
+
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
 - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary)
+- [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
 
 **HuggingFace Download**
 
@@ -221,8 +236,8 @@ If the download speed is too slow, consider using a mirror site. For more inform
 ```bash
 # Download pre-trained models from HuggingFace
 git lfs install
-git clone https://huggingface.co/Kedreamix/Linly-Talker
-# git lfs clone https://huggingface.co/Kedreamix/Linly-Talker
+git clone https://huggingface.co/Kedreamix/Linly-Talker --depth 1
+# git lfs clone https://huggingface.co/Kedreamix/Linly-Talker --depth 1
 
 # pip install -U huggingface_hub
 # export HF_ENDPOINT=https://hf-mirror.com # Use a mirror site
@@ -235,7 +250,7 @@ huggingface-cli download --resume-download --local-dir-use-symlinks False Kedrea
 # Download pre-trained models from Modelscope
 # 1. Using git
 git lfs install
-git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
+git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git --depth 1
 # git lfs clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
 
 # 2. Download using Python code
@@ -369,6 +384,8 @@ bash scripts/sadtalker_download_models.sh
 
 [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 
+[Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
+
 > If downloading from Baidu Cloud, remember to place it in the `checkpoints` folder. The model downloaded from Baidu Cloud is named `sadtalker` by default, but it should be renamed to `checkpoints`.
 
 ### Wav2Lip
@@ -386,11 +403,30 @@ Before usage, download the Wav2Lip model:
 
 
 
-### ER-NeRF (Coming Soon)
+### ER-NeRF
 
 ER-NeRF (ICCV 2023) is a digital human built using the latest NeRF technology. It allows for the customization of digital characters and can reconstruct them using just a five-minute video of a person. For more details, please refer to [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF).
 
 Updated: Taking inspiration from the likeness of Obama, for better results, consider cloning and customizing the voice of digital personas for improved effectiveness.
+
+
+
+### MuseTalk
+
+MuseTalk is a real-time, high-quality audio-driven lip synchronization model capable of running at over 30 frames per second on an NVIDIA Tesla V100 GPU. This model can be integrated with input videos generated by MuseV, forming a part of a comprehensive virtual human solution. For more details, please refer to [https://github.com/TMElyralab/MuseTalk](https://github.com/TMElyralab/MuseTalk).
+
+MuseTalk is trained to operate within the latent space of ft-mse-vae and offers the following features:
+
+- **Unseen Face Synchronization**: It can modify unseen faces based on input audio, with a face region size of 256 x 256.
+- **Multi-language Support**: Supports audio inputs in various languages, including Chinese, English, and Japanese.
+- **High-performance Real-time Inference**: Achieves real-time inference at over 30 frames per second on an NVIDIA Tesla V100.
+- **Facial Center Point Adjustment**: Allows the adjustment of the facial region's center point, significantly impacting the generated results.
+- **HDTF Dataset Training**: Provides model checkpoints trained on the HDTF dataset.
+- **Upcoming Training Code Release**: Training code will be released soon, facilitating further development and research.
+
+MuseTalk offers an efficient and versatile tool for precise audio synchronization with facial expressions in virtual humans, marking a significant step towards fully interactive virtual personas.
+
+In Linly-Talker, MuseTalk has been integrated to perform inference on videos based on MuseV, achieving an ideal speed for conversations with near real-time performance. This approach works very well and supports streaming-based inference.
 
 
 
@@ -476,6 +512,10 @@ From OpenAI, requires API application. For more information, please visit [https
 
 From Tsinghua University, for more information please visit [https://github.com/THUDM/ChatGLM3](https://github.com/THUDM/ChatGLM3).
 
+### GPT4Free
+
+For free access to GPT-4 and other models, you can refer to [https://github.com/xtekky/gpt4free](https://github.com/xtekky/gpt4free). This resource provides methods to utilize these models without cost.
+
 ### LLM Multiple Model Selection
 
 In the `webui.py` file, easily select the model you need. ⚠️ For the first run, make sure to download the model first. Refer to Qwen1.8B.
@@ -528,7 +568,7 @@ The current features available in the WebUI are as follows:
 - [x] Digital Persona Text/Voice Playback (based on input text/voice)
 
 - [x] Multiple modules➕Multiple models➕Multiple choices
-  - [ ] Multiple role selections: Female/Male/Custom (each part can automatically upload images) Coming Soon
+  - [x] Multiple role selections: Female/Male/Custom (each part can automatically upload images) Coming Soon
   - [x] Multiple TTS model selections: EdgeTTS / PaddleTTS / GPT-SoVITS / Coming Soon
   - [x] Multiple LLM model selections: Linly / Qwen / ChatGLM / GeminiPro / ChatGPT / Coming Soon
   - [x] Multiple Talker model selections: Wav2Lip / SadTalker / ERNeRF / MuseTalk (coming soon) / Coming Soon
@@ -601,7 +641,15 @@ python app_talk.py
 
 ![](docs/UI4.png)
 
+MuseTalk has been integrated into Linly-Talker, enabling efficient preprocessing of MuseV-generated videos. Once preprocessed, these videos facilitate conversations at speeds that meet near real-time requirements, providing very fast performance. MuseTalk is now available within the WebUI.
 
+To run the application, use the following command:
+
+```bash
+python app_musetalk.py
+```
+
+![WebUI Screenshot](docs/UI5.png)
 
 ## Folder structure
 
@@ -610,6 +658,7 @@ The folder structure of the weight files is as follows:
 - `Baidu (百度云盘)`: You can download the weights from [here](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`).
 - `huggingface`: You can access the weights at [this link](https://huggingface.co/Kedreamix/Linly-Talker).
 - `modelscope`: The weights will be available soon at [this link](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files).
+- `Qurak(夸克网盘)`：You can download the weights from [here](https://pan.quark.cn/s/f48f5e35796b)
 
 ```bash
 Linly-Talker/ 

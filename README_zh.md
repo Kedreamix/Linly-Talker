@@ -44,6 +44,10 @@
 - **更新零基础小白部署 AutoDL 教程，并且更新了codewithgpu的镜像，可以一键进行体验和学习。**
 - **更新了WebUI.py，Linly-Talker WebUI支持多模块、多模型和多选项**
 
+**2024.06 更新** 📆
+
+- **更新MuseTalk加入Linly-Talker之中，并且更新了WebUI中，能够基本实现实时对话。**
+
 ---
 
 <details>
@@ -65,7 +69,8 @@
   - [THG - Avatar](#thg---avatar)
     - [SadTalker](#sadtalker)
     - [Wav2Lip](#wav2lip)
-    - [ER-NeRF（Comming Soon）](#er-nerfcomming-soon)
+    - [ER-NeRF](#er-nerf)
+    - [MuseTalk](#musetalk)
   - [LLM - Conversation](#llm---conversation)
     - [Linly-AI](#linly-ai)
     - [Qwen](#qwen)
@@ -119,7 +124,8 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 - [x] `语音克隆`技术，加入GPT-SoVITS，只需要一分钟的语音简单微调即可（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
 - [x] 加入离线TTS以及NeRF-based的方法和模型
 - [x] Linly-Talker WebUI支持多模块、多模型和多选项
-- [ ] 为Linly-Talker添加MuseV和MuseTalk功能
+- [x] 为Linly-Talker添加MuseTalk功能，基本达到实时的速度，交流速度很快
+- [x] 集成MuseTalk进入Linly-Talker WebUI
 - [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
 
 🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
@@ -141,6 +147,12 @@ AutoDL已发布镜像，可以直接使用，[https://www.codewithgpu.com/i/Kedr
 
 ```bash
 docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:XAw1l9jRjl
+```
+
+下载代码
+
+```bash
+git clone --recursive https://github.com/Kedreamix/Linly-Talker.git
 ```
 
 首先使用anaconda安装环境，安装pytorch环境，具体操作如下：
@@ -205,11 +217,12 @@ pip install -r TTS/requirements_paddle.txt
 pip intall -r ASR/requirements_funasr.txt
 ```
 
-接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明。
+接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明，建议从夸克网盘下载，会第一时间更新
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
 - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary) 
+- [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
 
 **HuggingFace下载**
 
@@ -218,7 +231,7 @@ pip intall -r ASR/requirements_funasr.txt
 ```bash
 # 从huggingface下载预训练模型
 git lfs install
-git clone https://huggingface.co/Kedreamix/Linly-Talker
+git clone https://huggingface.co/Kedreamix/Linly-Talker --depth 1
 # git lfs clone https://huggingface.co/Kedreamix/Linly-Talker
 
 # pip install -U huggingface_hub
@@ -232,8 +245,8 @@ huggingface-cli download --resume-download --local-dir-use-symlinks False Kedrea
 # 从modelscope下载预训练模型
 # 1. git 方法
 git lfs install
-git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
-# git lfs clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git
+git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git --depth 1
+# git lfs clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git --depth 1
 
 # 2. Python 代码下载
 pip install modelscope
@@ -332,7 +345,7 @@ ssl_keyfile = "./https_cert/key.pem"
 
 感谢大家的开源贡献，我借鉴了当前开源的语音克隆模型 `GPT-SoVITS`，我认为效果是相当不错的，项目地址可参考[https://github.com/RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
 
-
+我将一些训练好的克隆权重放在了[Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)中，大家可以自取权重和参考音频。
 
 ### XTTS
 
@@ -373,6 +386,8 @@ bash scripts/sadtalker_download_models.sh
 
 [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 
+[Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
+
 > 如果百度网盘下载，记住是放在checkpoints文件夹下，百度网盘下载的默认命名为sadtalker，实际应该重命名为checkpoints
 
 ### Wav2Lip
@@ -395,6 +410,25 @@ bash scripts/sadtalker_download_models.sh
 ER-NeRF（ICCV2023）是使用最新的NeRF技术构建的数字人，拥有定制数字人的特性，只需要一个人的五分钟左右到视频即可重建出来，具体可参考 [https://github.com/Fictionarry/ER-NeRF](https://github.com/Fictionarry/ER-NeRF)
 
 已更新，以奥巴马形象作为参考，若考虑更好的效果，可能考虑克隆定制数字人的声音以得到更好的效果。
+
+
+
+### MuseTalk
+
+MuseTalk 是一个实时高质量的音频驱动唇形同步模型，能够以30帧每秒以上的速度在NVIDIA Tesla V100显卡上运行。该模型可以与由 MuseV 生成的输入视频结合使用，作为完整的虚拟人解决方案的一部分。具体可参考 [https://github.com/TMElyralab/MuseTalk](https://github.com/TMElyralab/MuseTalk)
+
+MuseTalk 是一个实时高质量的音频驱动唇形同步模型，经过训练可以在 ft-mse-vae 的潜在空间中进行工作。它具有以下特性：
+
+- **未见面孔的同步**：根据输入的音频对未见过的面孔进行修改，面部区域的大小为 256 x 256。
+- **多语言支持**：支持多种语言的音频输入，包括中文、英语和日语。
+- **高性能实时推理**：在 NVIDIA Tesla V100 上可以实现 30帧每秒以上的实时推理。
+- **面部中心点调整**：支持修改面部区域的中心点位置，这对生成结果有显著影响。
+- **HDTF 数据集训练**：提供在 HDTF 数据集上训练的模型检查点。
+- **训练代码即将发布**：训练代码即将发布，方便进一步的开发和研究。
+
+MuseTalk 提供了一个高效且灵活的工具，使虚拟人的面部表情能够精确同步于音频，为实现全方位互动的虚拟人迈出了重要一步。
+
+在Linly-Talker中已经加入了MuseTalk，基于MuseV的视频进行推理，得到了比较理想的速度进行对话，基本达到实时的效果，还是非常不错的，也是可以基于流式进行推理的。
 
 
 
@@ -441,6 +475,12 @@ Linly来自深圳大学数据工程国家重点实验室，参考 [https://githu
 ### ChatGLM
 
 来自清华的，了解更多请访问 [https://github.com/THUDM/ChatGLM3](https://github.com/THUDM/ChatGLM3)
+
+
+
+### GPT4Free
+
+可参考[https://github.com/xtekky/gpt4free](https://github.com/xtekky/gpt4free)，免费白嫖使用GPT4等模型
 
 
 
@@ -506,10 +546,10 @@ Gradio是一个Python库,提供了一种简单的方式将机器学习模型作�
 
 - [x] 多模块➕多模型➕多选择
 
-  - [ ] 角色多选择：女性角色/男性角色/自定义角色(每一部分都可以自动上传图片) Comming Soon
+  - [x] 角色多选择：女性角色/男性角色/自定义角色(每一部分都可以自动上传图片)/Comming Soon
   - [x] TTS模型多选择：EdgeTTS / PaddleTTS/ GPT-SoVITS/Comming Soon
   - [x] LLM模型多选择： Linly/ Qwen / ChatGLM/ GeminiPro/ ChatGPT/Comming Soon
-  - [x] Talker模型多选择：Wav2Lip/ SadTalker/ ERNeRF/ MuseTalk(comming soon)/Comming Soon
+  - [x] Talker模型多选择：Wav2Lip/ SadTalker/ ERNeRF/ MuseTalk/Comming Soon
   - [x] ASR模型多选择：Whisper/ FunASR/Comming Soon
 
   ![](docs/WebUI2.png)
@@ -583,15 +623,22 @@ python app_talk.py
 
 ![](docs/UI4.png)
 
+加入了MuseTalk的方式，能够将MuseV的视频进行预处理，预处理后进行对话，速度基本能够达到实时的要求，速度非常快，MuseTalk已加入在WebUI中。
 
+```bash
+python app_musetalk.py
+```
+
+![](docs/UI5.png)
 
 ## 文件夹结构
 
-所有的权重部分可以从这下载，百度网盘可能有时候会更新慢一点
+所有的权重部分可以从这下载，百度网盘可能有时候会更新慢一点，建议从夸克网盘下载，会第一时间更新
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
 - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files)
+- [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
 
 权重文件夹结构如下
 
