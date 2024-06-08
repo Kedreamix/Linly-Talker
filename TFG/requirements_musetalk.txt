@@ -1,12 +1,19 @@
+# pip install --no-cache-dir -U openmim 
+# mim install mmengine 
+# mim install "mmcv>=2.0.1" 
+# mim install "mmdet>=3.1.0" 
+# mim install "mmpose>=1.1.0" 
 # =======MuseTalk===========#
-ffmpeg-python
-moviepy
+# ffmpeg-python
+diffusers==0.27.2
+accelerate==0.28.0
+opencv-python==4.9.0.80
+soundfile==0.12.1
+transformers==4.39.2
+gdown
+requests
 imageio[ffmpeg]
-xformers==0.0.21
-diffusers @ git+https://github.com/TMElyralab/diffusers.git@tme
-ip_adapter @ git+https://github.com/tencent-ailab/IP-Adapter.git@main
-clip @ git+https://github.com/openai/CLIP.git@main
-controlnet_aux @ git+https://github.com/TMElyralab/controlnet_aux.git@tme
-mmcm @ git+https://github.com/TMElyralab/MMCM.git@setup
-webq
-easydict
+omegaconf
+ffmpeg-python
+spaces
+moviepy
