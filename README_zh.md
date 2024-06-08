@@ -146,8 +146,12 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 AutoDL已发布镜像，可以直接使用，[https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker)，也可以使用docker来直接创建环境，我也会持续不断的更新镜像
 
 ```bash
-docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:XAw1l9jRjl
+docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:3iRyoQb112
 ```
+
+Windows我加入了一个python一键整合包，可以按顺序进行运行，按照需求按照相应的依赖，并且下载对应的模型，即可运行，主要按照conda以后从02开始安装pytorch进行运行，如果有问题，请随时与我沟通
+
+[Windows一键整合包](https://pan.quark.cn/s/cc8f19c45a15)
 
 下载代码
 
@@ -211,10 +215,21 @@ pip install -r TFG/requirements_nerf.txt
 pip install -r TTS/requirements_paddle.txt
 ```
 
-若使用FunAS/r语音识别模型，可安装环境
+若使用FunASR语音识别模型，可安装环境
 
 ```
 pip intall -r ASR/requirements_funasr.txt
+```
+
+若使用MuesTalk模型，可安装环境
+
+```bash
+pip install --no-cache-dir -U openmim 
+mim install mmengine 
+mim install "mmcv>=2.0.1" 
+mim install "mmdet>=3.1.0" 
+mim install "mmpose>=1.1.0" 
+pip install -r TFG/requirements_musetalk.txt 
 ```
 
 接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明，建议从夸克网盘下载，会第一时间更新

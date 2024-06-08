@@ -149,8 +149,12 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 AutoDL has released an image, which can be used directly at [https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker). You can also create an environment directly using Docker. I will continue to update the image.
 
 ```bash
-docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:XAw1l9jRjl
+docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:3iRyoQb112
 ```
+
+For Windows, I've included an all-in-one Python package. You can run the steps in sequence to install the necessary dependencies and download the corresponding model to get it running. Follow the instructions using `conda` and start installing PyTorch from step 02. If you encounter any issues, please feel free to contact me.
+
+[Windows All-in-One Package](https://pan.quark.cn/s/cc8f19c45a15)
 
 Download the code:
 
@@ -218,6 +222,17 @@ If you are using the FunASR speech recognition model, you can install the enviro
 
 ```
 pip install -r ASR/requirements_funasr.txt
+```
+
+If using the MuesTalk model, you can set up the environment with the following commands:
+
+```bash
+pip install --no-cache-dir -U openmim 
+mim install mmengine 
+mim install "mmcv>=2.0.1" 
+mim install "mmdet>=3.1.0" 
+mim install "mmpose>=1.1.0" 
+pip install -r TFG/requirements_musetalk.txt 
 ```
 
 Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
