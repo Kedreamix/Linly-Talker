@@ -244,6 +244,17 @@ We recommend downloading from Quark Netdisk for the latest updates.
 - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary)
 - [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
 
+I made a script that can download all the models mentioned below without requiring much input from the user. This method is suitable for stable network conditions, especially for Linux users. For Windows users, Git can also be used to download the models. If the network connection is unstable, users can choose to manually download the models or try running a Shell script to complete the download. The script has the following features:
+
+1. **Choose Download Method**: Users can choose to download models from three different sources: ModelScope, Huggingface, or Huggingface mirror site.
+2. **Download Models**: Based on the user's selection, the script executes the corresponding download command.
+3. **Move Model Files**: After downloading, the script moves the model files to the specified directory.
+4. **Error Handling**: Error checks are included in each step of the operation. If any step fails, the script will output an error message and stop execution.
+
+```bash
+sh scripts/download_models.sh
+```
+
 **HuggingFace Download**
 
 If the download speed is too slow, consider using a mirror site. For more information, refer to [Efficiently Obtain Hugging Face Models Using Mirror Sites](https://kedreamix.github.io/2024/01/05/Note/HuggingFace/?highlight=镜像).

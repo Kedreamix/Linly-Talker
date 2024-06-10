@@ -239,6 +239,17 @@ pip install -r TFG/requirements_musetalk.txt
 - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary) 
 - [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
 
+我制作一个脚本可以完成下述所有模型的下载，无需用户过多操作。这种方式适合网络稳定的情况，并且特别适合 Linux 用户。对于 Windows 用户，也可以使用 Git 来下载模型。如果网络环境不稳定，用户可以选择使用手动下载方法，或者尝试运行 Shell 脚本来完成下载。脚本具有以下功能。
+
+1. **选择下载方式**: 用户可以选择从三种不同的源下载模型：ModelScope、Huggingface 或 Huggingface 镜像站点。
+2. **下载模型**: 根据用户的选择，执行相应的下载命令。
+3. **移动模型文件**: 下载完成后，将模型文件移动到指定的目录。
+4. **错误处理**: 在每一步操作中加入了错误检查，如果操作失败，脚本会输出错误信息并停止执行。
+
+```bash
+sh scripts/download_models.sh
+```
+
 **HuggingFace下载**
 
 如果速度太慢可以考虑镜像，参考 [简便快捷获取 Hugging Face 模型（使用镜像站点）](https://kedreamix.github.io/2024/01/05/Note/HuggingFace/?highlight=镜像)
@@ -266,7 +277,7 @@ git clone https://www.modelscope.cn/Kedreamix/Linly-Talker.git --depth 1
 # 2. Python 代码下载
 pip install modelscope
 from modelscope import snapshot_download
-model_dir = snapshot_download('Kedreamix/Linly-Talker')
+model_dir = snapshot_download('Kedreamix/Linly-Talker', resume_download=True, cache_dir='./', revision='master')
 ```
 
 **移动所有模型到当前目录**
