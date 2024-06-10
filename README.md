@@ -301,8 +301,12 @@ mv Linly-Talker/checkpoints/* ./checkpoints
 # Voice cloning models
 mv Linly-Talker/GPT_SoVITS/pretrained_models/* ./GPT_SoVITS/pretrained_models/
 
-# Qwen large model
+# Qwen large language model
 mv Linly-Talker/Qwen ./
+
+# MuseTalk model
+mkdir -p ./Musetalk/models
+mv Linly-Talker/MuseTalk/* ./Musetalk/models
 ```
 
 For the convenience of deployment and usage, an `configs.py` file has been updated. You can modify some hyperparameters in this file for customization:

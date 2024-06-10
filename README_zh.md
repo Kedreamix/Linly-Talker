@@ -224,12 +224,12 @@ pip intall -r ASR/requirements_funasr.txt
 若使用MuesTalk模型，可安装环境
 
 ```bash
-pip install --no-cache-dir -U openmim 
-mim install mmengine 
-mim install "mmcv>=2.0.1" 
-mim install "mmdet>=3.1.0" 
-mim install "mmpose>=1.1.0" 
-pip install -r TFG/requirements_musetalk.txt 
+  pip install --no-cache-dir -U openmim 
+  mim install mmengine 
+  mim install "mmcv>=2.0.1" 
+  mim install "mmdet>=3.1.0" 
+  mim install "mmpose>=1.1.0" 
+  pip install -r TFG/requirements_musetalk.txt 
 ```
 
 接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明，建议从夸克网盘下载，会第一时间更新
@@ -298,6 +298,10 @@ mv Linly-Talker/GPT_SoVITS/pretrained_models/* ./GPT_SoVITS/pretrained_models/
 
 # Qwen大模型
 mv Linly-Talker/Qwen ./
+
+# MuseTalk模型
+mkdir -p ./Musetalk/models
+mv Linly-Talker/MuseTalk/* ./Musetalk/models
 ```
 
 为了大家的部署使用方便，更新了一个`configs.py`文件，可以对其进行一些超参数修改即可
