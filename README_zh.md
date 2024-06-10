@@ -218,18 +218,18 @@ pip install -r TTS/requirements_paddle.txt
 若使用FunASR语音识别模型，可安装环境
 
 ```
-pip intall -r ASR/requirements_funasr.txt
+pip install -r ASR/requirements_funasr.txt
 ```
 
 若使用MuesTalk模型，可安装环境
 
 ```bash
-  pip install --no-cache-dir -U openmim 
-  mim install mmengine 
-  mim install "mmcv>=2.0.1" 
-  mim install "mmdet>=3.1.0" 
-  mim install "mmpose>=1.1.0" 
-  pip install -r TFG/requirements_musetalk.txt 
+pip install --no-cache-dir -U openmim 
+mim install mmengine 
+mim install "mmcv>=2.0.1" 
+mim install "mmdet>=3.1.0" 
+mim install "mmpose>=1.1.0" 
+pip install -r TFG/requirements_musetalk.txt 
 ```
 
 接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明，建议从夸克网盘下载，会第一时间更新
