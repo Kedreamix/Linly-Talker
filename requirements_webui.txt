@@ -1,0 +1,100 @@
+# pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
+# 指定 PyTorch 及其依赖项的安装源
+# -f https://download.pytorch.org/whl/cu118
+
+# # PyTorch 及其依赖项
+# torch==2.0.1
+# torchvision==0.15.2
+# torchaudio==2.0.2
+
+# conda install ffmpeg==4.2.2
+# pip install --no-cache-dir -U  
+# mim install mmengine 
+# mim install "mmcv>=2.0.1" 
+# mim install "mmdet>=3.1.0" 
+# mim install "mmpose>=1.1.0" 
+
+# =====Install=====
+numba
+tqdm
+pyyaml
+ffmpeg-python
+gdown
+requests
+imageio[ffmpeg]
+omegaconf
+spaces
+moviepy
+librosa==0.8.1
+
+# =====SadTalker=====
+numpy==1.23.4
+face_alignment==1.3.5
+imageio==2.19.3
+imageio-ffmpeg==0.4.7
+
+resampy==0.3.1
+pydub==0.25.1 
+scipy==1.10.1
+kornia==0.6.8
+yacs==0.1.8
+joblib==1.1.0
+facexlib==0.3.0
+gradio==4.16.0
+scikit-image==0.19.3
+protobuf==3.20.2
+gfpgan
+
+# =====MuseTalk=====
+openmim
+diffusers==0.27.2
+accelerate==0.28.0
+opencv-python==4.9.0.80
+soundfile==0.12.1
+transformers==4.39.2
+
+# =====PaddleTTS=====
+paddlepaddle==2.5.2
+paddlespeech==1.4.1
+opencc==1.1.1
+matplotlib==3.8.4
+
+# =====ASR=====
+openai
+modelscope
+funasr>=1.0.0
+edge-tts>=6.1.9
+openai-whisper
+zhconv
+
+
+# =====LLM=====
+openai
+g4f
+google-generativeai
+google-api-python-client==2.126.0
+tiktoken
+accelerate
+einops 
+transformers_stream_generator==0.0.4
+sentencepiece
+
+# =====GPT-SoVITS=====
+
+numba==0.56.4
+pytorch-lightning
+onnxruntime
+tqdm
+cn2an
+pypinyin
+pyopenjtalk
+g2p_en
+modelscope==1.10.0
+chardet
+PyYAML
+psutil
+jieba_fast
+jieba
+LangSegment
+
+
