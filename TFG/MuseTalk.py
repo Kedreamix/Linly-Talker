@@ -122,7 +122,12 @@ class MuseTalk_RealTime:
     def __init__(self):
         # load model weights
         self.audio_processor, self.vae, self.unet, self.pe = load_all_model()
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if torch.cuda.is_available():
+            device = "cuda"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        else:
+            device = "cpu"
         self.timesteps = torch.tensor([0], device=device)
         self.pe = self.pe.half()
         self.vae.vae = self.vae.vae.half()
@@ -517,7 +522,13 @@ class MuseTalk:
     def __init__(self):
         # load model weights
         self.audio_processor, self.vae, self.unet, self.pe  = load_all_model()
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        import platform
+        if torch.cuda.is_available():
+            device = "cuda"
+        elif platform.system() == 'Darwin': # macos 
+            device = "mps"
+        else:
+            device = "cpu"
         self.timesteps = torch.tensor([0], device=device)
     
         
@@ -753,7 +764,7 @@ if __name__ == "__main__":
     # musetalk = MuseTalk()
     musetalk = MuseTalk_RealTime()
     audio_path = "Musetalk/data/audio/sun.wav"
-    video_path = "Musetalk/data/video/yongen.mp4"
+    video_path = "Musetalk/data/video/yongen_musev.mp4"
     bbox_shift = 5
     video_path, bbox_shift_text = musetalk.prepare_material(video_path, bbox_shift)
     # print(video_path, bbox_shift_text)

@@ -19,7 +19,7 @@ from src.utils.init_path import init_path
 class SadTalker():
 
     def __init__(self, checkpoint_path='checkpoints', config_path='src/config', lazy_load=False):
-
+        import platform
         if torch.cuda.is_available():
             device = "cuda"
         elif platform.system() == 'Darwin': # macos 
