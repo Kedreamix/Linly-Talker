@@ -159,43 +159,37 @@ Windows我加入了一个python一键整合包，可以按顺序进行运行，�
 git clone --recursive https://github.com/Kedreamix/Linly-Talker.git
 ```
 
-首先使用anaconda安装环境，安装pytorch环境，具体操作如下：
+若使用Linly-Talker，可以直接用anaconda进行安装环境，几乎包括所有的模型所需要的依赖，具体操作如下：
 
 ```bash
 conda create -n linly python=3.10  
 conda activate linly
 
-# pytorch安装方式1：conda安装（推荐）
-conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
+# pytorch安装方式1：conda安装
+# CUDA 11.7
+# conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
+# CUDA 11.8
+# conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.8 -c pytorch -c nvidia
 
 # pytorch安装方式2：pip 安装
-pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
-
-conda install -q ffmpeg # ffmpeg==4.2.2
-
-pip install -r requirements_app.txt
-```
-
-若使用语音克隆等模型，需要更高版本的Pytorch，但是功能也会更加丰富，不过需要的驱动版本可能要到cuda11.8，可选择
-
-```bash
-conda create -n linly python=3.10  
-conda activate linly
-
+# CUDA 11.7
+# pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
+# CUDA 11.8
 pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
-conda install -q ffmpeg # ffmpeg==4.2.2
+conda install ffmpeg==4.2.2 # ffmpeg==4.2.2
 
-pip install -r requirements_app.txt
+pip install -r requirements_webui.txt
 
-# 安装语音克隆对应的依赖
-pip install -r VITS/requirements_gptsovits.txt
-```
+# 安装有关musetalk依赖
+pip install --no-cache-dir -U  openmim
+mim install mmengine 
+mim install "mmcv>=2.0.1" 
+mim install "mmdet>=3.1.0" 
+mim install "mmpose>=1.1.0" 
 
-若希望使用NeRF-based等模型等话，可能需要安装一下对应的环境
 
-```bash
-# 安装NeRF对应的依赖
+# 安装NeRF-based依赖，可能问题较多，可以先放弃
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 pip install -r TFG/requirements_nerf.txt
 
@@ -209,28 +203,83 @@ pip install -r TFG/requirements_nerf.txt
 # NeRF/shencoder
 ```
 
-若使用PaddleTTS，可安装对应的环境
+以下是旧版本的一些安装方法，可能存在会一些依赖冲突的问题，但是也不会出现太多bug，但是为了更好更方便的安装，我就更新了上述版本，以下版本可以忽略，或者遇到问题可以参考一下
 
-```bash
-pip install -r TTS/requirements_paddle.txt
-```
+> 首先使用anaconda安装环境，安装pytorch环境，具体操作如下：
+>
+> ```bash
+> conda create -n linly python=3.10  
+> conda activate linly
+> 
+> # pytorch安装方式1：conda安装（推荐）
+> conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
+> 
+> # pytorch安装方式2：pip 安装
+> pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+> 
+> conda install -q ffmpeg # ffmpeg==4.2.2
+> 
+> pip install -r requirements_app.txt
+> ```
+>
+> 若使用语音克隆等模型，需要更高版本的Pytorch，但是功能也会更加丰富，不过需要的驱动版本可能要到cuda11.8，可选择
+>
+> ```bash
+> conda create -n linly python=3.10  
+> conda activate linly
+> 
+> pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
+> 
+> conda install -q ffmpeg # ffmpeg==4.2.2
+> 
+> pip install -r requirements_app.txt
+> 
+> # 安装语音克隆对应的依赖
+> pip install -r VITS/requirements_gptsovits.txt
+> ```
+>
+> 若希望使用NeRF-based等模型等话，可能需要安装一下对应的环境
+>
+> ```bash
+> # 安装NeRF对应的依赖
+> pip install "git+https://github.com/facebookresearch/pytorch3d.git"
+> pip install -r TFG/requirements_nerf.txt
+> 
+> # 若pyaudio出现问题，可安装对应依赖
+> # sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
+> 
+> # 注意以下几个模块，若安装不成功，可以进入路径利用pip install . 或者 python setup.py install编译安装
+> # NeRF/freqencoder
+> # NeRF/gridencoder
+> # NeRF/raymarching
+> # NeRF/shencoder
+> ```
+>
+> 若使用PaddleTTS，可安装对应的环境
+>
+> ```bash
+> pip install -r TTS/requirements_paddle.txt
+> ```
+>
+> 若使用FunASR语音识别模型，可安装环境
+>
+> ```
+> pip install -r ASR/requirements_funasr.txt
+> ```
+>
+> 若使用MuesTalk模型，可安装环境
+>
+> ```bash
+> pip install --no-cache-dir -U openmim 
+> mim install mmengine 
+> mim install "mmcv>=2.0.1" 
+> mim install "mmdet>=3.1.0" 
+> mim install "mmpose>=1.1.0" 
+> pip install -r TFG/requirements_musetalk.txt 
+> ```
+>
 
-若使用FunASR语音识别模型，可安装环境
 
-```
-pip install -r ASR/requirements_funasr.txt
-```
-
-若使用MuesTalk模型，可安装环境
-
-```bash
-pip install --no-cache-dir -U openmim 
-mim install mmengine 
-mim install "mmcv>=2.0.1" 
-mim install "mmdet>=3.1.0" 
-mim install "mmpose>=1.1.0" 
-pip install -r TFG/requirements_musetalk.txt 
-```
 
 接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明，建议从夸克网盘下载，会第一时间更新
 

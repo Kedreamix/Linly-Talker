@@ -8,7 +8,7 @@
 # torchaudio==2.0.2
 
 # conda install ffmpeg==4.2.2
-# pip install --no-cache-dir -U  
+# pip install --no-cache-dir -U  openmim
 # mim install mmengine 
 # mim install "mmcv>=2.0.1" 
 # mim install "mmdet>=3.1.0" 

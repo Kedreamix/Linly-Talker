@@ -162,78 +162,128 @@ Download the code:
 git clone --recursive https://github.com/Kedreamix/Linly-Talker.git
 ```
 
-To install the environment using Anaconda and PyTorch, follow the steps below:
+以下是这段文字的英文翻译：
 
-```bash
-conda create -n linly python=3.10
-conda activate linly
+---
 
-# PyTorch Installation Method 1: Conda Installation (Recommended)
-conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
-
-# PyTorch Installation Method 2: Pip Installation
-pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
-
-conda install -q ffmpeg # ffmpeg==4.2.2
-
-pip install -r requirements_app.txt
-```
-
-If you want to use models like voice cloning, you may need a higher version of PyTorch. However, the functionality will be more diverse. You may need to use CUDA 11.8 as the driver version, which you can choose.
+If you are using Linly-Talker, you can set up the environment directly with Anaconda, which covers almost all the dependencies required by the models. The specific steps are as follows:
 
 ```bash
 conda create -n linly python=3.10  
 conda activate linly
 
+# PyTorch installation method 1: Install via conda
+# CUDA 11.7
+# conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
+# CUDA 11.8
+# conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.8 -c pytorch -c nvidia
+
+# PyTorch installation method 2: Install via pip
+# CUDA 11.7
+# pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
+# CUDA 11.8
 pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
-conda install -q ffmpeg # ffmpeg==4.2.2
+conda install ffmpeg==4.2.2 # Install ffmpeg==4.2.2
 
-pip install -r requirements_app.txt
+pip install -r requirements_webui.txt
 
-# Install dependencies for voice cloning
-pip install -r VITS/requirements_gptsovits.txt
-```
+# Install dependencies related to musetalk
+pip install --no-cache-dir -U openmim
+mim install mmengine 
+mim install "mmcv>=2.0.1" 
+mim install "mmdet>=3.1.0" 
+mim install "mmpose>=1.1.0" 
 
-If you wish to use NeRF-based models, you may need to set up the corresponding environment:
-
-```bash
-# Install dependencies for NeRF
+# Install NeRF-based dependencies, which might have several issues and can be skipped initially
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 pip install -r TFG/requirements_nerf.txt
 
-# If there are issues with PyAudio, you can install the corresponding dependencies
+# If there are issues with pyaudio, install the corresponding dependencies
 # sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
 
-# Note the following modules. If installation is unsuccessful, you can navigate to the path and use pip install . or python setup.py install to compile and install.
+# Note the following modules. If installation fails, you can enter the directory and use pip install . or python setup.py install to compile and install:
 # NeRF/freqencoder
 # NeRF/gridencoder
 # NeRF/raymarching
 # NeRF/shencoder
 ```
 
-If you are using PaddleTTS, you can set up the corresponding environment with:
+Below are some older installation methods, which might cause dependency conflicts, but they generally don't produce many bugs. For an easier and better installation, I've updated the above version. You can ignore the following versions or refer to them if you encounter issues.
 
-```bash
-pip install -r TTS/requirements_paddle.txt
-```
-
-If you are using the FunASR speech recognition model, you can install the environment with:
-
-```
-pip install -r ASR/requirements_funasr.txt
-```
-
-If using the MuesTalk model, you can set up the environment with the following commands:
-
-```bash
-pip install --no-cache-dir -U openmim 
-mim install mmengine 
-mim install "mmcv>=2.0.1" 
-mim install "mmdet>=3.1.0" 
-mim install "mmpose>=1.1.0" 
-pip install -r TFG/requirements_musetalk.txt 
-```
+> To install the environment using Anaconda and PyTorch, follow the steps below:
+>
+> ```bash
+> conda create -n linly python=3.10
+> conda activate linly
+> 
+> # PyTorch Installation Method 1: Conda Installation (Recommended)
+> conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
+> 
+> # PyTorch Installation Method 2: Pip Installation
+> pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+> 
+> conda install -q ffmpeg # ffmpeg==4.2.2
+> 
+> pip install -r requirements_app.txt
+> ```
+>
+> If you want to use models like voice cloning, you may need a higher version of PyTorch. However, the functionality will be more diverse. You may need to use CUDA 11.8 as the driver version, which you can choose.
+>
+> ```bash
+> conda create -n linly python=3.10  
+> conda activate linly
+> 
+> pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
+> 
+> conda install -q ffmpeg # ffmpeg==4.2.2
+> 
+> pip install -r requirements_app.txt
+> 
+> # Install dependencies for voice cloning
+> pip install -r VITS/requirements_gptsovits.txt
+> ```
+>
+> If you wish to use NeRF-based models, you may need to set up the corresponding environment:
+>
+> ```bash
+> # Install dependencies for NeRF
+> pip install "git+https://github.com/facebookresearch/pytorch3d.git"
+> pip install -r TFG/requirements_nerf.txt
+> 
+> # If there are issues with PyAudio, you can install the corresponding dependencies
+> # sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
+> 
+> # Note the following modules. If installation is unsuccessful, you can navigate to the path and use pip install . or python setup.py install to compile and install.
+> # NeRF/freqencoder
+> # NeRF/gridencoder
+> # NeRF/raymarching
+> # NeRF/shencoder
+> ```
+>
+> If you are using PaddleTTS, you can set up the corresponding environment with:
+>
+> ```bash
+> pip install -r TTS/requirements_paddle.txt
+> ```
+>
+> If you are using the FunASR speech recognition model, you can install the environment with:
+>
+> ```
+> pip install -r ASR/requirements_funasr.txt
+> ```
+>
+> If using the MuesTalk model, you can set up the environment with the following commands:
+>
+> ```bash
+> pip install --no-cache-dir -U openmim 
+> mim install mmengine 
+> mim install "mmcv>=2.0.1" 
+> mim install "mmdet>=3.1.0" 
+> mim install "mmpose>=1.1.0" 
+> pip install -r TFG/requirements_musetalk.txt 
+> ```
+>
 
 Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
 
