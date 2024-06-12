@@ -33,7 +33,7 @@ class LLM:
     def __init__(self, mode='offline'):
         self.mode = mode
         
-    def init_model(self, model_name, model_path, api_key=None, proxy_url=None, prefix_prompt='''请用少于25个字回答以下问题\n\n'''):
+    def init_model(self, model_name, model_path='', api_key=None, proxy_url=None, prefix_prompt='''请用少于25个字回答以下问题\n\n'''):
         if model_name not in ['Linly', 'Qwen', 'Qwen2', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']:
             raise ValueError("model_name must be one of ['Linly', 'Qwen', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']")
         if model_name == 'Linly':
