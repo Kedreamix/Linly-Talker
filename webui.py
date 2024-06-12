@@ -927,8 +927,10 @@ def app_muse():
                 am, voc, lang, male, 
                 inp_ref, prompt_text, prompt_language, text_language, how_to_cut, use_mic_voice,
                 tts_method, batch_size, character, talker_method, asr_method, llm_method)= webui_setting()
-            source_video.change(fn=musetalker.prepare_material, inputs=[source_video, bbox_shift], outputs=[source_video, bbox_shift_scale])
-            
+            try:
+                source_video.change(fn=musetalker.prepare_material, inputs=[source_video, bbox_shift], outputs=[source_video, bbox_shift_scale])
+            except:
+                print("MuseTalk 可能不能用！")
             with gr.Column(variant='panel'):
                 with gr.Tabs():
                     with gr.TabItem('对话'):
@@ -1107,10 +1109,10 @@ def tts_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     return model_name
 
 def success_print(text):
-    print(f"\033[1;31;42m{text}\033[0m")
+    print(f"\033[1;32;40m{text}\033[0m")
 
 def error_print(text):
-    print(f"\033[1;37;41m{text}\033[0m")
+    print(f"\033[1;31;40m{text}\033[0m")
 
 if __name__ == "__main__":
     llm_class = LLM(mode='offline')

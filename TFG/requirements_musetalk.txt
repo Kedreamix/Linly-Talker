@@ -4,7 +4,7 @@
 # mim install "mmdet>=3.1.0" 
 # mim install "mmpose>=1.1.0" 
 # =======MuseTalk===========#
-# ffmpeg-python
+ffmpeg-python
 diffusers==0.27.2
 accelerate==0.28.0
 opencv-python==4.9.0.80

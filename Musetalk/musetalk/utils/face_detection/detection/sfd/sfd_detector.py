@@ -14,7 +14,7 @@ models_urls = {
 
 
 class SFDDetector(FaceDetector):
-    def __init__(self, device, path_to_detector=os.path.join(os.path.dirname(os.path.abspath(__file__)), 's3fd.pth'), verbose=False):
+    def __init__(self, device, path_to_detector='checkpoints/hub/checkpoints/s3fd-619a316812.pth', verbose=False):
         super(SFDDetector, self).__init__(device, verbose)
 
         # Initialise the face detector
