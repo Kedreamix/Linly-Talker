@@ -1,20 +1,13 @@
+# PyTorch and its dependencies
+# These libraries include PyTorch and its related packages, supporting CUDA 11.8.
+torch==2.0.1
+torchvision==0.15.2
+torchaudio==2.0.2
+# Installation source for PyTorch: -f https://download.pytorch.org/whl/cu118
+# Example installation command:
 # pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
-# 指定 PyTorch 及其依赖项的安装源
-# -f https://download.pytorch.org/whl/cu118
 
-# # PyTorch 及其依赖项
-# torch==2.0.1
-# torchvision==0.15.2
-# torchaudio==2.0.2
-
-# conda install ffmpeg==4.2.2
-# pip install --no-cache-dir -U  openmim
-# mim install mmengine 
-# mim install "mmcv>=2.0.1" 
-# mim install "mmdet>=3.1.0" 
-# mim install "mmpose>=1.1.0" 
-
-# =====Install=====
+# General tools and libraries
 numba
 tqdm
 pyyaml
@@ -27,12 +20,11 @@ spaces
 moviepy
 librosa==0.8.1
 
-# =====SadTalker=====
+# SadTalker related libraries
 numpy==1.23.4
 face_alignment==1.3.5
 imageio==2.19.3
 imageio-ffmpeg==0.4.7
-
 resampy==0.3.1
 pydub==0.25.1 
 scipy==1.10.1
@@ -45,21 +37,26 @@ scikit-image==0.19.3
 protobuf==3.20.2
 gfpgan
 
-# =====MuseTalk=====
+# MuseTalk related libraries
 openmim
 diffusers==0.27.2
 accelerate==0.28.0
 opencv-python==4.9.0.80
 soundfile==0.12.1
 transformers==4.39.2
+# pip install --no-cache-dir -U openmim
+# mim install mmengine 
+# mim install "mmcv>=2.0.1" 
+# mim install "mmdet>=3.1.0" 
+# mim install "mmpose>=1.1.0" 
 
-# =====PaddleTTS=====
+# PaddleTTS related libraries
 paddlepaddle==2.5.2
 paddlespeech==1.4.1
 opencc==1.1.1
 matplotlib==3.8.4
 
-# =====ASR=====
+# ASR (Automatic Speech Recognition) related libraries
 openai
 modelscope
 funasr>=1.0.0
@@ -67,8 +64,7 @@ edge-tts>=6.1.9
 openai-whisper
 zhconv
 
-
-# =====LLM=====
+# LLM (Large Language Model) related libraries
 openai
 g4f
 google-generativeai
@@ -79,8 +75,7 @@ einops
 transformers_stream_generator==0.0.4
 sentencepiece
 
-# =====GPT-SoVITS=====
-
+# GPT-SoVITS related libraries
 numba==0.56.4
 pytorch-lightning
 onnxruntime
@@ -96,5 +91,3 @@ psutil
 jieba_fast
 jieba
 LangSegment
-
-
