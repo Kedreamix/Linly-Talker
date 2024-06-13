@@ -762,20 +762,23 @@ Linly-Talker/
 │       ├── s2D488k.pth
 │       ├── s2G488k.pth
 │       └── speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch
+
 ├── MuseTalk
-│   ├── dwpose
-│   │   └── dw-ll_ucoco_384.pth
-│   ├── face-parse-bisent
-│   │   ├── 79999_iter.pth
-│   │   └── resnet18-5c106cde.pth
-│   ├── musetalk
-│   │   ├── musetalk.json
-│   │   └── pytorch_model.bin
-│   ├── sd-vae-ft-mse
-│   │   ├── config.json
-│   │   └── diffusion_pytorch_model.bin
-│   └── whisper
-│       └── tiny.pt
+│   ├── models
+│   │   ├── dwpose
+│   │   │   └── dw-ll_ucoco_384.pth
+│   │   ├── face-parse-bisent
+│   │   │   ├── 79999_iter.pth
+│   │   │   └── resnet18-5c106cde.pth
+│   │   ├── musetalk
+│   │   │   ├── musetalk.json
+│   │   │   └── pytorch_model.bin
+│   │   ├── README.md
+│   │   ├── sd-vae-ft-mse
+│   │   │   ├── config.json
+│   │   │   └── diffusion_pytorch_model.bin
+│   │   └── whisper
+│   │       └── tiny.pt
 ├── Qwen
 │   └── Qwen-1_8B-Chat
 │       ├── assets
