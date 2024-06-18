@@ -2,6 +2,10 @@ import os
 import random 
 import gradio as gr
 import time
+import torch
+import gc
+import warnings
+warnings.filterwarnings('ignore')
 from zhconv import convert
 from LLM import LLM
 from TTS import EdgeTTS
@@ -59,6 +63,21 @@ def Asr(audio):
         question = 'Gradio存在一些bug，麦克风模式有时候可能音频还未传入，请重新点击一下语音识别即可'
         gr.Warning(question)
     return question
+
+def clear_memory():
+    """
+    清理PyTorch的显存和系统内存缓存。
+    """
+    # 1. 清理缓存的变量
+    gc.collect()  # 触发Python垃圾回收
+    torch.cuda.empty_cache()  # 清理PyTorch的显存缓存
+    torch.cuda.ipc_collect()  # 清理PyTorch的跨进程通信缓存
+    
+    # 2. 打印显存使用情况（可选）
+    print(f"Memory allocated: {torch.cuda.memory_allocated() / (1024 ** 2):.2f} MB")
+    print(f"Max memory allocated: {torch.cuda.max_memory_allocated() / (1024 ** 2):.2f} MB")
+    print(f"Cached memory: {torch.cuda.memory_reserved() / (1024 ** 2):.2f} MB")
+    print(f"Max cached memory: {torch.cuda.max_memory_reserved() / (1024 ** 2):.2f} MB")
 
 @calculate_time
 def TTS_response(text, 
@@ -159,7 +178,9 @@ def Talker_response(question_audio = None, method = 'SadTalker', text = '',
                                                am, voc, lang, male, 
                                                inp_ref, prompt_text, prompt_language, text_language, how_to_cut, use_mic_voice,
                                                tts_method)
-    
+    if driven_audio is None:
+        gr.Warning("音频没有正常生成，请检查TTS是否正确")
+        return None
     if method == 'SadTalker':
         pose_style = random.randint(0, 45)
         video = talker.test(pic_path,
@@ -543,7 +564,7 @@ def webui_setting(talk = True):
     talker_method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'ER-NeRF', 'MuseTalk', 'Comming Soon!!!'], 
                       value = 'SadTalker', label = '数字人模型选择')
     talker_method.change(fn = talker_model_change, inputs=[talker_method], outputs = [talker_method])
-    llm_method = gr.Dropdown(choices = ['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', 'Comming Soon!!!'], value = 'Qwen', label = 'LLM 模型选择')
+    llm_method = gr.Dropdown(choices = ['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', '直接回复 Direct Reply', 'Comming Soon!!!'], value = '直接回复 Direct Reply', label = 'LLM 模型选择')
     llm_method.change(fn = llm_model_change, inputs=[llm_method], outputs = [llm_method])
     return  (source_image, voice, rate, volume, pitch, 
              am, voc, lang, male, 
@@ -554,6 +575,8 @@ def webui_setting(talk = True):
 def exmaple_setting(asr, text, character, talk , tts, voice, llm):
     # 默认text的Example
     examples =  [
+        ['Whisper-base', '应对压力最有效的方法是什么？', '女性角色', 'SadTalker', 'Edge-TTS', 'zh-CN-XiaoxiaoNeural', '直接回复 Direct Reply'],
+        ['Whisper-tiny', '应对压力最有效的方法是什么？', '女性角色', 'SadTalker', 'PaddleTTS', 'None', '直接回复 Direct Reply'],
         ['Whisper-base', '应对压力最有效的方法是什么？', '女性角色', 'SadTalker', 'Edge-TTS', 'zh-CN-XiaoxiaoNeural', 'Qwen'],
         ['FunASR', '如何进行时间管理？','男性角色', 'SadTalker', 'Edge-TTS', 'zh-CN-YunyangNeural', 'Qwen'],
         ['Whisper-tiny', '为什么有些人选择使用纸质地图或寻求方向，而不是依赖GPS设备或智能手机应用程序？','女性角色', 'Wav2Lip', 'PaddleTTS', 'None', 'Qwen'],
@@ -908,6 +931,16 @@ def app_talk():
                 )   
     return inference
 
+def load_musetalk_model():
+    gr.Info("MuseTalk模型导入中...")
+    musetalker.init_model()
+    gr.Info("MuseTalk模型导入成功")
+    return "MuseTalk模型导入成功"
+def musetalk_prepare_material(source_video, bbox_shift):
+    if musetalker.load is False:
+        gr.Warning("请先加载MuseTalk模型后重新上传文件")
+        return source_video, None
+    return musetalker.prepare_material(source_video, bbox_shift)
 def app_muse():
     with gr.Blocks(analytics_enabled=False, title = 'Linly-Talker') as inference:
         gr.HTML(get_title("Linly 智能对话系统 (Linly-Talker) MuseTalker数字人实时对话"))
@@ -922,15 +955,16 @@ def app_muse():
                         bbox_shift = gr.Number(label="BBox_shift value, px", value=0)
                         bbox_shift_scale = gr.Textbox(label="bbox_shift_scale", 
                                                         value="",interactive=False)
+                load_musetalk = gr.Button("加载MuseTalk模型(传入视频前先加载)", variant='primary')
+                load_musetalk.click(fn=load_musetalk_model, outputs=bbox_shift_scale)
 
                 (_, voice, rate, volume, pitch, 
                 am, voc, lang, male, 
                 inp_ref, prompt_text, prompt_language, text_language, how_to_cut, use_mic_voice,
                 tts_method, batch_size, character, talker_method, asr_method, llm_method)= webui_setting()
-            try:
-                source_video.change(fn=musetalker.prepare_material, inputs=[source_video, bbox_shift], outputs=[source_video, bbox_shift_scale])
-            except:
-                print("MuseTalk 可能不能用！")
+            
+            source_video.change(fn=musetalk_prepare_material, inputs=[source_video, bbox_shift], outputs=[source_video, bbox_shift_scale])
+            
             with gr.Column(variant='panel'):
                 with gr.Tabs():
                     with gr.TabItem('对话'):
@@ -970,6 +1004,10 @@ def app_muse():
     return inference
 def asr_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     global asr
+
+    # 清理显存，在加载新的模型之前释放不必要的显存
+    clear_memory()
+
     if model_name == "Whisper-tiny":
         try:
             asr = WhisperASR('tiny')
@@ -1000,6 +1038,10 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     gemini_apikey = ""
     openai_apikey = ""
     proxy_url = None
+
+    # 清理显存，在加载新的模型之前释放不必要的显存
+    clear_memory()
+
     if model_name == 'Linly':
         try:
             llm = llm_class.init_model('Linly', 'Linly-AI/Chinese-LLaMA-2-7B-hf', prefix_prompt=prefix_prompt)
@@ -1035,12 +1077,9 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
             llm = llm_class.init_model('ChatGPT', api_key=openai_apikey, proxy_url=proxy_url, prefix_prompt=prefix_prompt)
         else:
             gr.Warning("请填写OpenAI的api_key")
-    # elif model_name == 'Llama2Chinese':
-    #     try:
-    #         llm =llm_class.init_model('Llama2Chinese', 'Llama2-chat-13B-Chinese-50W')
-    #         gr.Info("Llama2Chinese模型导入成功")
-    #     except Exception as e:
-    #         gr.Warning(f"Llama2Chinese模型下载失败 {e}")
+    elif model_name == '直接回复 Direct Reply':
+        llm =llm_class.init_model(model_name)
+        gr.Info("直接回复，不实用LLM模型")
     elif model_name == 'GPT4Free':
         try:
             llm = llm_class.init_model('GPT4Free', prefix_prompt=prefix_prompt)
@@ -1053,6 +1092,10 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     
 def talker_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     global talker
+
+    # 清理显存，在加载新的模型之前释放不必要的显存
+    clear_memory()
+
     if model_name not in ['SadTalker', 'Wav2Lip', 'ER-NeRF']:
         gr.Warning("其他模型还未集成，请等待")
     if model_name == 'SadTalker':
@@ -1065,6 +1108,7 @@ def talker_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     elif model_name == 'Wav2Lip':
         try:
             from TFG import Wav2Lip
+            clear_memory()
             talker = Wav2Lip("checkpoints/wav2lip_gan.pth")
             gr.Info("Wav2Lip模型导入成功")
         except Exception as e:
@@ -1083,6 +1127,10 @@ def talker_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
 
 def tts_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     global tts
+
+    # 清理显存，在加载新的模型之前释放不必要的显存
+    clear_memory()
+
     if model_name == 'Edge-TTS':
         # tts = EdgeTTS()
         if edgetts.network:
@@ -1116,12 +1164,8 @@ def error_print(text):
 
 if __name__ == "__main__":
     llm_class = LLM(mode='offline')
-    try:
-        llm = llm_class.init_model('Qwen', 'Qwen/Qwen-1_8B-Chat', prefix_prompt=prefix_prompt)
-        success_print("Success!!! LLM模块加载成功，默认使用Qwen模型")
-    except Exception as e:
-        error_print(f"Qwen Error: {e}")
-        error_print("如果使用Qwen，请先下载Qwen模型和安装环境")
+    llm = llm_class.init_model('直接回复 Direct Reply')
+    success_print("默认不使用LLM模型，直接回复问题，同时减少显存占用！")
     
     try:
         from VITS import *
@@ -1150,12 +1194,20 @@ if __name__ == "__main__":
         error_print(f"ASR Error: {e}")
         error_print("如果使用FunASR，请先下载WhisperASR模型和安装环境")
     
+    # 判断显存是否8g，若小于8g不建议使用MuseTalk功能
+    # Check if GPU is available and has at least 8GB of memory
+    if torch.cuda.is_available():
+        gpu_memory = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)  # Convert bytes to GB
+        if gpu_memory < 8:
+            error_print("警告: 您的显卡显存小于8GB，不建议使用MuseTalk功能")
+    
     try:
         from TFG import MuseTalk_RealTime
         musetalker = MuseTalk_RealTime()
+        success_print("Success!!! MuseTalk模块加载成功")
     except Exception as e:
         error_print(f"MuseTalk Error: {e}")
-        error_print("如果使用MuseTalk，请先下载MuseTalk相关模型")
+        error_print("如果使用MuseTalk，请先下载MuseTalk模型")
 
     tts = edgetts
     if not tts.network:
@@ -1190,5 +1242,6 @@ if __name__ == "__main__":
                 # ssl_certfile=ssl_certfile,
                 # ssl_keyfile=ssl_keyfile,
                 # ssl_verify=False,
+                share=True,
                 debug=True,
                 )

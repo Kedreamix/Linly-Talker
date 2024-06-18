@@ -120,19 +120,14 @@ def osmakedirs(path_list):
 
 class MuseTalk_RealTime:
     def __init__(self):
-        # load model weights
-        self.audio_processor, self.vae, self.unet, self.pe = load_all_model()
         if torch.cuda.is_available():
             device = "cuda"
         elif torch.backends.mps.is_available():
             device = "mps"
         else:
             device = "cpu"
-        self.timesteps = torch.tensor([0], device=device)
-        self.pe = self.pe.half()
-        self.vae.vae = self.vae.vae.half()
-        self.unet.model = self.unet.model.half()
-        
+        self.device = device
+        self.load = False
         # self.avatar_info = {
         #     "avatar_id":avatar_id,
         #     "video_path":video_path,
@@ -153,7 +148,16 @@ class MuseTalk_RealTime:
         self.mask_coords_list_cycle = None
         self.mask_list_cycle = None
         self.frame_list_cycle = None
-        
+
+    def init_model(self):
+        # load model weights
+        self.audio_processor, self.vae, self.unet, self.pe = load_all_model()
+        self.timesteps = torch.tensor([0], device=self.device)
+        self.pe = self.pe.half()
+        self.vae.vae = self.vae.vae.half()
+        self.unet.model = self.unet.model.half()
+        self.load = True
+    
     def process_frames(self, 
                        res_frame_queue,
                        video_len):
