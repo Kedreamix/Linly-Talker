@@ -70,7 +70,7 @@ class EdgeTTS:
                 print(", ".join(self.SUPPORTED_VOICE))
             self.network = True
         except:
-            print("网络无法连接，无法获取语音列表，可能Edge模式会出错，建议使用其他TTS方法")
+            # print("网络无法连接，无法获取语音列表，可能Edge模式会出错，建议使用其他TTS方法")
             self.network = False
             self.SUPPORTED_VOICE = ['zu-ZA-ThembaNeural', 'zu-ZA-ThandoNeural',  'zh-TW-YunJheNeural', 'zh-TW-HsiaoYuNeural', 'zh-TW-HsiaoChenNeural', 'zh-HK-WanLungNeural', 
                                     'zh-HK-HiuMaanNeural', 'zh-HK-HiuGaaiNeural', 'zh-CN-shaanxi-XiaoniNeural', 'zh-CN-liaoning-XiaobeiNeural', 
