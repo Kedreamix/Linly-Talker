@@ -34,7 +34,7 @@ class LLM:
         self.mode = mode
         
     def init_model(self, model_name, model_path='', api_key=None, proxy_url=None, prefix_prompt='''请用少于25个字回答以下问题\n\n'''):
-        if model_name not in ['Linly', 'Qwen', 'Qwen2', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']:
+        if model_name not in ['Linly', 'Qwen', 'Qwen2', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free', '直接回复 Direct Reply']:
             raise ValueError("model_name must be one of ['Linly', 'Qwen', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']")
         if model_name == 'Linly':
             llm = Linly(self.mode, model_path)
@@ -52,8 +52,13 @@ class LLM:
             llm = Llama2Chinese(model_path, self.mode)
         elif model_name == 'GPT4Free':
             llm = GPT4FREE()
+        elif model_name == '直接回复 Direct Reply':
+            llm = self
         llm.prefix_prompt = prefix_prompt
         return llm
+    
+    def generate(self, question, system_prompt = 'system无效'):
+        return question
     
     def test_Linly(self, question="如何应对压力？", model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
         llm = Linly(self.mode, model_path)
@@ -81,7 +86,10 @@ class LLM:
         print(answer)
 
 if __name__ == '__main__':
-    llm = LLM(mode='offline')
+    llm_class = LLM(mode='offline')
+    llm_class.init_model('直接回复 Direct Reply')
+    question = '如何应对压力？'
+    answer = llm_class.generate(question)
     # llm.test_Qwen()
     # llm.test_Linly()
     # llm.test_Gemini()

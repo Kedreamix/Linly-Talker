@@ -6,7 +6,7 @@ except Exception as e:
     print("ERNeRF导入失败，原因：", e)
     print("使用ERNeRF前需要安装对应的环境")
 try:
-    from .MuseTalk import MuseTalk, MuseTalk_RealTime
+    from .MuseTalk import MuseTalk_RealTime
 except Exception as e:
     print("MuseTalk导入失败，原因：", e)
     print("使用MuseTalk前需要安装对应的环境")
