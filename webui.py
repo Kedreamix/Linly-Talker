@@ -561,7 +561,7 @@ def webui_setting(talk = True):
     tts_method.change(fn = tts_model_change, inputs=[tts_method], outputs = [tts_method])
     asr_method = gr.Radio(choices = ['Whisper-tiny', 'Whisper-base', 'FunASR', 'Comming Soon!!!'], value='Whisper-base', label = '语音识别模型选择')
     asr_method.change(fn = asr_model_change, inputs=[asr_method], outputs = [asr_method])
-    talker_method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'ER-NeRF', 'MuseTalk', 'Comming Soon!!!'], 
+    talker_method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'ER-NeRF', 'Comming Soon!!!'], 
                       value = 'SadTalker', label = '数字人模型选择')
     talker_method.change(fn = talker_model_change, inputs=[talker_method], outputs = [talker_method])
     llm_method = gr.Dropdown(choices = ['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', '直接回复 Direct Reply', 'Comming Soon!!!'], value = '直接回复 Direct Reply', label = 'LLM 模型选择')
@@ -1152,6 +1152,7 @@ def tts_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
             gr.Info("模型加载成功")
         except Exception as e:
             gr.Warning(f"模型加载失败 {e}")
+        gr.Warning("注意注意⚠️：GPT-SoVITS要上传参考音频进行克隆，请点击TTS Method语音方法调节操作")
     else:
         gr.Warning("未知TTS模型，可提issue和PR 或者 建议更新模型")
     return model_name
@@ -1242,6 +1243,6 @@ if __name__ == "__main__":
                 # ssl_certfile=ssl_certfile,
                 # ssl_keyfile=ssl_keyfile,
                 # ssl_verify=False,
-                share=True,
+                # share=True,
                 debug=True,
                 )
