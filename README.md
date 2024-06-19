@@ -866,7 +866,11 @@ Linly-Talker/
 └── README.md
 ```
 
+## Support Us
 
+![](docs/Alipay.jpg)
+
+![](docs/Wechatpay.jpg)
 
 ## Reference
 
