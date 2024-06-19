@@ -868,9 +868,13 @@ Linly-Talker/
 
 ## Support Us
 
-![](docs/Alipay.jpg)
+| Alipay               | WeChatPay               |
+| -------------------- | ----------------------- |
+| ![](docs/Alipay.jpg) | ![](docs/WeChatpay.jpg) |
 
-![](docs/Wechatpay.jpg)
+
+
+
 
 ## Reference
 

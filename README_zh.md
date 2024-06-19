@@ -850,9 +850,11 @@ Linly-Talker/
 
 ## 赞助
 
-![](docs/Alipay.jpg)
+| 支付宝               | 微信                    |
+| -------------------- | ----------------------- |
+| ![](docs/Alipay.jpg) | ![](docs/WeChatpay.jpg) |
 
-![](docs/Wechatpay.jpg)
+
 
 ## 参考
 
