@@ -1,11 +1,13 @@
 # PyTorch and its dependencies
 # These libraries include PyTorch and its related packages, supporting CUDA 11.8.
-torch==2.0.1
-torchvision==0.15.2
-torchaudio==2.0.2
+# torch==2.0.1
+# torchvision==0.15.2
+# torchaudio==2.0.2
 # Installation source for PyTorch: -f https://download.pytorch.org/whl/cu118
 # Example installation command:
+
 # pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
+# pip install tb-nightly -i https://mirrors.aliyun.com/pypi/simple
 
 # General tools and libraries
 numba
