@@ -1119,15 +1119,19 @@ def asr_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
 
     if model_name == "Whisper-tiny":
         try:
-            asr = WhisperASR('tiny')
-            # asr = WhisperASR('Whisper/tiny.pt')
+            if os.path.exists('Whisper/tiny.pt'):
+                asr = WhisperASR('Whisper/tiny.pt')
+            else:
+                asr = WhisperASR('tiny')
             gr.Info("Whisper-tiny模型导入成功")
         except Exception as e:
             gr.Warning(f"Whisper-tiny模型下载失败 {e}")
     elif model_name == "Whisper-base":
         try:
-            asr = WhisperASR('base')
-            # asr = WhisperASR('Whisper/base.pt')
+            if os.path.exists('Whisper/base.pt'):
+                asr = WhisperASR('Whisper/base.pt')
+            else:
+                asr = WhisperASR('base')
             gr.Info("Whisper-base模型导入成功")
         except Exception as e:
             gr.Warning(f"Whisper-base模型下载失败 {e}")
@@ -1347,7 +1351,7 @@ if __name__ == "__main__":
         title = "Linly-Talker WebUI")
     demo.queue()
     demo.launch(server_name=ip, # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
-                server_port=port + 1,
+                server_port=port,
                 # 似乎在Gradio4.0以上版本可以不使用证书也可以进行麦克风对话
                 # ssl_certfile=ssl_certfile,
                 # ssl_keyfile=ssl_keyfile,
