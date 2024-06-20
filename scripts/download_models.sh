@@ -138,6 +138,36 @@ else
   exit 1
 fi
 
+# 7. WhisperASR模型
+# WhisperASR model
+if [ -d "Kedreamix/Linly-Talker/Whisper" ]; then
+  mv Kedreamix/Linly-Talker/Whisper ./
+  if [ $? -ne 0 ]; then
+    echo "Failed to move Whisper directory."
+    echo "移动 Whisper 目录失败。"
+    exit 1
+  fi
+else
+  echo "Directory Kedreamix/Linly-Talker/Whisper does not exist, cannot move Whisper model."
+  echo "目录 Kedreamix/Linly-Talker/Whisper 不存在，无法移动 Whisper 模型。"
+  exit 1
+fi
+
+# 8. FunASR模型
+# FunASR model
+if [ -d "Kedreamix/Linly-Talker/FunASR" ]; then
+  mv Kedreamix/Linly-Talker/FunASR ./
+  if [ $? -ne 0 ]; then
+    echo "Failed to move FunASR directory."
+    echo "移动 FunASR 目录失败。"
+    exit 1
+  fi
+else
+  echo "Directory Kedreamix/Linly-Talker/FunASR does not exist, cannot move FunASR model."
+  echo "目录 Kedreamix/Linly-Talker/FunASR 不存在，无法移动 FunASR 模型。"
+  exit 1
+fi
+
 echo "All models have been successfully moved and
 
  are ready."
