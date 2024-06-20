@@ -4,7 +4,9 @@
 echo "Please select a model download method:"
 echo "请选择模型下载方式："
 echo "1. Download from ModelScope (No resuming capability)"
-echo "1. 从 ModelScope 下载（无断点续传功能）"
+echo "1. 从 ModelScope 下载（有断点续传功能）推荐"
+# 记得先下载modelscope, pip install modelsope
+echo "记得先下载modelscope, pip install modelsope"
 echo "2. Download from Huggingface (With resuming capability)"
 echo "2. 从 Huggingface 下载（有断点续传功能）"
 echo "3. Download from Huggingface mirror site (Possibly faster)"
