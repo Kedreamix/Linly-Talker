@@ -47,6 +47,7 @@
 **2024.06 更新** 📆
 
 - **更新MuseTalk加入Linly-Talker之中，并且更新了WebUI中，能够基本实现实时对话。**
+- **改进的WebUI在默认设置下不加载LLM模型，以减少显存使用，并且可以直接通过问题回复完成口播功能。精细化后的WebUI包含以下三个主要功能：个性化角色生成、数字人多轮智能对话以及MuseTalk实时对话。这些改进不仅减少了先前的显存冗余，还增加了更多提示，以帮助用户更轻松地使用。**
 
 ---
 
@@ -146,7 +147,7 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 AutoDL已发布镜像，可以直接使用，[https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker)，也可以使用docker来直接创建环境，我也会持续不断的更新镜像
 
 ```bash
-docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:3iRyoQb112
+docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:cMDvNE4RYl
 ```
 
 Windows我加入了一个python一键整合包，可以按顺序进行运行，按照需求按照相应的依赖，并且下载对应的模型，即可运行，主要按照conda以后从02开始安装pytorch进行运行，如果有问题，请随时与我沟通
@@ -156,7 +157,7 @@ Windows我加入了一个python一键整合包，可以按顺序进行运行，�
 下载代码
 
 ```bash
-git clone --recursive https://github.com/Kedreamix/Linly-Talker.git
+git clone https://github.com/Kedreamix/Linly-Talker.git --depth 1
 ```
 
 若使用Linly-Talker，可以直接用anaconda进行安装环境，几乎包括所有的模型所需要的依赖，具体操作如下：
@@ -177,8 +178,14 @@ conda activate linly
 # CUDA 11.8
 pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
-conda install ffmpeg==4.2.2 # ffmpeg==4.2.2
+conda install -q ffmpeg # ffmpeg==4.2.2
 
+# 升级pip
+python -m pip install --upgrade pip
+# 更换 pypi 源加速库的安装
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip install tb-nightly -i https://mirrors.aliyun.com/pypi/simple
 pip install -r requirements_webui.txt
 
 # 安装有关musetalk依赖
@@ -246,6 +253,7 @@ pip install -r TFG/requirements_nerf.txt
 > pip install -r TFG/requirements_nerf.txt
 > 
 > # 若pyaudio出现问题，可安装对应依赖
+> # sudo apt-get update
 > # sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
 > 
 > # 注意以下几个模块，若安装不成功，可以进入路径利用pip install . 或者 python setup.py install编译安装

@@ -47,6 +47,7 @@
 **2024.06 Update** 📆
 
 - **Integrated MuseTalk into Linly-Talker and updated the WebUI, enabling basic real-time conversation capabilities.**
+- **The refined WebUI defaults to not loading the LLM model to reduce GPU memory usage. It directly responds with text to complete voiceovers. The enhanced WebUI features three main functions: personalized character generation, multi-turn intelligent dialogue with digital humans, and real-time MuseTalk conversations. These improvements reduce previous GPU memory redundancies and add more prompts to assist users effectively.**
 
 ---
 
@@ -149,7 +150,7 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 AutoDL has released an image, which can be used directly at [https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker). You can also create an environment directly using Docker. I will continue to update the image.
 
 ```bash
-docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:3iRyoQb112
+docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:cMDvNE4RYl
 ```
 
 For Windows, I've included an all-in-one Python package. You can run the steps in sequence to install the necessary dependencies and download the corresponding model to get it running. Follow the instructions using `conda` and start installing PyTorch from step 02. If you encounter any issues, please feel free to contact me.
@@ -159,7 +160,7 @@ For Windows, I've included an all-in-one Python package. You can run the steps i
 Download the code:
 
 ```bash
-git clone --recursive https://github.com/Kedreamix/Linly-Talker.git
+git clone https://github.com/Kedreamix/Linly-Talker.git --depth 1
 ```
 
 以下是这段文字的英文翻译：
@@ -184,8 +185,14 @@ conda activate linly
 # CUDA 11.8
 pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
-conda install ffmpeg==4.2.2 # Install ffmpeg==4.2.2
+conda install -q ffmpeg # Install ffmpeg==4.2.2
 
+# Upgrade pip
+python -m pip install --upgrade pip
+# Change the PyPI source to speed up the installation of packages
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip install tb-nightly -i https://mirrors.aliyun.com/pypi/simple
 pip install -r requirements_webui.txt
 
 # Install dependencies related to musetalk
@@ -200,6 +207,7 @@ pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 pip install -r TFG/requirements_nerf.txt
 
 # If there are issues with pyaudio, install the corresponding dependencies
+# sudo apt-get update
 # sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
 
 # Note the following modules. If installation fails, you can enter the directory and use pip install . or python setup.py install to compile and install:
