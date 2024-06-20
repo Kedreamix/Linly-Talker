@@ -6,7 +6,7 @@ from transformers import (
 )
 import os
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+# os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 class Llama2Chinese:
     def __init__(self, model_path, mode='offline'):
