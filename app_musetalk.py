@@ -188,6 +188,7 @@ if __name__ == "__main__":
     try:
         from TFG import MuseTalk_RealTime
         musetalker = MuseTalk_RealTime()
+        musetalker.init_model
     except Exception as e:
         error_print(f"MuseTalk Error: {e}")
         error_print("如果使用MuseTalk，请先下载MuseTalk相关模型")
