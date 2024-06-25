@@ -7,9 +7,10 @@
 
 <img src="docs/linly_logo.png" /><br>
 
-[![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/github/Kedreamix/Linly-Talker/blob/main/colab_webui.ipynb)
+[![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=f9ab00&labelColor=525252)](https://colab.research.google.com/github/Kedreamix/Linly-Talker/blob/main/colab_webui.ipynb)
 [![Licence](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/Kedreamix/Linly-Talker/blob/main/LICENSE)
 [![Huggingface](https://img.shields.io/badge/🤗%20-Models%20Repo-yellow.svg?style=for-the-badge)](https://huggingface.co/Kedreamix/Linly-Talker)
+[![Modelscope](https://img.shields.io/badge/ModelScope-624aff?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMjMuOTMgMTIxLjMzIj48cGF0aCBkPSJNMCA0Ny44NGgyNS42NXYyNS42NUgweiIgZmlsbD0iIzYyNGFmZiIvPjxwYXRoIGQ9Ik05OS4xNCA3My40OWgyNS42NXYyNS42NUg5OS4xNHoiIGZpbGw9IiM2MjRhZmYiLz48cGF0aCBkPSJNMTc2LjA5IDk5LjE0aC0yNS42NXYyMi4xOWg0Ny44NHYtNDcuODRoLTIyLjE5eiIgZmlsbD0iIzYyNGFmZiIvPjxwYXRoIGQ9Ik0xMjQuNzkgNDcuODRoMjUuNjV2MjUuNjVoLTI1LjY1eiIgZmlsbD0iIzM2Y2ZkMSIvPjxwYXRoIGQ9Ik0wIDIyLjE5aDI1LjY1djI1LjY1SDB6IiBmaWxsPSIjMzZjZmQxIi8+PHBhdGggZD0iTTE5OC4yOCA0Ny44NGgyNS42NXYyNS42NWgtMjUuNjV6IiBmaWxsPSIjNjI0YWZmIi8+PHBhdGggZD0iTTE5OC4yOCAyMi4xOWgyNS42NXYyNS42NWgtMjUuNjV6IiBmaWxsPSIjMzZjZmQxIi8+PHBhdGggZD0iTTE1MC40NCAwdjIyLjE5aDI1LjY1djI1LjY1aDIyLjE5VjB6IiBmaWxsPSIjNjI0YWZmIi8+PHBhdGggZD0iTTczLjQ5IDQ3Ljg0aDI1LjY1djI1LjY1SDczLjQ5eiIgZmlsbD0iIzM2Y2ZkMSIvPjxwYXRoIGQ9Ik00Ny44NCAyMi4xOWgyNS42NVYwSDI1LjY1djQ3Ljg0aDIyLjE5eiIgZmlsbD0iIzYyNGFmZiIvPjxwYXRoIGQ9Ik00Ny44NCA3My40OUgyNS42NXY0Ny44NGg0Ny44NHYtMjIuMTlINDcuODR6IiBmaWxsPSIjNjI0YWZmIi8+PC9zdmc+&logoColor=624aff&labelColor=525252&color=624aff&style=for-the-badge)](https://www.modelscope.cn/models/Kedreamix/Linly-Talker)
 
 [**English**](./README.md) | [**中文简体**](./README_zh.md)
 
@@ -176,8 +177,6 @@ Download the code:
 git clone https://github.com/Kedreamix/Linly-Talker.git --depth 1
 ```
 
-以下是这段文字的英文翻译：
-
 ---
 
 If you are using Linly-Talker, you can set up the environment directly with Anaconda, which covers almost all the dependencies required by the models. The specific steps are as follows:
@@ -312,7 +311,7 @@ We recommend downloading from Quark Netdisk for the latest updates.
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary)
+- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker)
 - [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
 
 I made a script that can download all the models mentioned below without requiring much input from the user. This method is suitable for stable network conditions, especially for Linux users. For Windows users, Git can also be used to download the models. If the network connection is unstable, users can choose to manually download the models or try running a Shell script to complete the download. The script has the following features:
@@ -758,7 +757,7 @@ The folder structure of the weight files is as follows:
 
 - `Baidu (百度云盘)`: You can download the weights from [here](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`).
 - `huggingface`: You can access the weights at [this link](https://huggingface.co/Kedreamix/Linly-Talker).
-- `modelscope`: The weights will be available soon at [this link](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files).
+- `modelscope`: The weights will be available soon at [this link](https://www.modelscope.cn/models/Kedreamix/Linly-Talker).
 - `Qurak(夸克网盘)`：You can download the weights from [here](https://pan.quark.cn/s/f48f5e35796b)
 
 ```bash
