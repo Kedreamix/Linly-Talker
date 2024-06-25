@@ -7,9 +7,11 @@
 
 <img src="docs/linly_logo.png" /><br>
 
-[![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/github/Kedreamix/Linly-Talker/blob/main/colab_webui.ipynb)
+[![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=f9ab00&labelColor=525252)](https://colab.research.google.com/github/Kedreamix/Linly-Talker/blob/main/colab_webui.ipynb)
 [![Licence](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/Kedreamix/Linly-Talker/blob/main/LICENSE)
 [![Huggingface](https://img.shields.io/badge/🤗%20-Models%20Repo-yellow.svg?style=for-the-badge)](https://huggingface.co/Kedreamix/Linly-Talker)
+[![Modelscope](https://img.shields.io/badge/ModelScope-624aff?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMjMuOTMgMTIxLjMzIj48cGF0aCBkPSJNMCA0Ny44NGgyNS42NXYyNS42NUgweiIgZmlsbD0iIzYyNGFmZiIvPjxwYXRoIGQ9Ik05OS4xNCA3My40OWgyNS42NXYyNS42NUg5OS4xNHoiIGZpbGw9IiM2MjRhZmYiLz48cGF0aCBkPSJNMTc2LjA5IDk5LjE0aC0yNS42NXYyMi4xOWg0Ny44NHYtNDcuODRoLTIyLjE5eiIgZmlsbD0iIzYyNGFmZiIvPjxwYXRoIGQ9Ik0xMjQuNzkgNDcuODRoMjUuNjV2MjUuNjVoLTI1LjY1eiIgZmlsbD0iIzM2Y2ZkMSIvPjxwYXRoIGQ9Ik0wIDIyLjE5aDI1LjY1djI1LjY1SDB6IiBmaWxsPSIjMzZjZmQxIi8+PHBhdGggZD0iTTE5OC4yOCA0Ny44NGgyNS42NXYyNS42NWgtMjUuNjV6IiBmaWxsPSIjNjI0YWZmIi8+PHBhdGggZD0iTTE5OC4yOCAyMi4xOWgyNS42NXYyNS42NWgtMjUuNjV6IiBmaWxsPSIjMzZjZmQxIi8+PHBhdGggZD0iTTE1MC40NCAwdjIyLjE5aDI1LjY1djI1LjY1aDIyLjE5VjB6IiBmaWxsPSIjNjI0YWZmIi8+PHBhdGggZD0iTTczLjQ5IDQ3Ljg0aDI1LjY1djI1LjY1SDczLjQ5eiIgZmlsbD0iIzM2Y2ZkMSIvPjxwYXRoIGQ9Ik00Ny44NCAyMi4xOWgyNS42NVYwSDI1LjY1djQ3Ljg0aDIyLjE5eiIgZmlsbD0iIzYyNGFmZiIvPjxwYXRoIGQ9Ik00Ny44NCA3My40OUgyNS42NXY0Ny44NGg0Ny44NHYtMjIuMTlINDcuODR6IiBmaWxsPSIjNjI0YWZmIi8+PC9zdmc+&logoColor=624aff&labelColor=525252&color=624aff&style=for-the-badge)](https://www.modelscope.cn/models/Kedreamix/Linly-Talker)
+
 
 [**English**](./README.md) | [**中文简体**](./README_zh.md)
 
@@ -306,7 +308,7 @@ pip install -r TFG/requirements_nerf.txt
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary) 
+- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker) 
 - [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
 
 我制作一个脚本可以完成下述所有模型的下载，无需用户过多操作。这种方式适合网络稳定的情况，并且特别适合 Linux 用户。对于 Windows 用户，也可以使用 Git 来下载模型。如果网络环境不稳定，用户可以选择使用手动下载方法，或者尝试运行 Shell 脚本来完成下载。脚本具有以下功能。
@@ -737,7 +739,7 @@ python app_musetalk.py
 
 - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
 - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files)
+- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker)
 - [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
 
 权重文件夹结构如下
