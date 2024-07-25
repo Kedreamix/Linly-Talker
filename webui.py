@@ -579,7 +579,7 @@ def webui_setting(talk = False):
     talker_method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'NeRFTalk', 'Comming Soon!!!'], 
                       value = 'SadTalker', label = '数字人模型选择')
     talker_method.change(fn = talker_model_change, inputs=[talker_method], outputs = [talker_method])
-    llm_method = gr.Dropdown(choices = ['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', '直接回复 Direct Reply', 'Comming Soon!!!'], value = '直接回复 Direct Reply', label = 'LLM 模型选择')
+    llm_method = gr.Dropdown(choices = ['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', 'QAnything', '直接回复 Direct Reply', 'Comming Soon!!!'], value = '直接回复 Direct Reply', label = 'LLM 模型选择')
     llm_method.change(fn = llm_model_change, inputs=[llm_method], outputs = [llm_method])
     return  (source_image, voice, rate, volume, pitch, 
              am, voc, lang, male, 
@@ -1199,6 +1199,12 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
             gr.Info("GPT4Free模型导入成功, 请注意GPT4Free可能不稳定")
         except Exception as e:
             gr.Warning(f"GPT4Free模型下载失败 {e}")
+    elif model_name == 'QAnything':
+        try:
+            llm = llm_class.init_model('QAnything')
+            gr.Info("QAnything模型接口加载成功")
+        except Exception as e:
+            gr.Warning(f"QAnything模型接口初始化失败 {e}")
     else:
         gr.Warning("未知LLM模型，可提issue和PR 或者 建议更新模型")
     return model_name
