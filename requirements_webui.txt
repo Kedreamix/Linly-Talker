@@ -21,6 +21,7 @@ omegaconf
 spaces
 moviepy
 librosa==0.8.1
+ultralytics
 
 # SadTalker related libraries
 numpy==1.23.4

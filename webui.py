@@ -209,6 +209,8 @@ def Talker_response(question_audio = None, method = 'SadTalker', text = '',
                         fps=20)
     elif method == 'Wav2Lip':
         video = talker.predict(crop_pic_path, driven_audio, batch_size, enhancer)
+    elif method == 'Wav2Lipv2':
+        video = talker.run(crop_pic_path, driven_audio, batch_size, enhancer)
     elif method == 'NeRFTalk':
         video = talker.predict(driven_audio)
     else:
@@ -267,6 +269,8 @@ def Talker_response_img(question_audio, method, text, voice, rate, volume, pitch
                         fps=fps)
     elif method == 'Wav2Lip':
         video = talker.predict(source_image, driven_audio, batch_size)
+    elif method == 'Wav2Lipv2':
+        video = talker.run(source_image, driven_audio, batch_size)
     elif method == 'NeRFTalk':
         video = talker.predict(driven_audio)
     else:
@@ -329,6 +333,8 @@ def Talker_Say(preprocess_type,
                         fps=fps)
     elif method == 'Wav2Lip':
         video = talker.predict(source_image, driven_audio, batch_size, enhancer)
+    elif method == 'Wav2Lipv2':
+        video = talker.run(crop_pic_path, driven_audio, batch_size, enhancer)
     elif method == 'NeRFTalk':
         video = talker.predict(driven_audio)
     else:
@@ -424,6 +430,8 @@ def human_response(source_image, history, question_audio, talker_method, voice, 
                         fps=fps)
     elif talker_method == 'Wav2Lip':
         video = talker.predict(crop_pic_path, driven_audio, batch_size, enhancer)
+    elif talker_method == 'Wav2Lipv2':
+        video = talker.run(crop_pic_path, driven_audio, batch_size, enhancer)
     elif talker_method == 'NeRFTalk':
         video = talker.predict(driven_audio)
     else:
@@ -576,7 +584,7 @@ def webui_setting(talk = False):
     tts_method.change(fn = tts_model_change, inputs=[tts_method], outputs = [tts_method])
     asr_method = gr.Radio(choices = ['Whisper-tiny', 'Whisper-base', 'FunASR', 'Comming Soon!!!'], value='Whisper-base', label = '语音识别模型选择')
     asr_method.change(fn = asr_model_change, inputs=[asr_method], outputs = [asr_method])
-    talker_method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'NeRFTalk', 'Comming Soon!!!'], 
+    talker_method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'Wav2Lipv2', 'NeRFTalk', 'Comming Soon!!!'], 
                       value = 'SadTalker', label = '数字人模型选择')
     talker_method.change(fn = talker_model_change, inputs=[talker_method], outputs = [talker_method])
     llm_method = gr.Dropdown(choices = ['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', '直接回复 Direct Reply', 'Comming Soon!!!'], value = '直接回复 Direct Reply', label = 'LLM 模型选择')
@@ -595,6 +603,7 @@ def exmaple_setting(asr, text, character, talk , tts, voice, llm):
         ['Whisper-base', '应对压力最有效的方法是什么？', '女性角色', 'SadTalker', 'Edge-TTS', 'zh-CN-XiaoxiaoNeural', 'Qwen'],
         ['FunASR', '如何进行时间管理？','男性角色', 'SadTalker', 'Edge-TTS', 'zh-CN-YunyangNeural', 'Qwen'],
         ['Whisper-tiny', '为什么有些人选择使用纸质地图或寻求方向，而不是依赖GPS设备或智能手机应用程序？','女性角色', 'Wav2Lip', 'PaddleTTS', 'None', 'Qwen'],
+        ['Whisper-tiny', '为什么有些人选择使用纸质地图或寻求方向，而不是依赖GPS设备或智能手机应用程序？','女性角色', 'Wav2Lipv2', 'Edge-TTS', 'None', 'Qwen'],
         ]
 
     with gr.Row(variant='panel'):
@@ -825,6 +834,18 @@ def app_img():
                     'examples/source_image/full_body_2.png', 'SadTalker',
                     'crop',
                     False,
+                    False
+                ],
+                [
+                    'examples/source_image/full_body_1.png', 'Wav2Lipv2',
+                    'full',
+                    False,
+                    False
+                ],
+                [
+                    'examples/source_image/full_body_1.png', 'Wav2Lip',
+                    'full',
+                    True,
                     False
                 ],
                 [
@@ -1209,7 +1230,7 @@ def talker_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
     # 清理显存，在加载新的模型之前释放不必要的显存
     clear_memory()
 
-    if model_name not in ['SadTalker', 'Wav2Lip', 'NeRFTalk']:
+    if model_name not in ['SadTalker', 'Wav2Lip', 'Wav2Lipv2', 'NeRFTalk']:
         gr.Warning("其他模型还未集成，请等待")
     if model_name == 'SadTalker':
         try:
@@ -1226,6 +1247,14 @@ def talker_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
             gr.Info("Wav2Lip模型导入成功")
         except Exception as e:
             gr.Warning("Wav2Lip模型加载失败", e)
+    elif model_name == 'Wav2Lipv2':
+        try:
+            from TFG import Wav2Lipv2
+            clear_memory()
+            talker = Wav2Lipv2('checkpoints/wav2lipv2.pth')
+            gr.Info("Wav2Lipv2模型导入成功, 能得到更高质量的结果")
+        except Exception as e:
+            gr.Warning("Wav2Lipv2模型加载失败", e)
     elif model_name == 'NeRFTalk':
         try:
             from TFG import ERNeRF
