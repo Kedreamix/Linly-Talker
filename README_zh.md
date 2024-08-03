@@ -211,9 +211,6 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 pip install tb-nightly -i https://mirrors.aliyun.com/pypi/simple
 pip install -r requirements_webui.txt
 
-# 安装有关CosyVoice的依赖
-conda install -y -c conda-forge pynini==2.1.5
-
 # 安装有关musetalk依赖
 pip install --no-cache-dir -U  openmim
 mim install mmengine 
@@ -224,15 +221,18 @@ mim install "mmpose>=1.1.0"
 # ⚠️注意 首先需要去下载CosyVoice-ttsfrd，需要先完成下载模型再经过这一步
 mkdir -p CosyVoice/pretrained_models # 创建文件夹 CosyVoice/pretrained_models
 mv checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd CosyVoice/pretrained_models # 移动目录
-unzip checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd/resource.zip # 解压
+unzip CosyVoice/pretrained_models/CosyVoice-ttsfrd/resource.zip # 解压
 # 该whl库，只适用于python 3.8 的版本
-pip install checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
+pip install CosyVoice/pretrained_models/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
 
 # 安装NeRF-based依赖，可能问题较多，可以先放弃
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
+# 如果在安装pytorch3d中出现问题，可以直接运行以下命令
+# python scripts/install_pytorch3d.py
 pip install -r TFG/requirements_nerf.txt
 
-# 若pyaudio出现问题，可安装对应依赖
+# 若pyaudio出现问题，可安装对应依赖 fatal error: portaudio.h
+# sudo apt-get update
 # sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
 
 # 注意以下几个模块，若安装不成功，可以进入路径利用pip install . 或者 python setup.py install编译安装
@@ -240,6 +240,12 @@ pip install -r TFG/requirements_nerf.txt
 # NeRF/gridencoder
 # NeRF/raymarching
 # NeRF/shencoder
+
+# If you encounter sox compatibility issues
+# ubuntu
+sudo apt-get install sox libsox-dev
+# centos
+sudo yum install sox sox-devel
 ```
 
 以下是旧版本的一些安装方法，可能存在会一些依赖冲突的问题，但是也不会出现太多bug，但是为了更好更方便的安装，我就更新了上述版本，以下版本可以忽略，或者遇到问题可以参考一下
