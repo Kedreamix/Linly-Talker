@@ -324,6 +324,10 @@ class MuseTalk_RealTime:
                     progress = gr.Progress(track_tqdm=True)):
         
         out_vid_name = "res"
+        if not self.avatar_path:
+            video_path = source_video
+            self.avatar_id = os.path.basename(video_path).split(".")[0]
+            self.avatar_path = f"./results/avatars/{self.avatar_id}"
         os.makedirs(self.avatar_path+'/tmp',exist_ok =True)   
         print("start inference")
         ############################################## extract audio feature ##############################################

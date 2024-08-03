@@ -57,6 +57,11 @@ class LLM:
         llm.prefix_prompt = prefix_prompt
         return llm
     
+    def chat(self, system_prompt, message, history):
+        response = self.generate(message, system_prompt)
+        history.append((message, response))
+        return response, history
+
     def generate(self, question, system_prompt = 'system无效'):
         return question
     
