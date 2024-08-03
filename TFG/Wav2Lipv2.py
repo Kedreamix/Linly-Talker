@@ -72,7 +72,7 @@ def get_video_fps(vfile):
 
 
 class Wav2Lipv2():
-    def __init__(self, checkpoint_path = 'checkpoints/wav2lipv2.pth',pretrained_model_dir = '/home/dengkaijun/workdirs/Linly-Talker/checkpoints/weights', 
+    def __init__(self, checkpoint_path = 'checkpoints/wav2lipv2.pth',pretrained_model_dir = 'checkpoints/weights', 
                     pads = [0, 0, 0, 0], audio_smooth = True, rotate = False):
 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
