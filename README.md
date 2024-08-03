@@ -507,11 +507,55 @@ CosyVoice includes several pre-trained speech synthesis models, mainly:
 
 Currently, Linly-Talker integrates three features from CosyVoice: pre-trained voice cloning, 3s rapid cloning, and cross-lingual cloning. Stay tuned for more exciting updates on Linly-Talker. Below are some examples of CosyVoice's capabilities:
 
-|                       | PROMPT TEXT                                                  | PROMPT SPEECH                                                | TARGET TEXT                                                  | RESULT                                                       |
-| --------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Pre-trained Voice     | Chinese Female voice ('中文女', '中文男', '日语男', '粤语女', '英文女', '英文男', '韩语女') | —                                                            | Hello, I am Tongyi’s generative speech model. How can I assist you today? | [sft.webm](https://github.com/user-attachments/assets/a9f9c8c4-7137-4845-9adb-a93ac304131e) |
-| 3s Language Cloning   | I hope you can do even better in the future.                 | [zero_shot_prompt.webm](https://github.com/user-attachments/assets/1ef09db6-42e5-42d2-acc2-d44e70b147f9) | Received a birthday gift from a friend far away. The unexpected surprise and heartfelt blessings filled me with sweet joy, and my smile blossomed like a flower. | [zero_shot.webm](https://github.com/user-attachments/assets/ba46c58f-2e16-4440-b920-51ec288f09e6) |
-| Cross-lingual Cloning | After that, we fully acquired that company to maintain management consistency, aligning interests with the assets joining the family. This is why sometimes we don’t buy the whole thing. | [cross_lingual_prompt.webm](https://github.com/user-attachments/assets/378ae5e6-b52a-47b4-b0db-d84d1edd6e56) | < \|en\|>And then later on, fully acquiring that company. So keeping management in line, interest in line with the asset that’s coming into the family is a reason why sometimes we don’t buy the whole thing. | [cross_lingual.webm](https://github.com/user-attachments/assets/b0162fc8-5738-4642-9fdd-b388a4965546) |
+<table>
+<tr>
+<th></th>
+<th align="center">PROMPT TEXT</th>
+<th align="center">PROMPT SPEECH</th>
+<th align="center">TARGET TEXT</th>
+<th align="center">RESULT</th>
+</tr>
+<tr>
+<td align="center"><strong>Pre-trained Voice</strong></td>
+<td align="center">中文女 音色（'中文女', '中文男', '日语男', '粤语女', '英文女', '英文男', '韩语女'）</td>
+<td align="center">—</td>
+<td align="center">你好，我是通义生成式语音大模型，请问有什么可以帮您的吗？</td>
+<td align="center">
+
+
+[sft.webm](https://github.com/user-attachments/assets/a9f9c8c4-7137-4845-9adb-a93ac304131e)
+
+</td>
+</tr>
+<tr>
+<td align="center"><strong>3s Language Cloning</strong></td>
+<td align="center">希望你以后能够做的比我还好呦。</td>
+<td align="center">
+
+[zero_shot_prompt.webm](https://github.com/user-attachments/assets/1ef09db6-42e5-42d2-acc2-d44e70b147f9)
+</td>
+<td align="center">收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。</td>
+<td align="center">
+
+[zero_shot.webm](https://github.com/user-attachments/assets/ba46c58f-2e16-4440-b920-51ec288f09e6)
+</td>
+</tr>
+<tr>
+<td align="center"><strong>Cross-lingual Cloning</strong></td>
+<td align="center">在那之后，完全收购那家公司，因此保持管理层的一致性，利益与即将加入家族的资产保持一致。这就是我们有时不买下全部的原因。</td>
+<td align="center">
+
+[cross_lingual_prompt.webm](https://github.com/user-attachments/assets/378ae5e6-b52a-47b4-b0db-d84d1edd6e56)
+</td>
+<td align="center">
+&lt; |en|&gt;And then later on, fully acquiring that company. So keeping management in line, interest in line with the asset that's coming into the family is a reason why sometimes we don't buy the whole thing.
+</td>
+<td align="center">
+
+[cross_lingual.webm](https://github.com/user-attachments/assets/b0162fc8-5738-4642-9fdd-b388a4965546)
+</td>
+</tr>
+</table>
 
 
 
