@@ -49,7 +49,7 @@
 - **Integrated MuseTalk into Linly-Talker and updated the WebUI, enabling basic real-time conversation capabilities.**
 - **The refined WebUI defaults to not loading the LLM model to reduce GPU memory usage. It directly responds with text to complete voiceovers. The enhanced WebUI features three main functions: personalized character generation, multi-turn intelligent dialogue with digital humans, and real-time MuseTalk conversations. These improvements reduce previous GPU memory redundancies and add more prompts to assist users effectively.**
 
-**2024.07 Update** 📆
+**2024.08 Update** 📆
 
 - **Updated CosyVoice to offer high-quality text-to-speech (TTS) functionality and voice cloning capabilities; also upgraded to Wav2Lipv2 to enhance overall performance.**
 
@@ -76,10 +76,12 @@
   - [Voice Clone](#voice-clone)
     - [GPT-SoVITS（Recommend）](#gpt-sovitsrecommend)
     - [XTTS](#xtts)
+    - [CoxyVoice](#cosyvoice)
     - [Coming Soon](#coming-soon-2)
   - [THG - Avatar](#thg---avatar)
     - [SadTalker](#sadtalker)
     - [Wav2Lip](#wav2lip)
+    - [Wav2Lipv2](#wav2lipv2)
     - [ER-NeRF](#er-nerf)
     - [MuseTalk](#musetalk)
     - [Coming Soon](#coming-soon-3)
