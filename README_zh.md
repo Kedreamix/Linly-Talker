@@ -869,14 +869,6 @@ Linly-Talker/
 └── README.md
 ```
 
-## 赞助
-
-| 支付宝               | 微信                    |
-| -------------------- | ----------------------- |
-| ![](docs/Alipay.jpg) | ![](docs/WeChatpay.jpg) |
-
-
-
 ## 参考
 
 **ASR**
