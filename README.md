@@ -49,6 +49,10 @@
 - **Integrated MuseTalk into Linly-Talker and updated the WebUI, enabling basic real-time conversation capabilities.**
 - **The refined WebUI defaults to not loading the LLM model to reduce GPU memory usage. It directly responds with text to complete voiceovers. The enhanced WebUI features three main functions: personalized character generation, multi-turn intelligent dialogue with digital humans, and real-time MuseTalk conversations. These improvements reduce previous GPU memory redundancies and add more prompts to assist users effectively.**
 
+**2024.08 Update** 📆
+
+- **Updated CosyVoice to offer high-quality text-to-speech (TTS) functionality and voice cloning capabilities; also upgraded to Wav2Lipv2 to enhance overall performance.**
+
 ---
 
 <details>
@@ -72,10 +76,12 @@
   - [Voice Clone](#voice-clone)
     - [GPT-SoVITS（Recommend）](#gpt-sovitsrecommend)
     - [XTTS](#xtts)
+    - [CoxyVoice](#cosyvoice)
     - [Coming Soon](#coming-soon-2)
   - [THG - Avatar](#thg---avatar)
     - [SadTalker](#sadtalker)
     - [Wav2Lip](#wav2lip)
+    - [Wav2Lipv2](#wav2lipv2)
     - [ER-NeRF](#er-nerf)
     - [MuseTalk](#musetalk)
     - [Coming Soon](#coming-soon-3)
@@ -143,6 +149,7 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 - [x] Linly-Talker WebUI supports multiple modules, multiple models, and multiple options
 - [x] Added MuseTalk functionality to Linly-Talker, achieving near real-time speed with very fast communication.
 - [x] Integrated MuseTalk into the Linly-Talker WebUI.
+- [x] Added CosyVoice, which provides high-quality text-to-speech (TTS) functionality and voice cloning capabilities. Additionally, updated to Wav2Lipv2 to enhance image quality effects.
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
@@ -174,9 +181,10 @@ Download the code:
 
 ```bash
 git clone https://github.com/Kedreamix/Linly-Talker.git --depth 1
-```
 
-以下是这段文字的英文翻译：
+cd Linly-Talker
+git submodule update --init --recursive
+```
 
 ---
 
@@ -198,7 +206,7 @@ conda activate linly
 # CUDA 11.8
 pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
-conda install -q ffmpeg # Install ffmpeg==4.2.2
+conda install -q ffmpeg==4.2.2 # ffmpeg==4.2.2
 
 # Upgrade pip
 python -m pip install --upgrade pip
@@ -208,12 +216,22 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 pip install tb-nightly -i https://mirrors.aliyun.com/pypi/simple
 pip install -r requirements_webui.txt
 
+# Install dependencies related to CosyVoice
+conda install -y -c conda-forge pynini==2.1.5
+
 # Install dependencies related to musetalk
 pip install --no-cache-dir -U openmim
 mim install mmengine 
 mim install "mmcv>=2.0.1" 
 mim install "mmdet>=3.1.0" 
 mim install "mmpose>=1.1.0" 
+
+# ⚠️ Note: You must first download CosyVoice-ttsfrd. Complete the model download before proceeding with these steps.
+mkdir -p CosyVoice/pretrained_models # Create directory CosyVoice/pretrained_models
+mv checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd CosyVoice/pretrained_models # Move directory
+unzip checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd/resource.zip # Unzip
+# This .whl library is only compatible with Python 3.8
+pip install checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
 
 # Install NeRF-based dependencies, which might have several issues and can be skipped initially
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
@@ -465,6 +483,82 @@ Coqui XTTS is a leading deep learning toolkit for Text-to-Speech (TTS) tasks, al
 - Experience XTTS online [https://huggingface.co/spaces/coqui/xtts](https://huggingface.co/spaces/coqui/xtts)
 - Official GitHub repository: [https://github.com/coqui-ai/TTS](https://github.com/coqui-ai/TTS)
 
+
+
+### CosyVoice
+
+CosyVoice is an open-source multilingual speech understanding model developed by Alibaba’s Tongyi Lab, focusing on high-quality speech synthesis. The model has been trained on over 150,000 hours of data and supports speech synthesis in multiple languages, including Chinese, English, Japanese, Cantonese, and Korean. CosyVoice excels in multilingual speech generation, zero-shot voice generation, cross-lingual voice synthesis, and command execution capabilities.
+
+CosyVoice supports one-shot voice cloning technology, enabling the generation of realistic and natural-sounding voices with details such as prosody and emotion using only 3 to 10 seconds of original audio.
+
+GitHub project link: [CosyVoice GitHub](https://github.com/FunAudioLLM/CosyVoice)
+
+CosyVoice includes several pre-trained speech synthesis models, mainly:
+
+1. **CosyVoice-300M**: Supports zero-shot and cross-lingual speech synthesis in Chinese, English, Japanese, Cantonese, Korean, and other languages.
+2. **CosyVoice-300M-SFT**: A model focused on supervised fine-tuning (SFT) inference.
+3. **CosyVoice-300M-Instruct**: A model that supports command-based inference, capable of generating speech with specific tones, emotions, and other elements.
+
+**Key Features**
+
+1. **Multilingual Support**: Capable of handling various languages including Chinese, English, Japanese, Cantonese, and Korean.
+2. **Multi-style Speech Synthesis**: Allows control over the tone and emotion of the generated speech through commands.
+3. **Streaming Inference Support**: Future updates will include streaming inference modes, such as KV caching and SDPA, for real-time optimization.
+
+Currently, Linly-Talker integrates three features from CosyVoice: pre-trained voice cloning, 3s rapid cloning, and cross-lingual cloning. Stay tuned for more exciting updates on Linly-Talker. Below are some examples of CosyVoice's capabilities:
+
+<table>
+<tr>
+<th></th>
+<th align="center">PROMPT TEXT</th>
+<th align="center">PROMPT SPEECH</th>
+<th align="center">TARGET TEXT</th>
+<th align="center">RESULT</th>
+</tr>
+<tr>
+<td align="center"><strong>Pre-trained Voice</strong></td>
+<td align="center">中文女 音色（'中文女', '中文男', '日语男', '粤语女', '英文女', '英文男', '韩语女'）</td>
+<td align="center">—</td>
+<td align="center">你好，我是通义生成式语音大模型，请问有什么可以帮您的吗？</td>
+<td align="center">
+
+
+[sft.webm](https://github.com/user-attachments/assets/a9f9c8c4-7137-4845-9adb-a93ac304131e)
+
+</td>
+</tr>
+<tr>
+<td align="center"><strong>3s Language Cloning</strong></td>
+<td align="center">希望你以后能够做的比我还好呦。</td>
+<td align="center">
+
+[zero_shot_prompt.webm](https://github.com/user-attachments/assets/1ef09db6-42e5-42d2-acc2-d44e70b147f9)
+</td>
+<td align="center">收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。</td>
+<td align="center">
+
+[zero_shot.webm](https://github.com/user-attachments/assets/ba46c58f-2e16-4440-b920-51ec288f09e6)
+</td>
+</tr>
+<tr>
+<td align="center"><strong>Cross-lingual Cloning</strong></td>
+<td align="center">在那之后，完全收购那家公司，因此保持管理层的一致性，利益与即将加入家族的资产保持一致。这就是我们有时不买下全部的原因。</td>
+<td align="center">
+
+[cross_lingual_prompt.webm](https://github.com/user-attachments/assets/378ae5e6-b52a-47b4-b0db-d84d1edd6e56)
+</td>
+<td align="center">
+&lt; |en|&gt;And then later on, fully acquiring that company. So keeping management in line, interest in line with the asset that's coming into the family is a reason why sometimes we don't buy the whole thing.
+</td>
+<td align="center">
+
+[cross_lingual.webm](https://github.com/user-attachments/assets/b0162fc8-5738-4642-9fdd-b388a4965546)
+</td>
+</tr>
+</table>
+
+
+
 ### Coming Soon
 
 Welcome everyone to provide suggestions, motivating me to continuously update the models and enrich the functionality of Linly-Talker.
@@ -502,7 +596,15 @@ Before usage, download the Wav2Lip model:
 | Expert Discriminator         | Weights of the expert discriminator                   | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQRvmiZg-HRAjvI6zqN9eTEBP74KefynCwPWVmF57l-AYA?e=ZRPHKP) |
 | Visual Quality Discriminator | Weights of the visual disc trained in a GAN setup     | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQVqH88dTm1HjlK11eNba5gBbn15WMS0B0EZbDBttqrqkg?e=ic0ljo) |
 
+### Wav2Lipv2
 
+Inspired by the repository [https://github.com/primepake/wav2lip_288x288](https://github.com/primepake/wav2lip_288x288), Wav2Lipv2 uses a newly trained 288 model to achieve higher quality results.
+
+Additionally, by employing YOLO for facial detection, the overall effect is improved. You can compare and test the results in Linly-Talker. The model has been updated, and the comparison is as follows:
+
+| Wav2Lip                                                      | Wav2Lipv2                                                    |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <video src="https://github.com/user-attachments/assets/d61df5cf-e3b9-4057-81fc-d69dcff806d6"></video> | <video src="https://github.com/user-attachments/assets/7f6be271-2a4d-4d9c-98f8-db25816c28b3"></video> |
 
 ### ER-NeRF
 
@@ -670,9 +772,9 @@ The current features available in the WebUI are as follows:
 
 - [x] Multiple modules➕Multiple models➕Multiple choices
   - [x] Multiple role selections: Female/Male/Custom (each part can automatically upload images) Coming Soon
-  - [x] Multiple TTS model selections: EdgeTTS / PaddleTTS / GPT-SoVITS / Coming Soon
+  - [x] Multiple TTS model selections: EdgeTTS / PaddleTTS / GPT-SoVITS / CosyVoice / Coming Soon
   - [x] Multiple LLM model selections: Linly / Qwen / ChatGLM / GeminiPro / ChatGPT / Coming Soon
-  - [x] Multiple Talker model selections: Wav2Lip / SadTalker / ERNeRF / MuseTalk (coming soon) / Coming Soon
+  - [x] Multiple Talker model selections: Wav2Lip / Wav2Lipv2 / SadTalker / ERNeRF / MuseTalk/ Coming Soon
   - [x] Multiple ASR model selections: Whisper / FunASR / Coming Soon
   
   ![](docs/WebUI2.png)
