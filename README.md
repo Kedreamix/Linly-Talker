@@ -191,7 +191,7 @@ git submodule update --init --recursive
 If you are using Linly-Talker, you can set up the environment directly with Anaconda, which covers almost all the dependencies required by the models. The specific steps are as follows:
 
 ```bash
-conda create -n linly python=3.10  
+conda create -n linly python=3.8
 conda activate linly
 
 # PyTorch installation method 1: Install via conda
@@ -216,36 +216,41 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 pip install tb-nightly -i https://mirrors.aliyun.com/pypi/simple
 pip install -r requirements_webui.txt
 
-# Install dependencies related to CosyVoice
-conda install -y -c conda-forge pynini==2.1.5
-
 # Install dependencies related to musetalk
 pip install --no-cache-dir -U openmim
 mim install mmengine 
-mim install "mmcv>=2.0.1" 
+mim install "mmcv==2.1.0" 
 mim install "mmdet>=3.1.0" 
 mim install "mmpose>=1.1.0" 
 
 # ⚠️ Note: You must first download CosyVoice-ttsfrd. Complete the model download before proceeding with these steps.
 mkdir -p CosyVoice/pretrained_models # Create directory CosyVoice/pretrained_models
 mv checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd CosyVoice/pretrained_models # Move directory
-unzip checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd/resource.zip # Unzip
+unzip CosyVoice/pretrained_models/CosyVoice-ttsfrd/resource.zip # Unzip
 # This .whl library is only compatible with Python 3.8
-pip install checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
+pip install CosyVoice/pretrained_models/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
 
 # Install NeRF-based dependencies, which might have several issues and can be skipped initially
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
+# If you encounter problems installing PyTorch3D, you can use the following command to install it:
+# python scripts/install_pytorch3d.py
 pip install -r TFG/requirements_nerf.txt
 
-# If there are issues with pyaudio, install the corresponding dependencies
-# sudo apt-get update
-# sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
+# If you encouter issues with pyaudio
+sudo apt-get update
+sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
 
 # Note the following modules. If installation fails, you can enter the directory and use pip install . or python setup.py install to compile and install:
 # NeRF/freqencoder
 # NeRF/gridencoder
 # NeRF/raymarching
 # NeRF/shencoder
+
+# If you encounter sox compatibility issues
+# ubuntu
+sudo apt-get install sox libsox-dev
+# centos
+sudo yum install sox sox-devel
 ```
 
 Below are some older installation methods, which might cause dependency conflicts, but they generally don't produce many bugs. For an easier and better installation, I've updated the above version. You can ignore the following versions or refer to them if you encounter issues.
