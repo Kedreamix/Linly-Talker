@@ -9,6 +9,8 @@ from .ChatGPT import ChatGPT
 from .ChatGLM import ChatGLM
 from .Llama2Chinese import Llama2Chinese
 from .GPT4Free import GPT4FREE
+from .QAnything import QAnything
+
 def test_Linly(question = "如何应对压力？", mode='offline', model_path="Linly-AI/Chinese-LLaMA-2-7B-hf"):
     llm = Linly(mode, model_path)
     answer = llm.generate(question)
@@ -34,8 +36,8 @@ class LLM:
         self.mode = mode
         
     def init_model(self, model_name, model_path='', api_key=None, proxy_url=None, prefix_prompt='''请用少于25个字回答以下问题\n\n'''):
-        if model_name not in ['Linly', 'Qwen', 'Qwen2', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free', '直接回复 Direct Reply']:
-            raise ValueError("model_name must be one of ['Linly', 'Qwen', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free']")
+        if model_name not in ['Linly', 'Qwen', 'Qwen2', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free', 'QAnything', '直接回复 Direct Reply']:
+            raise ValueError("model_name must be one of ['Linly', 'Qwen', 'Qwen2', 'Gemini', 'ChatGLM', 'ChatGPT', 'Llama2Chinese', 'GPT4Free', 'QAnything', '直接回复 Direct Reply']")
         if model_name == 'Linly':
             llm = Linly(self.mode, model_path)
         elif model_name == 'Qwen':
@@ -52,6 +54,8 @@ class LLM:
             llm = Llama2Chinese(model_path, self.mode)
         elif model_name == 'GPT4Free':
             llm = GPT4FREE()
+        elif model_name == 'QAnything':
+            llm = QAnything()
         elif model_name == '直接回复 Direct Reply':
             llm = self
         llm.prefix_prompt = prefix_prompt
