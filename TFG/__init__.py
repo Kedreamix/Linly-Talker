@@ -1,5 +1,6 @@
 from .SadTalker import SadTalker
 from .Wav2Lip import Wav2Lip
+from .Wav2Lipv2 import Wav2Lipv2
 try:
     from .ERNeRF import ERNeRF
 except Exception as e:

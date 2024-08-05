@@ -49,6 +49,10 @@
 - **更新MuseTalk加入Linly-Talker之中，并且更新了WebUI中，能够基本实现实时对话。**
 - **改进的WebUI在默认设置下不加载LLM模型，以减少显存使用，并且可以直接通过问题回复完成口播功能。精细化后的WebUI包含以下三个主要功能：个性化角色生成、数字人多轮智能对话以及MuseTalk实时对话。这些改进不仅减少了先前的显存冗余，还增加了更多提示，以帮助用户更轻松地使用。**
 
+**2024.08 更新** 📆
+
+- **更新CosyVoice，具备优质的文本转语音（TTS）功能和语音克隆能力；同时更新了Wav2Lipv2，以提升整体效果**
+
 ---
 
 <details>
@@ -71,10 +75,12 @@
   - [Voice Clone](#voice-clone)
     - [GPT-SoVITS（推荐）](#gpt-sovits推荐)
     - [XTTS](#xtts)
+    - [CoxyVoice](#cosyvoice)
     - [Coming Soon](#coming-soon-2)
   - [THG - Avatar](#thg---avatar)
     - [SadTalker](#sadtalker)
     - [Wav2Lip](#wav2lip)
+    - [Wav2Lipv2](#wav2lipv2)
     - [ER-NeRF](#er-nerf)
     - [MuseTalk](#musetalk)
     - [Coming Soon](#coming-soon-3)
@@ -140,6 +146,7 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 - [x] Linly-Talker WebUI支持多模块、多模型和多选项
 - [x] 为Linly-Talker添加MuseTalk功能，基本达到实时的速度，交流速度很快
 - [x] 集成MuseTalk进入Linly-Talker WebUI
+- [x] 加入了CosyVoice，具备优质的文本转语音（TTS）功能和语音克隆能力。同时，更新了Wav2Lipv2，以提升图片质量效果。
 - [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
 
 🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
@@ -171,12 +178,15 @@ Windows我加入了一个python一键整合包，可以按顺序进行运行，�
 
 ```bash
 git clone https://github.com/Kedreamix/Linly-Talker.git --depth 1
+
+cd Linly-Talker
+git submodule update --init --recursive
 ```
 
 若使用Linly-Talker，可以直接用anaconda进行安装环境，几乎包括所有的模型所需要的依赖，具体操作如下：
 
 ```bash
-conda create -n linly python=3.10  
+conda create -n linly python=3.8 
 conda activate linly
 
 # pytorch安装方式1：conda安装
@@ -191,7 +201,7 @@ conda activate linly
 # CUDA 11.8
 pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
-conda install -q ffmpeg # ffmpeg==4.2.2
+conda install -q ffmpeg==4.2.2 # ffmpeg==4.2.2
 
 # 升级pip
 python -m pip install --upgrade pip
@@ -204,16 +214,25 @@ pip install -r requirements_webui.txt
 # 安装有关musetalk依赖
 pip install --no-cache-dir -U  openmim
 mim install mmengine 
-mim install "mmcv>=2.0.1" 
+mim install "mmcv==2.1.0" 
 mim install "mmdet>=3.1.0" 
 mim install "mmpose>=1.1.0" 
 
+# ⚠️注意 首先需要去下载CosyVoice-ttsfrd，需要先完成下载模型再经过这一步
+mkdir -p CosyVoice/pretrained_models # 创建文件夹 CosyVoice/pretrained_models
+mv checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd CosyVoice/pretrained_models # 移动目录
+unzip CosyVoice/pretrained_models/CosyVoice-ttsfrd/resource.zip # 解压
+# 该whl库，只适用于python 3.8 的版本
+pip install CosyVoice/pretrained_models/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
 
 # 安装NeRF-based依赖，可能问题较多，可以先放弃
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
+# 如果在安装pytorch3d中出现问题，可以直接运行以下命令
+# python scripts/install_pytorch3d.py
 pip install -r TFG/requirements_nerf.txt
 
-# 若pyaudio出现问题，可安装对应依赖
+# 若pyaudio出现问题，可安装对应依赖 fatal error: portaudio.h
+# sudo apt-get update
 # sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
 
 # 注意以下几个模块，若安装不成功，可以进入路径利用pip install . 或者 python setup.py install编译安装
@@ -221,6 +240,12 @@ pip install -r TFG/requirements_nerf.txt
 # NeRF/gridencoder
 # NeRF/raymarching
 # NeRF/shencoder
+
+# If you encounter sox compatibility issues
+# ubuntu
+sudo apt-get install sox libsox-dev
+# centos
+sudo yum install sox sox-devel
 ```
 
 以下是旧版本的一些安装方法，可能存在会一些依赖冲突的问题，但是也不会出现太多bug，但是为了更好更方便的安装，我就更新了上述版本，以下版本可以忽略，或者遇到问题可以参考一下
@@ -447,6 +472,8 @@ ssl_keyfile = "./https_cert/key.pem"
 
 我将一些训练好的克隆权重放在了[Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)中，大家可以自取权重和参考音频。
 
+
+
 ### XTTS
 
 Coqui XTTS是一个领先的深度学习文本到语音任务（TTS语音生成模型）工具包，通过使用一段5秒钟以上的语音频剪辑就可以完成声音克隆*将语音克隆到不同的语言*。
@@ -461,6 +488,79 @@ Coqui XTTS是一个领先的深度学习文本到语音任务（TTS语音生成�
 
 - 在线体验XTTS [https://huggingface.co/spaces/coqui/xtts](https://huggingface.co/spaces/coqui/xtts)
 - 官方Github库 https://github.com/coqui-ai/TTS
+
+
+
+### CosyVoice
+
+CosyVoice 是阿里通义实验室开源的一款多语言语音理解模型，专注于高质量的语音合成。该模型经过超过15万小时的数据训练，支持中文、英语、日语、粤语和韩语等多种语言的语音合成。CosyVoice 在多语言语音生成、零样本语音生成、跨语言声音合成和指令执行能力等方面表现出色。
+
+CosyVoice 支持 one-shot 音色克隆技术，仅需3至10秒的原始音频即可生成逼真自然的模拟音色，包括韵律和情感等细节。
+
+GitHub项目地址：https://github.com/FunAudioLLM/CosyVoice
+
+CosyVoice 包含多个预训练的语音合成模型，主要包括：
+
+1. **CosyVoice-300M**：支持中、英、日、粤、韩等多语言的零样本（zero-shot）和跨语言（cross-lingual）语音合成。
+2. **CosyVoice-300M-SFT**：专注于监督微调（SFT）推理的模型。
+3. **CosyVoice-300M-Instruct**：支持指令推理的模型，可以生成包含特定语气、情感等元素的语音。
+
+主要功能和特性
+
+1. **多语言支持**：能够处理多种语言，包括中文、英语、日语、粤语和韩语等。
+2. **多风格语音合成**：通过指令可以控制生成语音的语气和情感。
+3. **流式推理支持**：未来将支持流式推理模式，包括KV缓存和SDPA等用于实时性优化的技术。
+
+暂时 Linly-Talker 中加入了 预训练音色、3s极速复刻 和  跨语种复刻 三种功能，更多有趣的可以继续关注 Linly-Talker，以下是CosyVoice的一些效果
+
+<table>
+<tr>
+<th></th>
+<th align="center">PROMPT TEXT</th>
+<th align="center">PROMPT SPEECH</th>
+<th align="center">TARGET TEXT</th>
+<th align="center">RESULT</th>
+</tr>
+<tr>
+<td align="center"><strong>预训练音色</strong></td>
+<td align="center">中文女 音色（'中文女', '中文男', '日语男', '粤语女', '英文女', '英文男', '韩语女'）</td>
+<td align="center">—</td>
+<td align="center">你好，我是通义生成式语音大模型，请问有什么可以帮您的吗？</td>
+<td align="center">
+
+[sft.webm](https://github.com/user-attachments/assets/a9f9c8c4-7137-4845-9adb-a93ac304131e)
+
+</td>
+</tr>
+<tr>
+<td align="center"><strong>3s语言复刻</strong></td>
+<td align="center">希望你以后能够做的比我还好呦。</td>
+<td align="center">
+
+[zero_shot_prompt.webm](https://github.com/user-attachments/assets/1ef09db6-42e5-42d2-acc2-d44e70b147f9)
+</td>
+<td align="center">收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。</td>
+<td align="center">
+
+[zero_shot.webm](https://github.com/user-attachments/assets/ba46c58f-2e16-4440-b920-51ec288f09e6)
+</td>
+</tr>
+<tr>
+<td align="center"><strong>跨语种复刻</strong></td>
+<td align="center">在那之后，完全收购那家公司，因此保持管理层的一致性，利益与即将加入家族的资产保持一致。这就是我们有时不买下全部的原因。</td>
+<td align="center">
+
+[cross_lingual_prompt.webm](https://github.com/user-attachments/assets/378ae5e6-b52a-47b4-b0db-d84d1edd6e56)
+</td>
+<td align="center">
+&lt; |en|&gt;And then later on, fully acquiring that company. So keeping management in line, interest in line with the asset that's coming into the family is a reason why sometimes we don't buy the whole thing.
+</td>
+<td align="center">
+
+[cross_lingual.webm](https://github.com/user-attachments/assets/b0162fc8-5738-4642-9fdd-b388a4965546)
+</td>
+</tr>
+</table>
 
 
 
@@ -502,6 +602,16 @@ bash scripts/sadtalker_download_models.sh
 | Wav2Lip + GAN                | Slightly inferior lip-sync, but better visual quality | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EdjI7bZlgApMqsVoEUUXpLsBxqXbn5z8VTmoxp55YNDcIA?e=n9ljGW) |
 | Expert Discriminator         | Weights of the expert discriminator                   | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQRvmiZg-HRAjvI6zqN9eTEBP74KefynCwPWVmF57l-AYA?e=ZRPHKP) |
 | Visual Quality Discriminator | Weights of the visual disc trained in a GAN setup     | [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EQVqH88dTm1HjlK11eNba5gBbn15WMS0B0EZbDBttqrqkg?e=ic0ljo) |
+
+### Wav2Lipv2
+
+借鉴于 https://github.com/primepake/wav2lip_288x288 仓库，使用新训练的288模型，能够得到更高质量的结果
+
+同时使用yolo进行检测面部，整体的效果都会更好一点，具体可以在Linly-Talker中进行比较和测试，模型已更新，效果比较如下
+
+| Wav2Lip                                                      | Wav2Lipv2                                                    |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <video src="https://github.com/user-attachments/assets/d61df5cf-e3b9-4057-81fc-d69dcff806d6"></video> | <video src="https://github.com/user-attachments/assets/7f6be271-2a4d-4d9c-98f8-db25816c28b3"></video> |
 
 
 
@@ -647,9 +757,9 @@ Gradio是一个Python库,提供了一种简单的方式将机器学习模型作�
 - [x] 多模块➕多模型➕多选择
 
   - [x] 角色多选择：女性角色/男性角色/自定义角色(每一部分都可以自动上传图片)/Comming Soon
-  - [x] TTS模型多选择：EdgeTTS / PaddleTTS/ GPT-SoVITS/Comming Soon
+  - [x] TTS模型多选择：EdgeTTS / PaddleTTS/ GPT-SoVITS/CosyVoice/Comming Soon
   - [x] LLM模型多选择： Linly/ Qwen / ChatGLM/ GeminiPro/ ChatGPT/Comming Soon
-  - [x] Talker模型多选择：Wav2Lip/ SadTalker/ ERNeRF/ MuseTalk/Comming Soon
+  - [x] Talker模型多选择：Wav2Lip/ Wav2Lipv2/ SadTalker/ ERNeRF/ MuseTalk/Comming Soon
   - [x] ASR模型多选择：Whisper/ FunASR/Comming Soon
 
   ![](docs/WebUI2.png)
@@ -868,14 +978,6 @@ Linly-Talker/
 │       └── tokens.json
 └── README.md
 ```
-
-## 赞助
-
-| 支付宝               | 微信                    |
-| -------------------- | ----------------------- |
-| ![](docs/Alipay.jpg) | ![](docs/WeChatpay.jpg) |
-
-
 
 ## 参考
 

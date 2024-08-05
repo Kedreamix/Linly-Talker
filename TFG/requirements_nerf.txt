@@ -7,7 +7,7 @@ numpy
 pandas
 tqdm
 matplotlib
-PyMCubes
+PyMCubes==0.1.4
 rich
 dearpygui
 packaging
