@@ -99,8 +99,8 @@
     - [WebUI](#webui)
     - [Old Verison](#old-verison)
   - [文件夹结构](#文件夹结构)
-  - [赞助](#赞助)
   - [参考](#参考)
+  - [许可协议](#许可协议)
   - [Star History](#star-history)
 
 <!-- /TOC -->
@@ -122,6 +122,8 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 
 ![The system architecture of multimodal human–computer interaction.](docs/HOI.png)
 
+> [!NOTE]
+>
 > 查看我们的介绍视频 [demo video](https://www.bilibili.com/video/BV1rN4y1a76x/)
 >
 > 在B站上我录了一系列视频，也代表我更新的每一步与使用方法，详细查看[数字人智能对话系统 - Linly-Talker合集](https://space.bilibili.com/241286257/channel/collectiondetail?sid=2065753)
@@ -149,8 +151,12 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 - [x] 加入了CosyVoice，具备优质的文本转语音（TTS）功能和语音克隆能力。同时，更新了Wav2Lipv2，以提升图片质量效果。
 - [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
 
-🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
+> [!IMPORTANT]
+>
+> 🔆 该项目 Linly-Talker 正在进行中 - 欢迎提出PR请求！如果您有任何关于新的模型方法、研究、技术或发现运行错误的建议，请随时编辑并提交 PR。您也可以打开一个问题或通过电子邮件直接联系我。📩⭐ 如果您发现这个Github Project有用，请给它点个星！🤩
 
+> [!TIP]
+>
 > 如果在部署的时候有任何的问题，可以关注[常见问题汇总.md](https://github.com/Kedreamix/Linly-Talker/blob/main/常见问题汇总.md)部分，我已经整理了可能出现的所有问题，另外交流群也在这里，我会定时更新，感谢大家的关注与使用！！！
 
 ## 示例
@@ -164,15 +170,17 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 
 ## 创建环境
 
-AutoDL已发布镜像，可以直接使用，[https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker)，也可以使用docker来直接创建环境，我也会持续不断的更新镜像
-
-```bash
-docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:cMDvNE4RYl
-```
-
-Windows我加入了一个python一键整合包，可以按顺序进行运行，按照需求按照相应的依赖，并且下载对应的模型，即可运行，主要按照conda以后从02开始安装pytorch进行运行，如果有问题，请随时与我沟通
-
-[Windows一键整合包](https://pan.quark.cn/s/cc8f19c45a15)
+> [!NOTE]
+>
+> AutoDL已发布镜像，可以直接使用，[https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker)，也可以使用docker来直接创建环境，我也会持续不断的更新镜像
+>
+> ```bash
+> docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:zYGdW3yO3D
+> ```
+>
+> Windows我加入了一个python一键整合包，可以按顺序进行运行，按照需求按照相应的依赖，并且下载对应的模型，即可运行，主要按照conda以后从02开始安装pytorch进行运行，如果有问题，请随时与我沟通
+>
+> [Windows一键整合包](https://pan.quark.cn/s/cc8f19c45a15)
 
 下载代码
 
@@ -247,6 +255,10 @@ sudo apt-get install sox libsox-dev
 # centos
 sudo yum install sox sox-devel
 ```
+
+> [!NOTE]
+>
+> 安装过程可能耗时很长。
 
 以下是旧版本的一些安装方法，可能存在会一些依赖冲突的问题，但是也不会出现太多bug，但是为了更好更方便的安装，我就更新了上述版本，以下版本可以忽略，或者遇到问题可以参考一下
 
@@ -327,12 +339,15 @@ sudo yum install sox sox-devel
 
 
 
-接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明，建议从夸克网盘下载，会第一时间更新
-
-- [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
-- [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary) 
-- [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
+> [!NOTE]
+>
+> 接下来还需要安装对应的模型，有以下下载方式，下载后安装文件架结构放置，文件夹结构在本文最后有说明，建议从modelscope下载，会第一时间更新
+>
+> - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+> - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
+> - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary) 
+> - [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
+>
 
 我制作一个脚本可以完成下述所有模型的下载，无需用户过多操作。这种方式适合网络稳定的情况，并且特别适合 Linux 用户。对于 Windows 用户，也可以使用 Git 来下载模型。如果网络环境不稳定，用户可以选择使用手动下载方法，或者尝试运行 Shell 脚本来完成下载。脚本具有以下功能。
 
@@ -843,12 +858,15 @@ python app_musetalk.py
 
 ## 文件夹结构
 
-所有的权重部分可以从这下载，百度网盘可能有时候会更新慢一点，建议从夸克网盘下载，会第一时间更新
-
-- [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
-- [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files)
-- [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
+> [!NOTE]
+>
+> 所有的权重部分可以从这下载，百度网盘可能有时候会更新慢一点，建议从夸克网盘下载，会第一时间更新
+>
+> - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+> - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
+> - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files)
+> - [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
+>
 
 权重文件夹结构如下
 
@@ -1009,6 +1027,16 @@ Linly-Talker/
 
 - [https://github.com/RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
 - [https://github.com/coqui-ai/TTS](https://github.com/coqui-ai/TTS)
+
+
+
+## 许可协议
+
+> [!CAUTION]
+>
+> 在使用本工具时，请遵守相关法律，包括版权法、数据保护法和隐私法。未经原作者和/或版权所有者许可，请勿使用本工具。
+
+`Linly-Talker` 遵循 MIT Licence。在使用本工具时，请遵守相关法律，包括版权法、数据保护法和隐私法。未经原作者和/或版权所有者许可，请勿使用本工具。未经原作者和/或版权所有者许可，请勿使用本工具。此外，请确保遵守您参考的模型和组件中的所有许可协议。
 
 ## Star History
 

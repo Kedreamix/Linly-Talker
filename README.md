@@ -98,10 +98,10 @@
   - [Gradio](#gradio)
   - [Start WebUI](#start-webui)
     - [WebUI](#webui)
-  - [Old Verison](#old-verison)
+    - [Old Verison](#old-verison)
   - [Folder structure](#folder-structure)
-  - [Support Us](#support-us)
   - [Reference](#reference)
+  - [License](#license)
   - [Star History](#star-history)
 
 <!-- /TOC -->
@@ -125,6 +125,8 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 
 ![The system architecture of multimodal human–computer interaction.](docs/HOI_en.png)
 
+> [!NOTE]
+>
 > You can watch the demo video [here](https://www.bilibili.com/video/BV1rN4y1a76x/).
 >
 > I have recorded a series of videos on Bilibili, which also represent every step of my updates and methods of use. For detailed information, please refer to [Digital Human Dialogue System - Linly-Talker Collection](https://space.bilibili.com/241286257/channel/collectiondetail?sid=2065753).
@@ -152,8 +154,12 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 - [x] Added CosyVoice, which provides high-quality text-to-speech (TTS) functionality and voice cloning capabilities. Additionally, updated to Wav2Lipv2 to enhance image quality effects.
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
-🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
+> [!IMPORTANT]
+>
+> 🔆 The Linly-Talker project is ongoing - pull requests are welcome! If you have any suggestions regarding new model approaches, research, techniques, or if you discover any runtime errors, please feel free to edit and submit a pull request. You can also open an issue or contact me directly via email. 📩⭐ If you find this repository useful, please give it a star! 🤩
 
+> [!TIP]
+>
 > If you encounter any issues during deployment, please consult the [Common Issues Summary](https://github.com/Kedreamix/Linly-Talker/blob/main/常见问题汇总.md) section, where I have compiled a list of all potential problems. Additionally, a discussion group is available here, and I will provide regular updates. Thank you for your attention and use of Linly-Talker!
 
 ## Example
@@ -167,15 +173,17 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 
 ## Setup Environment
 
-AutoDL has released an image, which can be used directly at [https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker). You can also create an environment directly using Docker. I will continue to update the image.
-
-```bash
-docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:cMDvNE4RYl
-```
-
-For Windows, I've included an all-in-one Python package. You can run the steps in sequence to install the necessary dependencies and download the corresponding model to get it running. Follow the instructions using `conda` and start installing PyTorch from step 02. If you encounter any issues, please feel free to contact me.
-
-[Windows All-in-One Package](https://pan.quark.cn/s/cc8f19c45a15)
+> [!NOTE]
+>
+> AutoDL has released an image, which can be used directly at [https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker). You can also create an environment directly using Docker. I will continue to update the image.
+>
+> ```bash
+> docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:zYGdW3yO3D
+> ```
+>
+> For Windows, I've included an all-in-one Python package. You can run the steps in sequence to install the necessary dependencies and download the corresponding model to get it running. Follow the instructions using `conda` and start installing PyTorch from step 02. If you encounter any issues, please feel free to contact me.
+>
+> [Windows All-in-One Package](https://pan.quark.cn/s/cc8f19c45a15)
 
 Download the code:
 
@@ -253,6 +261,10 @@ sudo apt-get install sox libsox-dev
 sudo yum install sox sox-devel
 ```
 
+> [!NOTE]
+>
+> The installation process is very slow.
+
 Below are some older installation methods, which might cause dependency conflicts, but they generally don't produce many bugs. For an easier and better installation, I've updated the above version. You can ignore the following versions or refer to them if you encounter issues.
 
 > To install the environment using Anaconda and PyTorch, follow the steps below:
@@ -329,14 +341,17 @@ Below are some older installation methods, which might cause dependency conflict
 > ```
 >
 
-Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
-
-We recommend downloading from Quark Netdisk for the latest updates.
-
-- [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
-- [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
-- [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary)
-- [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
+> [!NOTE]
+>
+> Next, you need to install the corresponding models. You can download them using the following methods. Once downloaded, place the files in the specified folder structure (explained at the end of this document).
+>
+> We recommend downloading from modelscope for the latest updates.
+>
+> - [Baidu (百度云盘)](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`)
+> - [huggingface](https://huggingface.co/Kedreamix/Linly-Talker)
+> - [modelscope](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/summary)
+> - [Quark(夸克网盘)](https://pan.quark.cn/s/f48f5e35796b)
+>
 
 I made a script that can download all the models mentioned below without requiring much input from the user. This method is suitable for stable network conditions, especially for Linux users. For Windows users, Git can also be used to download the models. If the network connection is unstable, users can choose to manually download the models or try running a Shell script to complete the download. The script has the following features:
 
@@ -797,7 +812,7 @@ This time, we've updated the interface. We can freely select the fine-tuned mode
 
 ![](docs/WebUI3.png)
 
-## Old Verison
+### Old Verison
 
 There are three modes for the current startup, and you can choose a specific setting based on the scenario.
 
@@ -861,12 +876,15 @@ python app_musetalk.py
 
 ## Folder structure
 
-The folder structure of the weight files is as follows:
-
-- `Baidu (百度云盘)`: You can download the weights from [here](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`).
-- `huggingface`: You can access the weights at [this link](https://huggingface.co/Kedreamix/Linly-Talker).
-- `modelscope`: The weights will be available soon at [this link](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files).
-- `Qurak(夸克网盘)`：You can download the weights from [here](https://pan.quark.cn/s/f48f5e35796b)
+> [!NOTE]
+>
+> The folder structure of the weight files is as follows:
+>
+> - `Baidu (百度云盘)`: You can download the weights from [here](https://pan.baidu.com/s/1eF13O-8wyw4B3MtesctQyg?pwd=linl) (Password: `linl`).
+> - `huggingface`: You can access the weights at [this link](https://huggingface.co/Kedreamix/Linly-Talker).
+> - `modelscope`: The weights will be available soon at [this link](https://www.modelscope.cn/models/Kedreamix/Linly-Talker/files).
+> - `Qurak(夸克网盘)`：You can download the weights from [here](https://pan.quark.cn/s/f48f5e35796b)
+>
 
 ```bash
 Linly-Talker/ 
@@ -1024,6 +1042,14 @@ Linly-Talker/
 
 - [https://github.com/RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
 - [https://github.com/coqui-ai/TTS](https://github.com/coqui-ai/TTS)
+
+## License
+
+> [!CAUTION]
+>
+> When using this tool, please comply with all applicable laws, including copyright, data protection, and privacy laws. Do not use, modify, distribute, or sublicense this tool without permission from the original authors and/or copyright holders.
+
+`Linly-Talker` follows the MIT License. In addition to adhering to the MIT License, ensure that you comply with all license agreements for any referenced models and components. Unauthorized use may lead to legal consequences.
 
 ## Star History
 
