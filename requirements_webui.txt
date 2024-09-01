@@ -24,6 +24,7 @@ moviepy
 librosa==0.10.2
 ultralytics # for wav2lipv2
 gradio==4.16.0
+scikit_learn==1.4.2
 
 # SadTalker related libraries
 numpy==1.23.4
@@ -35,7 +36,7 @@ pydub==0.25.1
 scipy==1.10.1
 kornia==0.6.8
 yacs==0.1.8
-joblib==1.1.0
+joblib==1.2.0
 facexlib==0.3.0
 scikit-image==0.19.3
 protobuf==3.20.2
@@ -104,3 +105,4 @@ conformer==0.3.2
 lightning==2.2.4
 wget==3.2
 HyperPyYAML==1.2.2
+WeTextProcessing==1.0.3
