@@ -292,13 +292,13 @@ class Wav2Lipv2():
         input_dict.update(copy.deepcopy(input_imginfo))
         return input_dict
 
-    def run(self, video_path, audio_path, batch_size = 4, enhance = False, outfile=None):
+    def run(self, video_path, audio_path, batch_size = 4, enhance = False, outfile=None, fps = 25):
         if outfile is None:
             key = str(uuid.uuid4().hex)
             outfile = ("results/result_voice_{}.mp4".format(key))
 
 
-        fps = self.fps if video_path.split('.')[1] in ['jpg', 'png', 'jpeg'] else get_video_fps(video_path)
+        fps = fps if video_path.split('.')[1] in ['jpg', 'png', 'jpeg'] else get_video_fps(video_path)
         self.fps = fps
 
         temp_audio_file = tempfile.NamedTemporaryFile(suffix=".wav")
@@ -419,5 +419,7 @@ class Wav2Lipv2():
 if __name__ == '__main__':
     current_dir = './'
     wav2lipv2 = Wav2Lipv2(os.path.join(current_dir,'checkpoints/wav2lipv2.pth'))
-    wav2lipv2.run(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 16)
-    wav2lipv2.run(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 16, enhance = True)
+    wav2lipv2.run('/home/dengkaijun/workdirs/Wav2Lip/video.mp4', '/home/dengkaijun/workdirs/Wav2Lip/video.mp4', batch_size = 16)
+
+    # wav2lipv2.run(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 16)
+    # wav2lipv2.run(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 16, enhance = True)

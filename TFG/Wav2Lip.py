@@ -17,7 +17,7 @@ class Wav2Lip:
         self.mel_step_size = 16
         self.static = False
         self.img_size = 96
-        self.face_det_batch_size = 2
+        self.face_det_batch_size = 8
         self.box = [-1, -1, -1, -1]
         self.pads = [0, 10, 0, 0]
         self.nosmooth = False
@@ -49,15 +49,59 @@ class Wav2Lip:
     #     else:
     #         return None
                    
-    def predict(self, face, audio_file, batch_size, enhance = False):
+    def predict(self, face, audio_file, batch_size, fps = 25,
+                enhance = False, resize_factor = 1, rotate = False, crop = [-1, -1, -1, -1]):
         os.makedirs('results', exist_ok=True)
         os.makedirs('temp', exist_ok=True)
-        frame = cv2.imread(face)
-        if self.resize_factor > 1:
-            frame = cv2.resize(frame, (frame.shape[1]//self.resize_factor, frame.shape[0]//self.resize_factor))
-        full_frames = [frame]
+        
+        if not os.path.isfile(face):
+            raise ValueError('--face argument must be a valid path to video/image file')
+
+        elif face.split('.')[1] in ['jpg', 'png', 'jpeg']:
+            full_frames = [cv2.imread(face)]
+            fps = fps
+
+        else:
+            video_stream = cv2.VideoCapture(face)
+            fps = video_stream.get(cv2.CAP_PROP_FPS)
+
+            print('Reading video frames...')
+
+            full_frames = []
+            while 1:
+                still_reading, frame = video_stream.read()
+                if not still_reading:
+                    video_stream.release()
+                    break
+                if resize_factor > 1:
+                    frame = cv2.resize(frame, (frame.shape[1]//resize_factor, frame.shape[0]//resize_factor))
+
+                if rotate:
+                    frame = cv2.rotate(frame, cv2.cv2.ROTATE_90_CLOCKWISE)
+
+                y1, y2, x1, x2 = crop
+                if x2 == -1: x2 = frame.shape[1]
+                if y2 == -1: y2 = frame.shape[0]
+
+                frame = frame[y1:y2, x1:x2]
+
+                full_frames.append(frame)
+        print ("Number of frames available for inference: "+str(len(full_frames)))
+
+        if not audio_file.endswith('.wav'):
+            print('Extracting raw audio...')
+            command = 'ffmpeg -y -i {} -strict -2 {}'.format(audio_file, 'temp/temp.wav')
+
+            subprocess.call(command, shell=True)
+            audio_file = 'temp/temp.wav'
+
         wav = audio.load_wav(audio_file, 16000)
         mel = audio.melspectrogram(wav)
+        print(mel.shape)
+        
+        if np.isnan(mel.reshape(-1)).sum() > 0:
+            raise ValueError('Mel contains nan! Using a TTS voice? Add a small epsilon noise to the wav file and try again')
+            
         mel_chunks = []
         mel_idx_multiplier = 80./self.fps 
         i = 0
@@ -234,5 +278,6 @@ class Wav2Lip:
 if __name__ == '__main__':
     current_dir = './'
     wav2lip = Wav2Lip(os.path.join(current_dir,'checkpoints/wav2lip.pth'))
+    # wav2lip.predict('/home/dengkaijun/workdirs/Linly-Talker/TFG/results/test.mp4', os.path.join(current_dir,'answer.wav'), batch_size = 2, enhance=False)
     wav2lip.predict(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 2, enhance=False)
     wav2lip.predict(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 2, enhance=True)

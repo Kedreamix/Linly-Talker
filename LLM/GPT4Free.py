@@ -34,13 +34,14 @@ class GPT4FREE:
             return '对不起，你的请求出错了，请再次尝试。\nSorry, your request has encountered an error. Please try again.\n'
         
         return response.choices[0].message.content
-    def chat(self, system_prompt = "You are a helpful assistant.", message = ""):
+    def chat(self, system_prompt = "You are a helpful assistant.", message = "", history=[]):
         response = self.generate(message, system_prompt)
         self.history += [{
             "role": "assistants",
             "content": response
         }]
-        return response, self.history
+        history.append((message, response))
+        return response, history
     def clear_history(self):
         # 清空历史记录
         self.history = []

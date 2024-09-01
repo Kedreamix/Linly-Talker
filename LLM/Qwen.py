@@ -53,7 +53,7 @@ class Qwen:
         self.history = []
     
 def test():
-    llm = Qwen(mode='offline', model_path="../Qwen/Qwen-1_8B-Chat")
+    llm = Qwen(mode='offline', model_path="Qwen/Qwen-1_8B-Chat")
     answer = llm.generate("如何应对压力？")
     print(answer)
 
