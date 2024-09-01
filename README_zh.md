@@ -53,6 +53,10 @@
 
 - **更新CosyVoice，具备优质的文本转语音（TTS）功能和语音克隆能力；同时更新了Wav2Lipv2，以提升整体效果**
 
+**2024.09 更新** 📆
+
+- **新增 Linly-Talker API 文档，提供详细的接口说明，帮助用户通过 API 使用 Linly-Talker 的功能。**
+
 ---
 
 <details>
@@ -64,6 +68,7 @@
   - [TO DO LIST](#to-do-list)
   - [示例](#示例)
   - [创建环境](#创建环境)
+  - [API 文档](#api-文档)
   - [ASR - Speech Recognition](#asr---speech-recognition)
     - [Whisper](#whisper)
     - [FunASR](#funasr)
@@ -75,7 +80,7 @@
   - [Voice Clone](#voice-clone)
     - [GPT-SoVITS（推荐）](#gpt-sovits推荐)
     - [XTTS](#xtts)
-    - [CoxyVoice](#cosyvoice)
+    - [CosyVoice](#cosyvoice)
     - [Coming Soon](#coming-soon-2)
   - [THG - Avatar](#thg---avatar)
     - [SadTalker](#sadtalker)
@@ -149,6 +154,7 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 - [x] 为Linly-Talker添加MuseTalk功能，基本达到实时的速度，交流速度很快
 - [x] 集成MuseTalk进入Linly-Talker WebUI
 - [x] 加入了CosyVoice，具备优质的文本转语音（TTS）功能和语音克隆能力。同时，更新了Wav2Lipv2，以提升图片质量效果。
+- [x] 新增Linly-Talker API文档，提供详细的接口说明
 - [ ] `实时`语音识别（人与数字人之间就可以通过语音进行对话交流)
 
 > [!IMPORTANT]
@@ -194,7 +200,7 @@ git submodule update --init --recursive
 若使用Linly-Talker，可以直接用anaconda进行安装环境，几乎包括所有的模型所需要的依赖，具体操作如下：
 
 ```bash
-conda create -n linly python=3.8 
+conda create -n linly python=3.10
 conda activate linly
 
 # pytorch安装方式1：conda安装
@@ -226,12 +232,14 @@ mim install "mmcv==2.1.0"
 mim install "mmdet>=3.1.0" 
 mim install "mmpose>=1.1.0" 
 
+# 💡CosyVoice的ttsfrd可以用WeTextProcessing代替，所以可以省略一下几步，同时保证能够在其他python版本中运行
+
 # ⚠️注意 首先需要去下载CosyVoice-ttsfrd，需要先完成下载模型再经过这一步
-mkdir -p CosyVoice/pretrained_models # 创建文件夹 CosyVoice/pretrained_models
-mv checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd CosyVoice/pretrained_models # 移动目录
-unzip CosyVoice/pretrained_models/CosyVoice-ttsfrd/resource.zip # 解压
+# mkdir -p CosyVoice/pretrained_models # 创建文件夹 CosyVoice/pretrained_models
+# mv checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd CosyVoice/pretrained_models # 移动目录
+# unzip CosyVoice/pretrained_models/CosyVoice-ttsfrd/resource.zip # 解压
 # 该whl库，只适用于python 3.8 的版本
-pip install CosyVoice/pretrained_models/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
+# pip install CosyVoice/pretrained_models/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
 
 # 安装NeRF-based依赖，可能问题较多，可以先放弃
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
@@ -436,6 +444,16 @@ model_path = 'Qwen/Qwen-1_8B-Chat'
 ssl_certfile = "./https_cert/cert.pem"
 ssl_keyfile = "./https_cert/key.pem"
 ```
+
+
+
+## API 文档
+
+在 [api/README.md](api/README.md) 文件中，我们详细介绍了 Linly-Talker API 的使用和配置。这些文档为用户提供了关于如何调用 API、所需的参数、返回的数据格式等信息。通过查阅这些文档，用户可以深入了解如何通过 API 接口来实现 Linly-Talker 的功能，包括启动对话、上传图片、进行语音识别和生成语音等操作。
+
+要获得这些详细的 API 接口说明，请访问 `api/README.md` 文件。
+
+
 
 ## ASR - Speech Recognition
 

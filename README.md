@@ -53,6 +53,10 @@
 
 - **Updated CosyVoice to offer high-quality text-to-speech (TTS) functionality and voice cloning capabilities; also upgraded to Wav2Lipv2 to enhance overall performance.**
 
+**2024.09 Update** 📆
+
+- **Added Linly-Talker API documentation, providing detailed interface descriptions to help users access Linly-Talker’s features via the API.**
+
 ---
 
 <details>
@@ -65,6 +69,7 @@
   - [TO DO LIST](#to-do-list)
   - [Example](#example)
   - [Setup Environment](#setup-environment)
+  - [API Documentation](#api-documentation)
   - [ASR - Speech Recognition](#asr---speech-recognition)
     - [Whisper](#whisper)
     - [FunASR](#funasr)
@@ -76,7 +81,7 @@
   - [Voice Clone](#voice-clone)
     - [GPT-SoVITS（Recommend）](#gpt-sovitsrecommend)
     - [XTTS](#xtts)
-    - [CoxyVoice](#cosyvoice)
+    - [CosyVoice](#cosyvoice)
     - [Coming Soon](#coming-soon-2)
   - [THG - Avatar](#thg---avatar)
     - [SadTalker](#sadtalker)
@@ -152,6 +157,7 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 - [x] Added MuseTalk functionality to Linly-Talker, achieving near real-time speed with very fast communication.
 - [x] Integrated MuseTalk into the Linly-Talker WebUI.
 - [x] Added CosyVoice, which provides high-quality text-to-speech (TTS) functionality and voice cloning capabilities. Additionally, updated to Wav2Lipv2 to enhance image quality effects.
+- [x] Added Linly-Talker API documentation with detailed interface descriptions.
 - [ ] `Real-time` Speech Recognition (Enable conversation and communication between humans and digital entities using voice)
 
 > [!IMPORTANT]
@@ -199,7 +205,7 @@ git submodule update --init --recursive
 If you are using Linly-Talker, you can set up the environment directly with Anaconda, which covers almost all the dependencies required by the models. The specific steps are as follows:
 
 ```bash
-conda create -n linly python=3.8
+conda create -n linly python=3.10
 conda activate linly
 
 # PyTorch installation method 1: Install via conda
@@ -231,12 +237,14 @@ mim install "mmcv==2.1.0"
 mim install "mmdet>=3.1.0" 
 mim install "mmpose>=1.1.0" 
 
+# 💡The ttsfrd from CosyVoice can be replaced with WeTextProcessing, so a few steps can be omitted, while ensuring compatibility with other Python versions
+
 # ⚠️ Note: You must first download CosyVoice-ttsfrd. Complete the model download before proceeding with these steps.
-mkdir -p CosyVoice/pretrained_models # Create directory CosyVoice/pretrained_models
-mv checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd CosyVoice/pretrained_models # Move directory
-unzip CosyVoice/pretrained_models/CosyVoice-ttsfrd/resource.zip # Unzip
+# mkdir -p CosyVoice/pretrained_models # Create directory CosyVoice/pretrained_models
+# mv checkpoints/CosyVoice_ckpt/CosyVoice-ttsfrd CosyVoice/pretrained_models # Move directory
+# unzip CosyVoice/pretrained_models/CosyVoice-ttsfrd/resource.zip # Unzip
 # This .whl library is only compatible with Python 3.8
-pip install CosyVoice/pretrained_models/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
+# pip install CosyVoice/pretrained_models/CosyVoice-ttsfrd/ttsfrd-0.3.6-cp38-cp38-linux_x86_64.whl
 
 # Install NeRF-based dependencies, which might have several issues and can be skipped initially
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
@@ -441,6 +449,16 @@ ssl_keyfile = "./https_cert/key.pem"
 ```
 
 This file allows you to adjust parameters such as the device running port, API running port, Linly model path, and SSL certificate paths for ease of deployment and configuration.
+
+
+
+## API Documentation
+
+In the [api/README.md](api/README.md) file, we provide detailed information about the usage and configuration of the Linly-Talker API. This documentation includes information on how to call the API, the required parameters, and the format of the returned data. By reviewing these documents, users can gain a comprehensive understanding of how to utilize the API to implement various Linly-Talker functionalities, including starting conversations, uploading images, performing speech recognition, and generating speech.
+
+For detailed API interface descriptions, please refer to the `api/README.md` file.
+
+
 
 ## ASR - Speech Recognition
 
