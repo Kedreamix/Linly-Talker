@@ -81,8 +81,8 @@ def Talker_response(source_image, source_video, method = 'SadTalker', driven_aud
                         fps=20)
     elif method == 'Wav2Lip':
         video = wav2lip.predict(source_image, driven_audio, batch_size)
-    elif method == 'ER-NeRF':
-        video = ernerf.predict(driven_audio)
+    elif method == 'NeRFTalk':
+        video = nerftalk.predict(driven_audio)
     else:
         gr.Warning("不支持的方法：" + method)
         return None
@@ -147,7 +147,7 @@ def main():
             with gr.Column(variant='panel'): 
                 with gr.Tabs():
                     with gr.TabItem('数字人问答'):
-                        method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'ER-NeRF'], value = 'SadTalker', label = '模型选择')
+                        method = gr.Radio(choices = ['SadTalker', 'Wav2Lip', 'NeRFTalk'], value = 'SadTalker', label = '模型选择')
                         gen_video = gr.Video(label="Generated video", format="mp4", scale=1, autoplay=True)
                 video_button = gr.Button("提交", variant='primary')
 
@@ -205,9 +205,9 @@ if __name__ == "__main__":
         print("如果使用Wav2Lip，请先下载Wav2Lip模型")
         
     try:
-        from TFG import ERNeRF
-        ernerf = ERNeRF()
-        ernerf.init_model('checkpoints/Obama_ave.pth', 'checkpoints/Obama.json')
+        from TFG import NeRFTalk
+        nerftalk = NeRFTalk()
+        nerftalk.init_model('checkpoints/Obama_ave.pth', 'checkpoints/Obama.json')
     except Exception as e:
         print("ERNeRF Error: ", e)
         print("如果使用ERNeRF，请先下载ERNeRF模型")

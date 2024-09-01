@@ -856,8 +856,8 @@ def talker_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
             talker = Wav2Lipv2('checkpoints/wav2lipv2.pth')
             gr.Info("Wav2Lipv2模型导入成功，能够生成更高质量的结果")
         elif model_name == 'NeRFTalk':
-            from TFG import ERNeRF
-            talker = ERNeRF()
+            from TFG import NeRFTalk
+            talker = NeRFTalk()
             talker.init_model('checkpoints/Obama_ave.pth', 'checkpoints/Obama.json')
             gr.Info("NeRFTalk模型导入成功")
             gr.Warning("NeRFTalk模型仅针对单个人训练，内置奥巴马模型，上传其他图片无效")
