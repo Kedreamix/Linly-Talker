@@ -457,7 +457,7 @@ def webui_setting(talk=False):
     tts_method.change(fn=tts_model_change, inputs=[tts_method], outputs=[tts_method])
     asr_method = gr.Radio(choices=['Whisper-tiny', 'Whisper-base', 'FunASR', 'Comming Soon!!!'], value='Whisper-base', label='语音识别模型选择')
     asr_method.change(fn=asr_model_change, inputs=[asr_method], outputs=[asr_method])
-    llm_method = gr.Dropdown(choices=['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', '直接回复 Direct Reply', 'Comming Soon!!!'], value='直接回复 Direct Reply', label='LLM 模型选择')
+    llm_method = gr.Dropdown(choices=['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', 'QAnything', '直接回复 Direct Reply', 'Comming Soon!!!'], value='直接回复 Direct Reply', label='LLM 模型选择')
     llm_method.change(fn=llm_model_change, inputs=[llm_method], outputs=[llm_method])
     return (source_image, voice, rate, volume, pitch, am, voc, lang, male, 
             ref_audio, prompt_text, prompt_language, text_language, cut_method, use_mic_voice, tts_method, 
@@ -823,6 +823,9 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
         elif model_name == 'GPT4Free':
             llm = llm_class.init_model('GPT4Free', prefix_prompt=PREFIX_PROMPT)
             gr.Info("GPT4Free模型导入成功，请注意该模型可能不稳定")
+        elif model_name == 'QAnything':
+            llm = llm_class.init_model('QAnything')
+            gr.Info("QAnything模型接口加载成功")
         else:
             gr.Warning("未知LLM模型，请检查模型名称或提出Issue")
     except Exception as e:
