@@ -334,7 +334,7 @@ def human_response(source_image, history, question_audio, talker_method, voice, 
         gr.Warning("不支持的方法：" + talker_method)
         return None
 
-    return video, driven_vtt if driven_vtt else video
+    return video
 
 
 @calculate_time
@@ -364,7 +364,7 @@ def MuseTalker_response(source_video, bbox_shift, question_audio, text, voice,
     # MuseTalker 视频生成
     video = musetalker.inference_noprepare(driven_audio, source_video, bbox_shift, batch_size, fps=25)
 
-    return video, driven_vtt if driven_vtt else video
+    return video
 
 GPT_SoVITS_ckpt = "GPT_SoVITS/pretrained_models"
 def load_vits_model(gpt_path, sovits_path, progress=gr.Progress(track_tqdm=True)):
