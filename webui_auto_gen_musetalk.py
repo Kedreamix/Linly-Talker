@@ -13,8 +13,16 @@ from TTS import EdgeTTS
 from src.cost_time import calculate_time
 
 from configs import *
+
+AUTO_PROCESS_ENABLED = False
 os.environ["GRADIO_TEMP_DIR"]= './temp'
 os.environ["WEBUI"] = "true"
+
+def update_auto_process_state(enabled):
+    global AUTO_PROCESS_ENABLED
+    AUTO_PROCESS_ENABLED = enabled
+    return gr.update(visible=not enabled)  # 当自动处理开启时隐藏手动按钮
+
 def get_title(title = 'Linly 智能对话系统 (Linly-Talker)'):
     description = f"""
     <p style="text-align: center; font-weight: bold;">
@@ -709,25 +717,65 @@ def app_muse():
 
             # 问题输入和ASR识别
             with gr.Column(variant='panel'):
+                # 首先创建视频输出组件
+                gen_video = gr.Video(label="数字人视频", format="mp4")
+                
                 with gr.Tabs():
                     with gr.TabItem('对话'):
+                        # 添加自动处理开关
+                        auto_process = gr.Checkbox(
+                            label="自动处理模式（录音完成后自动识别并生成视频）",
+                            value=False,
+                            info="开启后，录音完成时自动执行语音识别和视频生成"
+                        )
+                        
                         with gr.Group():
                             question_audio = gr.Audio(sources=['microphone', 'upload'], type="filepath", label='语音对话')
                             input_text = gr.Textbox(label="输入文字/问题", lines=3, placeholder='请输入文本或问题，同时可以设置LLM模型。默认使用直接回复。')
                             asr_btn = gr.Button('语音识别（语音对话后点击）')
-                        asr_btn.click(fn=Asr, inputs=[question_audio], outputs=[input_text]) 
-                    generate_button.click(fn=TTS_response, 
-                                      inputs=[input_text, voice, rate, volume, pitch, am, voc, lang, male,
-                                                ref_audio, prompt_text, prompt_language, text_language,
-                                                cut_method, question_audio, prompt_text, use_mic_voice, 
-                                                mode_checkbox_group, sft_dropdown, prompt_text_cv, prompt_wav_upload, prompt_wav_record, seed, speed_factor, tts_method, ],
-                                      outputs=[audio_output])
 
-                # 生成MuseTalk视频
-                with gr.TabItem("MuseTalk Video"):
-                    gen_video = gr.Video(label="数字人视频", format="mp4")
+                        # 定义自动处理函数
+                        def auto_process_recording(audio, auto_enabled, source_video, bbox_shift, voice, rate, volume, pitch,
+                                 am, voc, lang, male, ref_audio, prompt_text, prompt_language,
+                                 text_language, cut_method, use_mic_voice, mode_checkbox_group,
+                                 sft_dropdown, prompt_text_cv, prompt_wav_upload, prompt_wav_record,
+                                 seed, speed_factor, tts_method, batch_size):
+                                    if not auto_enabled or audio is None:
+                                        return None, None
+
+                                    # 1. 执行语音识别
+                                    text = Asr(audio)
+
+                                    # 2. 执行视频生成
+                                    video = MuseTalker_response(
+                                        source_video, bbox_shift, audio, text,
+                                        voice, rate, volume, pitch,
+                                        am, voc, lang, male,
+                                        ref_audio, prompt_text, prompt_language,
+                                        text_language, cut_method, use_mic_voice,
+                                        mode_checkbox_group, sft_dropdown,
+                                        prompt_text_cv, prompt_wav_upload, prompt_wav_record,
+                                        seed, speed_factor, tts_method, batch_size
+                                    )
+
+                                    return text, video
+
+                        # 添加录音完成事件处理
+                        question_audio.stop_recording(
+                            fn=auto_process_recording,
+                            inputs=[
+                                question_audio, auto_process, source_video, bbox_shift,
+                                voice, rate, volume, pitch, am, voc, lang, male,
+                                ref_audio, prompt_text, prompt_language, text_language,
+                                cut_method, use_mic_voice, mode_checkbox_group,
+                                sft_dropdown, prompt_text_cv, prompt_wav_upload,
+                                prompt_wav_record, seed, speed_factor, tts_method, batch_size
+                            ],
+                            outputs=[input_text, gen_video]
+                        )
+
+                # Generate 按钮
                 submit = gr.Button('Generate', elem_id="sadtalker_generate", variant='primary')
-                # examples = [os.path.join('Musetalk/data/video', video) for video in os.listdir("Musetalk/data/video")]
                 
                 gr.Markdown("## MuseV Video Examples")
                 gr.Examples(
@@ -751,8 +799,7 @@ def app_muse():
                     voice, rate, volume, pitch, am, voc, lang, male, 
                     ref_audio, prompt_text, prompt_language, text_language, cut_method, use_mic_voice, 
                     mode_checkbox_group, sft_dropdown, prompt_text_cv, prompt_wav_upload, prompt_wav_record, seed, speed_factor, 
-                    tts_method, batch_size
-                ],
+                tts_method, batch_size],
                 outputs=[gen_video]
             )
 
