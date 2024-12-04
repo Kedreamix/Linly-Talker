@@ -4,7 +4,7 @@ sys.path.append('./Musetalk')
 import os
 import time
 import re
-from huggingface_hub import snapshot_download
+# from huggingface_hub import snapshot_download
 import requests
 import numpy as np
 import cv2

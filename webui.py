@@ -209,7 +209,7 @@ def LLM_response(
 
     # 生成VTT文件（如果TTS方法为'Edge-TTS'）
     tts_vtt = 'answer.vtt' if tts_method == 'Edge-TTS' else None
-
+    tts_vtt = None
     return tts_audio, tts_vtt, answer
 
 @calculate_time
@@ -267,7 +267,7 @@ def chat_response(system, message, history):
 
 def modify_system_session(system: str) -> str:
     if system is None or len(system) == 0:
-        system = default_system
+        system = DEFAULT_SYSTEM
     llm.clear_history()
     return system, system, []
 
@@ -312,6 +312,7 @@ def human_response(source_image, history, question_audio, talker_method, voice, 
                                             cut_method, question_audio, question, use_mic_voice, 
                                             mode_checkbox_group, sft_dropdown, prompt_text_cv, prompt_wav_upload, prompt_wav_record, seed, speed_factor,tts_method)
     driven_vtt = 'answer.vtt' if tts_method == 'Edge-TTS' else None
+    driven_vtt = None
     if driven_audio is None:
         gr.Warning("音频没有正常生成，请检查TTS是否正确")
         return None
@@ -364,7 +365,7 @@ def MuseTalker_response(source_video, bbox_shift, question_audio, text, voice,
     # MuseTalker 视频生成
     video = musetalker.inference_noprepare(driven_audio, source_video, bbox_shift, batch_size, fps=25)
 
-    return video, driven_vtt if driven_vtt else video
+    return (video, driven_vtt) if driven_vtt else video
 
 GPT_SoVITS_ckpt = "GPT_SoVITS/pretrained_models"
 def load_vits_model(gpt_path, sovits_path, progress=gr.Progress(track_tqdm=True)):

@@ -1,13 +1,17 @@
 # PyTorch and its dependencies
 # These libraries include PyTorch and its related packages, supporting CUDA 11.8.
---extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.0.1
-torchvision==0.15.2
-torchaudio==2.0.2
+--extra-index-url https://download.pytorch.org/whl/torch_stable.html
+torch
+torchvision
+torchaudio
+# torch==2.4.1+cu118
+# torchvision==0.19.1+cu118
+# torchaudio==2.4.1+cu118
+
 # Installation source for PyTorch: -f https://download.pytorch.org/whl/cu118
 # Example installation command:
 
-# pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
+# pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu118
 # pip install tb-nightly -i https://mirrors.aliyun.com/pypi/simple
 
 # General tools and libraries
@@ -23,7 +27,7 @@ spaces
 moviepy
 librosa==0.10.2
 ultralytics # for wav2lipv2
-gradio==4.16.0
+gradio==4.*
 scikit_learn==1.4.2
 
 # SadTalker related libraries
@@ -46,6 +50,7 @@ matplotlib==3.7.5
 
 # MuseTalk related libraries
 diffusers==0.27.2
+huggingface_hub==0.25.2
 accelerate==0.28.0
 opencv-python==4.9.0.80
 soundfile==0.12.1
@@ -65,7 +70,7 @@ transformers==4.39.2
 openai
 modelscope
 funasr>=1.0.0
-edge-tts>=6.1.9
+edge-tts>=6.1.18
 openai-whisper
 zhconv
 
