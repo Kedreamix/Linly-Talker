@@ -419,7 +419,7 @@ class Wav2Lipv2():
 if __name__ == '__main__':
     current_dir = './'
     wav2lipv2 = Wav2Lipv2(os.path.join(current_dir,'checkpoints/wav2lipv2.pth'))
-    wav2lipv2.run('/home/dengkaijun/workdirs/Wav2Lip/video.mp4', '/home/dengkaijun/workdirs/Wav2Lip/video.mp4', batch_size = 16)
+    wav2lipv2.run('Wav2Lip/video.mp4', 'Wav2Lip/video.mp4', batch_size = 16)
 
     # wav2lipv2.run(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 16)
     # wav2lipv2.run(os.path.join(current_dir,'inputs/example.png'), os.path.join(current_dir,'answer.wav'), batch_size = 16, enhance = True)
