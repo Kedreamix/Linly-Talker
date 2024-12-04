@@ -57,6 +57,10 @@
 
 - **新增 Linly-Talker API 文档，提供详细的接口说明，帮助用户通过 API 使用 Linly-Talker 的功能。**
 
+**2024.12 更新** 📆
+
+- **简单修复了Edge-TTS的bug，解决了MuseTalk的一些问题，计划加入fishTTS以获得更稳定的TTS效果，并引入先进的数字人技术。**
+
 ---
 
 <details>
@@ -204,16 +208,20 @@ conda create -n linly python=3.10
 conda activate linly
 
 # pytorch安装方式1：conda安装
-# CUDA 11.7
-# conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
 # CUDA 11.8
-# conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.8 -c pytorch -c nvidia
+# conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1  pytorch-cuda=11.8 -c pytorch -c nvidia
+# CUDA 12.1
+# conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=12.1 -c pytorch -c nvidia
+# CUDA 12.4
+# conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=12.4 -c pytorch -c nvidia
 
 # pytorch安装方式2：pip 安装
-# CUDA 11.7
-# pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
 # CUDA 11.8
-pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
+# pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu118
+# CUDA 12.1
+# pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu121
+# CUDA 12.4
+# pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu124
 
 conda install -q ffmpeg==4.2.2 # ffmpeg==4.2.2
 
@@ -483,11 +491,17 @@ ssl_keyfile = "./https_cert/key.pem"
 
 借鉴使用微软语音服务，具体使用方法参考[https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts)
 
+> [!Warning]
+>
+> 由于Edge TTS仓库出现了一些问题，似乎是因为微软对某些IP进行了限制，可参考[403 error is back/need to implement Sec-MS-GEC token](https://github.com/rany2/edge-tts/issues/290) [Add support for clock adjustment for Sec-MS-GEC token](https://github.com/rany2/edge-tts/pull/309)，暂时发现还是不稳定，我有进行修改，若感觉还是不稳定，请使用其他方法，推荐使用CosyVoice方法
+
 
 
 ### PaddleTTS
 
 在实际使用过程中，可能会遇到需要离线操作的情况。由于Edge TTS需要在线环境才能生成语音，因此我们选择了同样开源的PaddleSpeech作为文本到语音（TTS）的替代方案。虽然效果可能有所不同，但PaddleSpeech支持离线操作。更多信息可参考PaddleSpeech的GitHub页面：[PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)。
+
+
 
 ### Coming Soon
 

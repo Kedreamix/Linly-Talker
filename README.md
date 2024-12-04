@@ -57,6 +57,10 @@
 
 - **Added Linly-Talker API documentation, providing detailed interface descriptions to help users access Linly-Talker’s features via the API.**
 
+**2024.12 Update** 📆
+
+- **Implemented a simple fix for the Edge-TTS bug, resolved several issues with MuseTalk, and plan to integrate fishTTS for more stable TTS performance, along with incorporating advanced digital human technologies.**
+
 ---
 
 <details>
@@ -208,16 +212,21 @@ If you are using Linly-Talker, you can set up the environment directly with Anac
 conda create -n linly python=3.10
 conda activate linly
 
-# PyTorch installation method 1: Install via conda
-# CUDA 11.7
-# conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
-# CUDA 11.8
-# conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.8 -c pytorch -c nvidia
+# PyTorch Installation Option 1: Using conda  
+# CUDA 11.8  
+# conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=11.8 -c pytorch -c nvidia  
+# CUDA 12.1  
+# conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=12.1 -c pytorch -c nvidia  
+# CUDA 12.4  
+# conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=12.4 -c pytorch -c nvidia  
 
-# PyTorch installation method 2: Install via pip
-# CUDA 11.7
-# pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
-# CUDA 11.8
+# PyTorch Installation Option 2: Using pip  
+# CUDA 11.8  
+# pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu118  
+# CUDA 12.1  
+# pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu121  
+# CUDA 12.4  
+# pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu124  
 pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
 
 conda install -q ffmpeg==4.2.2 # ffmpeg==4.2.2
@@ -487,6 +496,12 @@ For detailed information about the usage and code implementation of Text-to-Spee
 ### Edge TTS
 
 To use Microsoft Edge's online text-to-speech service from Python without needing Microsoft Edge or Windows or an API key, you can refer to the GitHub repository at [https://github.com/rany2/edge-tts](https://github.com/rany2/edge-tts). It provides a Python module called "edge-tts" that allows you to utilize the service. You can find detailed installation instructions and usage examples in the repository's README file.
+
+> [!Warning]
+>
+> Due to some issues with the Edge TTS repository, it seems that Microsoft has restricted certain IPs. For more details, refer to [403 error is back/need to implement Sec-MS-GEC token](https://github.com/rany2/edge-tts/issues/290) and [Add support for clock adjustment for Sec-MS-GEC token](https://github.com/rany2/edge-tts/pull/309). The solution is still unstable for now. I have made some modifications, but if it continues to be unstable, please consider using alternative methods. I recommend using the CosyVoice method.
+
+
 
 ### PaddleTTS
 
