@@ -7,28 +7,22 @@ from io import TextIOWrapper
 from typing import Any, TextIO, Union
 import sys
 sys.path.append('../Linly-Talker')
-sys.path.append('../Linly-Talker-main')
 from src import cost_time
 from src.cost_time import calculate_time    
 os.environ["GRADIO_TEMP_DIR"]= './temp'
 
 """
-Constants for the Edge TTS project.
+Constants for the Edge TTS project. 
+https://github.com/rany2/edge-tts/blob/master/src/edge_tts/constants.py
 """
 
+BASE_URL = "speech.platform.bing.com/consumer/speech/synthesize/readaloud"
 TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4"
 
-WSS_URL = (
-    "wss://speech.platform.bing.com/consumer/speech/synthesize/"
-    + "readaloud/edge/v1?TrustedClientToken="
-    + TRUSTED_CLIENT_TOKEN
-)
+WSS_URL = f"wss://{BASE_URL}/edge/v1?TrustedClientToken={TRUSTED_CLIENT_TOKEN}"
+VOICE_LIST = f"https://{BASE_URL}/voices/list?trustedclienttoken={TRUSTED_CLIENT_TOKEN}"
 
-VOICE_LIST = (
-    "https://speech.platform.bing.com/consumer/speech/synthesize/"
-    + "readaloud/voices/list?trustedclienttoken="
-    + TRUSTED_CLIENT_TOKEN
-)
+DEFAULT_VOICE = "en-US-EmmaMultilingualNeural"
 
 def list_voices_fn(proxy=None):
     """
@@ -57,6 +51,7 @@ def list_voices_fn(proxy=None):
     response = requests.get(VOICE_LIST, headers=headers, timeout=3)
     data = json.loads(response.text)
     return data
+
 
 
 class EdgeTTS:
@@ -152,31 +147,22 @@ class EdgeTTS:
         volume = f'-{volume}%'
         return rate, volume, pitch
     @calculate_time
-    def predict(self,TEXT, VOICE, RATE, VOLUME, PITCH, OUTPUT_FILE='result.wav', OUTPUT_SUBS='result.vtt', words_in_cue = 8):
+    def apredict(self,TEXT, VOICE, RATE, VOLUME, PITCH, OUTPUT_FILE='result.wav', OUTPUT_SUBS='result.vtt', words_in_cue = 8):
         async def amain() -> None:
             """Main function"""
             rate, volume, pitch = self.preprocess(rate = RATE, volume = VOLUME, pitch = PITCH)
             communicate = Communicate(TEXT, VOICE, rate = rate, volume = volume, pitch = pitch)
-            subs: SubMaker = SubMaker()
-            sub_file: Union[TextIOWrapper, TextIO] = (
-                open(OUTPUT_SUBS, "w", encoding="utf-8")
-            )
-            async for chunk in communicate.stream():
-                if chunk["type"] == "audio":
-                    # audio_file.write(chunk["data"])
-                    pass
-                elif chunk["type"] == "WordBoundary":
-                    # print((chunk["offset"], chunk["duration"]), chunk["text"])
-                    subs.create_sub((chunk["offset"], chunk["duration"]), chunk["text"])
-            sub_file.write(subs.generate_subs(words_in_cue))
-            await communicate.save(OUTPUT_FILE)
-            
-        
-        # loop = asyncio.get_event_loop_policy().get_event_loop()
-        # try:
-        #     loop.run_until_complete(amain())
-        # finally:
-        #     loop.close()
+            submaker = SubMaker()
+            with open(OUTPUT_FILE, "wb") as file:
+                async for chunk in communicate.stream():
+                    if chunk["type"] == "audio":
+                        file.write(chunk["data"])
+                    elif chunk["type"] == "WordBoundary":
+                        submaker.feed(chunk)
+
+            with open(OUTPUT_SUBS, "w", encoding="utf-8") as file:
+                file.write(submaker.get_srt())
+
         asyncio.run(amain())
         with open(OUTPUT_SUBS, 'r', encoding='utf-8') as file:
             vtt_lines = file.readlines()
@@ -188,8 +174,32 @@ class EdgeTTS:
             output_file.writelines(vtt_lines_without_spaces)
         return OUTPUT_FILE, OUTPUT_SUBS
 
+    @calculate_time
+    def predict(self,TEXT, VOICE, RATE, VOLUME, PITCH, OUTPUT_FILE='result.wav', OUTPUT_SUBS='result.vtt', words_in_cue = 8):
+        rate, volume, pitch = self.preprocess(rate = RATE, volume = VOLUME, pitch = PITCH)
+        communicate = Communicate(TEXT, VOICE, rate = rate, volume = volume, pitch = pitch)
+        communicate.save_sync(OUTPUT_FILE)
+
+        
+        '''
+        由于EdgeTTS的一些问题，并且最近发现其生成的字幕还是有些奇怪，所以会重新写一个字幕生成，暂不使用其字母生成
+        '''
+        # communicate = Communicate(TEXT, VOICE)
+        # submaker = SubMaker()
+        # with open(OUTPUT_FILE, "wb") as file:
+        #     for chunk in communicate.stream_sync():
+        #         if chunk["type"] == "audio":
+        #             file.write(chunk["data"])
+        #         elif chunk["type"] == "WordBoundary":
+        #             submaker.feed(chunk)
+
+        # with open(OUTPUT_SUBS, "w", encoding="utf-8") as file:
+        #     file.write(submaker.get_srt())
+
+        return OUTPUT_FILE, None
+
 def test():
-    tts = EdgeTTS(list_voices=True)
+    tts = EdgeTTS(list_voices=False)
     TEXT = '''近日，苹果公司起诉高通公司，状告其未按照相关合约进行合作，高通方面尚未回应。这句话中“其”指的是谁？'''
     VOICE = "zh-CN-XiaoxiaoNeural"
     OUTPUT_FILE, OUTPUT_SUBS = "tts.wav", "tts.vtt"
