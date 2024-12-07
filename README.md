@@ -188,7 +188,7 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 > AutoDL has released an image, which can be used directly at [https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker). You can also create an environment directly using Docker. I will continue to update the image.
 >
 > ```bash
-> docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:zYGdW3yO3D
+> docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:afGA8RPDLf
 > ```
 >
 > For Windows, I've included an all-in-one Python package. You can run the steps in sequence to install the necessary dependencies and download the corresponding model to get it running. Follow the instructions using `conda` and start installing PyTorch from step 02. If you encounter any issues, please feel free to contact me.

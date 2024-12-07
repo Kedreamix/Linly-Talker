@@ -185,7 +185,7 @@ Linly-Talker的设计理念是创造一种全新的人机交互方式，不仅�
 > AutoDL已发布镜像，可以直接使用，[https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker](https://www.codewithgpu.com/i/Kedreamix/Linly-Talker/Kedreamix-Linly-Talker)，也可以使用docker来直接创建环境，我也会持续不断的更新镜像
 >
 > ```bash
-> docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:zYGdW3yO3D
+> docker pull registry.cn-beijing.aliyuncs.com/codewithgpu2/kedreamix-linly-talker:afGA8RPDLf
 > ```
 >
 > Windows我加入了一个python一键整合包，可以按顺序进行运行，按照需求按照相应的依赖，并且下载对应的模型，即可运行，主要按照conda以后从02开始安装pytorch进行运行，如果有问题，请随时与我沟通
