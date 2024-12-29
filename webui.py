@@ -945,7 +945,7 @@ if __name__ == "__main__":
     # 尝试加载Whisper ASR模块
     try:
         from ASR import WhisperASR
-        asr = WhisperASR('base')
+        asr = WhisperASR('Whisper/base.pt')
         success_print("Success! WhisperASR模块加载成功，默认使用Whisper-base模型")
     except Exception as e:
         error_print(f"WhisperASR 加载失败: {e}")
