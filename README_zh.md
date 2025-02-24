@@ -61,6 +61,10 @@
 
 - **简单修复了Edge-TTS的bug，解决了MuseTalk的一些问题，计划加入fishTTS以获得更稳定的TTS效果，并引入先进的数字人技术。**
 
+**2025.02 更新** 📆
+
+- **添加了更快的语音识别模型OmniSenseVoice。**
+
 ---
 
 <details>
