@@ -61,6 +61,9 @@
 
 - **Implemented a simple fix for the Edge-TTS bug, resolved several issues with MuseTalk, and plan to integrate fishTTS for more stable TTS performance, along with incorporating advanced digital human technologies.**
 
+**2025.02 Update** 📆
+
+- **Added OmniSenseVoice Model for Faster Speech Recognition**
 ---
 
 <details>
