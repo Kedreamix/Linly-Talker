@@ -168,6 +168,25 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 > - [Deploying Linly-Talker on AutoDL Platform (Super Detailed Tutorial for Beginners)](https://www.bilibili.com/video/BV1uT421m74z/)
 > - [Linly-Talker Update: Offline TTS Integration and Customized Digital Human Solutions](https://www.bilibili.com/video/BV1Mr421u7NN/)
 
+> [!TIP]
+>
+> **🎓 New to Linly-Talker? Start with the Educational UI!**
+>
+> If you want to understand how Linly-Talker works before diving in, we've created an interactive educational interface:
+>
+> ```bash
+> python understanding_ui.py
+> ```
+>
+> This will launch an interactive guide (http://localhost:7860) that explains:
+> - 📊 System architecture and data flow
+> - 🔧 How each component (ASR, LLM, TTS, THG) works
+> - ⚖️ Model comparisons and recommendations
+> - 💡 Practical use cases and applications
+> - 🚀 Quick start guide and best practices
+>
+> Perfect for beginners! See [UNDERSTANDING_UI_README.md](UNDERSTANDING_UI_README.md) for details.
+
 ## TO DO LIST
 
 - [x] Completed the basic conversation system flow, capable of `voice interactions`.
