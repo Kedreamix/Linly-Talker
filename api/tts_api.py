@@ -15,6 +15,7 @@ tts = None
 cosyvoice = None
 edgetts = None
 vits = None
+cambai = None
 
 class TTSRequest(BaseModel):
     text: str = '你好，我是Linly-Talker。'
@@ -80,6 +81,11 @@ async def change_model(model_name: str = Query(..., description="要加载的TTS
             if cosyvoice is None:
                 cosyvoice = CosyVoiceTTS(model_path)
             logger.info("CosyVoice-克隆翻译模式模型加载成功")
+        elif model_name in ('CambTTS', 'CambTTS-克隆声音', 'CambTTS-翻译模式'):
+            from TTS import CambTTS
+            if cambai is None:
+                cambai = CambTTS()
+            logger.info("CambTTS模型加载成功")
         else:
             logger.warning(f"未知的TTS模型: {model_name}")
             raise HTTPException(status_code=400, detail=f"未知的TTS模型: {model_name}")
@@ -146,6 +152,50 @@ def predict_gpt_sovits(request: TTSRequest):
                      save_path=request.save_path)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"GPT-SoVITS 预测失败: {e}")
+
+    return request.save_path
+
+def predict_camb_tts(request: TTSRequest):
+    global cambai
+    if cambai is None:
+        raise HTTPException(status_code=400, detail="CambTTS 模型未加载")
+
+    try:
+        cambai.predict(request.text, request.voice, OUTPUT_FILE=request.save_path)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"CambTTS 预测失败: {e}")
+
+    return request.save_path
+
+def predict_camb_clone(request: TTSRequest):
+    global cambai
+    if cambai is None:
+        raise HTTPException(status_code=400, detail="CambTTS 模型未加载")
+    if not request.ref_audio:
+        raise HTTPException(status_code=400, detail="CambTTS 克隆需要提供参考音频")
+
+    try:
+        voice_id = cambai.clone_voice(request.ref_audio, voice_name=request.prompt_text or None)
+        cambai.predict(request.text, VOICE_ID=voice_id, OUTPUT_FILE=request.save_path)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"CambTTS 克隆预测失败: {e}")
+
+    return request.save_path
+
+def predict_camb_translated(request: TTSRequest):
+    global cambai
+    if cambai is None:
+        raise HTTPException(status_code=400, detail="CambTTS 模型未加载")
+
+    try:
+        cambai.predict_translated(
+            request.text,
+            SOURCE_LANG_ID=1,
+            TARGET_LANG_ID=54,
+            OUTPUT_FILE=request.save_path,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"CambTTS 翻译预测失败: {e}")
 
     return request.save_path
 
@@ -239,6 +289,12 @@ async def tts_response(
             file_path = predict_gpt_sovits(request)
         elif "CosyVoice" in request.tts_method:
             file_path = predict_cosyvoice(request)
+        elif request.tts_method == 'CambTTS':
+            file_path = predict_camb_tts(request)
+        elif request.tts_method == 'CambTTS-克隆声音':
+            file_path = predict_camb_clone(request)
+        elif request.tts_method == 'CambTTS-翻译模式':
+            file_path = predict_camb_translated(request)
         else:
             raise HTTPException(status_code=400, detail=f"未知的TTS方法: {request.tts_method}")
         
