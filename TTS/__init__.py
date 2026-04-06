@@ -6,3 +6,9 @@ except Exception as e:
     print("PaddleTTS Error: ", e)
     print("如果使用PaddleTTS，请先安装PaddleTTS环境")
     print("pip install -r requirements_paddle.txt")
+
+try:
+    from .CambTTS import CambTTS
+except Exception as e:
+    print("CambTTS Error: ", e)
+    print("如果使用CambTTS，请先安装camb-sdk: pip install camb-sdk")
