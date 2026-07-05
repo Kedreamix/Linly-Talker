@@ -144,7 +144,7 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 
 > [!TIP]
 > 
-> **🚀 New Release: Linly-Talker-Stream** 
+> **🚀 [Updated]New Release: Linly-Talker-Stream** 
 > 
 > We've launched [Linly-Talker-Stream](https://github.com/Kedreamix/Linly-Talker-Stream), the real-time streaming interactive architecture version of Linly-Talker. Compared to traditional "turn-based" Q&A, the Stream version achieves:
 > 
