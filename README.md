@@ -504,7 +504,7 @@ To implement ASR (Automatic Speech Recognition) using OpenAI's Whisper, you can 
 
 ### FunASR
 
-The speech recognition performance of Alibaba's FunASR is quite impressive and it is actually better than Whisper in terms of Chinese language. Additionally, FunASR is capable of achieving real-time results, making it a great choice. You can experience FunASR by accessing the FunASR file in the ASR folder. Please refer to [https://github.com/alibaba-damo-academy/FunASR](https://github.com/alibaba-damo-academy/FunASR) for more information.
+The speech recognition performance of Alibaba's FunASR is quite impressive and it is actually better than Whisper in terms of Chinese language. Additionally, FunASR is capable of achieving real-time results, making it a great choice. You can experience FunASR by accessing the FunASR file in the ASR folder. Please refer to [https://github.com/modelscope/FunASR](https://github.com/modelscope/FunASR) for more information.
 
 
 
@@ -1073,7 +1073,7 @@ Linly-Talker/
 **ASR**
 
 - [https://github.com/openai/whisper](https://github.com/openai/whisper)
-- [https://github.com/alibaba-damo-academy/FunASR](https://github.com/alibaba-damo-academy/FunASR)
+- [https://github.com/modelscope/FunASR](https://github.com/modelscope/FunASR)
 
 **TTS**
 
