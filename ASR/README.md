@@ -36,7 +36,7 @@ class WhisperASR:
 
 ### FunASR Alibaba
 
-阿里的`FunASR`的语音识别效果也是相当不错，而且时间也是比whisper更快的，更能达到实时的效果，所以也将FunASR添加进去了，在ASR文件夹下的FunASR文件里可以进行体验，参考 [https://github.com/alibaba-damo-academy/FunASR](https://github.com/alibaba-damo-academy/FunASR)
+阿里的`FunASR`的语音识别效果也是相当不错，而且时间也是比whisper更快的，更能达到实时的效果，所以也将FunASR添加进去了，在ASR文件夹下的FunASR文件里可以进行体验，参考 [https://github.com/modelscope/FunASR](https://github.com/modelscope/FunASR)
 
 需要注意的是，在第一次运行的时候，需要安装以下库。
 
@@ -48,7 +48,7 @@ pip install -U rotary_embedding_torch
 
 ```python
 '''
-Reference: https://github.com/alibaba-damo-academy/FunASR
+Reference: https://github.com/modelscope/FunASR
 pip install funasr
 pip install modelscope
 pip install -U rotary_embedding_torch
