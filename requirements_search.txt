@@ -1,0 +1,2 @@
+# WebUI web lookup (Python 3.10+, no model or GPU dependencies)
+mcp>=1.30,<2

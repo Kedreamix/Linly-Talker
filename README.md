@@ -197,6 +197,11 @@ The design philosophy of Linly-Talker is to create a new form of human-computer 
 
 ## Example
 
+Multi-turn WebUI chat supports [web lookup with Parallel Search MCP](docs/Web_Search.md)
+for current information and URL summaries, without a search account or API key.
+Lookup is enabled by default for chat models and can be switched off; Direct Reply
+does not access the web.
+
 |                        文字/语音对话                         |                          数字人回答                          |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |                 应对压力最有效的方法是什么？                 | <video src="https://github.com/Kedreamix/Linly-Talker/assets/61195303/f1deb189-b682-4175-9dea-7eeb0fb392ca"></video> |
