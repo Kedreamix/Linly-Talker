@@ -1,4 +1,5 @@
 import os
+import asyncio
 import random 
 import gradio as gr
 import numpy as np
@@ -11,6 +12,7 @@ from zhconv import convert
 from LLM import LLM
 from TTS import EdgeTTS
 from src.cost_time import calculate_time
+from src.web_search import chat_with_web, new_search_session, web_search_allowed, WebSearchError
 
 from configs import *
 os.environ["GRADIO_TEMP_DIR"]= './temp'
@@ -255,26 +257,35 @@ def Talker_response_img(question_audio, method, text, voice, rate, volume, pitch
 
     return (video, driven_vtt) if driven_vtt else video
 
-def chat_response(system, message, history):
-    # response = llm.generate(message)
-    response, history = llm.chat(system, message, history)
+async def chat_response(system, message, history, web_lookup, search_session):
+    search_session = search_session or new_search_session()
+    # Save identity before I/O so errors, cancellation and retries keep it.
+    yield gr.skip(), gr.skip(), "", search_session
+    try:
+        response, history, evidence = await chat_with_web(
+            llm, system, message, history, web_lookup, search_session,
+            direct_reply=llm is llm_class,
+        )
+    except WebSearchError as exc:
+        raise gr.Error(str(exc)) from exc
     print(history)
     # 流式输出
     for i in range(len(response)):
-        time.sleep(0.01)
-        yield "", history[:-1] + [(message, response[:i+1])]
-    return "", history
+        await asyncio.sleep(0.01)
+        yield "", history[:-1] + [(message, response[:i+1])], evidence, search_session
+    if not response:
+        yield "", history, evidence, search_session
 
 def modify_system_session(system: str) -> str:
     if system is None or len(system) == 0:
         system = DEFAULT_SYSTEM
     llm.clear_history()
-    return system, system, []
+    return system, system, [], new_search_session(), ""
 
 def clear_session():
     # clear history
     llm.clear_history()
-    return '', []
+    return '', [], new_search_session(), ""
 
 
 def human_response(source_image, history, question_audio, talker_method, voice, rate, volume, pitch,
@@ -532,6 +543,14 @@ def app_multi():
                 
                 # 聊天机器人界面
                 chatbot = gr.Chatbot(height=400, show_copy_button=True)
+                search_session = gr.State(value=None)
+                web_lookup = gr.Checkbox(
+                    value=web_search_allowed(), interactive=web_search_allowed(),
+                    label="联网查询 / Web lookup (Parallel)",
+                    info="将问题或网址发送到 Parallel，免费且无需密钥。关闭后仅使用所选模型；直接回复模式不联网。",
+                )
+                with gr.Accordion("网页参考 / Web evidence", open=False):
+                    web_evidence = gr.Textbox(label="网页内容及来源 / Excerpts and sources", interactive=False, lines=6)
                 
                 # 语音输入及识别按钮
                 with gr.Group():
@@ -554,11 +573,13 @@ def app_multi():
                 with gr.Row():
                     clear_history = gr.Button("🧹 清除历史对话")
                     sumbit = gr.Button("🚀 发送", variant='primary')
+                    stop_lookup = gr.Button("停止 / Stop")
                     
                 # 设置按钮的点击事件
-                sumbit.click(chat_response, inputs=[system_input, msg, chatbot], outputs=[msg, chatbot])
-                clear_history.click(fn=clear_session, outputs=[msg, chatbot])
-                modify_system.click(fn=modify_system_session, inputs=[system_input], outputs=[system_state, system_input, chatbot])
+                chat_event = sumbit.click(chat_response, inputs=[system_input, msg, chatbot, web_lookup, search_session], outputs=[msg, chatbot, web_evidence, search_session])
+                stop_lookup.click(fn=None, cancels=[chat_event], queue=False)
+                clear_history.click(fn=clear_session, outputs=[msg, chatbot, search_session, web_evidence], cancels=[chat_event])
+                modify_system.click(fn=modify_system_session, inputs=[system_input], outputs=[system_state, system_input, chatbot, search_session, web_evidence], cancels=[chat_event])
                 video_button.click(fn=human_response, inputs=[source_image, chatbot, question_audio, talker_method, voice, rate, volume, pitch,
                                                              am, voc, lang, male, 
                                                              ref_audio, prompt_text, prompt_language, text_language, cut_method,  use_mic_voice, 

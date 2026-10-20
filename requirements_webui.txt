@@ -15,6 +15,7 @@ torchaudio
 # pip install tb-nightly -i https://mirrors.aliyun.com/pypi/simple
 
 # General tools and libraries
+-r requirements_search.txt
 numba
 tqdm
 pyyaml
